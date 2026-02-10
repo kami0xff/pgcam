@@ -1,0 +1,87 @@
+/**
+ * PornGuruCam - Main JavaScript
+ */
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize infinite scroll if config exists
+    if (window.infiniteScrollConfig) {
+        initInfiniteScroll();
+    }
+});
+
+/**
+ * Infinite Scroll Implementation
+ */
+function initInfiniteScroll() {
+    const config = window.infiniteScrollConfig;
+    const grid = document.getElementById('models-grid');
+    const loader = document.getElementById('infinite-loader');
+    const trigger = document.getElementById('infinite-scroll-trigger');
+    
+    if (!grid || !trigger) return;
+
+    let currentPage = config.currentPage;
+    let hasMore = config.hasMore;
+    let isLoading = false;
+
+    // Create Intersection Observer
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && hasMore && !isLoading) {
+                loadMoreModels();
+            }
+        });
+    }, {
+        rootMargin: '200px', // Start loading before user reaches the end
+        threshold: 0
+    });
+
+    // Observe the trigger element
+    observer.observe(trigger);
+
+    async function loadMoreModels() {
+        if (isLoading || !hasMore) return;
+        
+        isLoading = true;
+        if (loader) loader.style.display = 'flex';
+
+        try {
+            // Build URL with filters
+            const params = new URLSearchParams(config.filters);
+            params.set('page', currentPage + 1);
+            
+            const response = await fetch(`${config.apiUrl}?${params.toString()}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            if (!response.ok) throw new Error('Failed to load');
+
+            const data = await response.json();
+
+            // Append new models to grid
+            if (data.html) {
+                grid.insertAdjacentHTML('beforeend', data.html);
+            }
+
+            // Update state
+            currentPage = data.nextPage - 1;
+            hasMore = data.hasMore;
+
+            // Hide loader if no more pages
+            if (!hasMore && loader) {
+                loader.style.display = 'none';
+            }
+
+        } catch (error) {
+            console.error('Error loading models:', error);
+            if (loader) {
+                loader.innerHTML = '<span class="loader-error">Failed to load. <button onclick="location.reload()">Retry</button></span>';
+            }
+        } finally {
+            isLoading = false;
+        }
+    }
+}

@@ -1,0 +1,109 @@
+# ==============================================
+# Docker Compose Production - pornguru.cam
+# FrankenPHP with automatic HTTPS
+# ==============================================
+
+services:
+  # ==============================================
+  # Main Application (FrankenPHP)
+  # ==============================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.frankenphp
+      target: production
+    image: porngurucam:production
+    container_name: porngurucam-app
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"  # HTTP/3
+    environment:
+      SERVER_NAME: "pornguru.cam, www.pornguru.cam"
+      APP_ENV: production
+      APP_DEBUG: "false"
+    env_file:
+      - .env.production
+    volumes:
+      # Persist Let's Encrypt certificates
+      - caddy_data:/data
+      - caddy_config:/config
+      # Persist Laravel storage (uploads, logs, cache)
+      - app_storage:/app/storage
+      # Caddy logs
+      - ./logs/caddy:/var/log/caddy
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - pornguru-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/up"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ==============================================
+  # PostgreSQL Database (Users, Favorites, Sessions)
+  # ==============================================
+  db:
+    image: postgres:16-alpine
+    container_name: porngurucam-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-porngurucam}
+      POSTGRES_USER: ${DB_USERNAME:-porngurucam}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - pornguru-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-porngurucam} -d ${DB_DATABASE:-porngurucam}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ==============================================
+  # Redis (Optional: Sessions, Cache, Queue)
+  # ==============================================
+  redis:
+    image: redis:7-alpine
+    container_name: porngurucam-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 128mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    networks:
+      - pornguru-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+# ==============================================
+# Volumes
+# ==============================================
+volumes:
+  caddy_data:
+    name: porngurucam_caddy_data
+  caddy_config:
+    name: porngurucam_caddy_config
+  app_storage:
+    name: porngurucam_storage
+  postgres_data:
+    name: porngurucam_postgres
+  redis_data:
+    name: porngurucam_redis
+
+# ==============================================
+# Networks
+# ==============================================
+networks:
+  pornguru-network:
+    name: pornguru-network
+    driver: bridge
