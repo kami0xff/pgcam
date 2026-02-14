@@ -172,8 +172,9 @@ window.StreamPreviewManager = (function() {
             const hls = new Hls({
                 maxBufferLength: 10,
                 maxMaxBufferLength: 20,
-                startLevel: 0,
-                capLevelToPlayerSize: true
+                startLevel: -1, // Auto-select best quality for player size
+                capLevelToPlayerSize: true,
+                capLevelOnFPSDrop: true
             });
             
             hls.loadSource(streamUrl);

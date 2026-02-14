@@ -42,7 +42,7 @@ class FavoriteController extends Controller
             ]);
         }
 
-        $favorites = Auth::user()->favorites()->pluck('cam_model_id');
+        $favorites = Auth::user()->favoriteCamModelIds();
 
         return response()->json([
             'success' => true,

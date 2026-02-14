@@ -1,28 +1,59 @@
 # Deployment Guide - pornguru.cam
 
-## Quick Start
+## Git Workflow
 
-### 1. Clone the repository on your server
-
-```bash
-git clone <your-repo-url> porngurucam
-cd porngurucam
-git checkout production
+```
+feature/xyz  ──→  dev  ──→  main (production)
+                   ↑          ↑
+              test here    auto-deploys
 ```
 
-### 2. Configure environment
+| Branch | Purpose | Deploys to |
+|--------|---------|------------|
+| `main` | Production-ready code | pornguru.cam (auto via CI/CD) |
+| `dev` | Integration & testing | Local dev stack |
+| `feature/*` | New features / fixes | Nothing |
+
+### Daily workflow
+
+```bash
+# 1. Start a feature
+make feature F=fix-stream-quality
+
+# 2. Work, commit, push
+git add -A && git commit -m "fix stream quality selection"
+git push -u origin feature/fix-stream-quality
+
+# 3. When done, merge into dev
+make finish                  # merges feature → dev
+
+# 4. Test on dev
+make dev                     # starts dev stack at localhost:8787
+
+# 5. When ready, release to production
+make release                 # merges dev → main, pushes, CI/CD deploys
+```
+
+## First-Time Server Setup
+
+### 1. Clone and checkout
+
+```bash
+git clone git@github.com:kami0xff/pgcam.git /var/www/porngurucam
+cd /var/www/porngurucam
+```
+
+### 2. Configure production environment
 
 ```bash
 cp .env.production.example .env.production
-nano .env.production  # Fill in your values
+nano .env.production
 ```
 
-**Required values to set:**
-- `APP_KEY` - Generate with: `php artisan key:generate --show`
-- `CAM_DB_HOST` - Your PostgreSQL host for cam models
-- `CAM_DB_PASSWORD` - PostgreSQL password
-- `DB_PASSWORD` - MySQL password for users/favorites
-- `DB_ROOT_PASSWORD` - MySQL root password
+**Required values:**
+- `APP_KEY` -- Generate: `docker run --rm -it php:8.3-cli php -r "echo 'base64:'.base64_encode(random_bytes(32)).PHP_EOL;"`
+- `CAM_DB_HOST` / `CAM_DB_PASSWORD` -- External cam models database
+- `DB_PASSWORD` -- Local PostgreSQL for users/favorites/sessions
 
 ### 3. Deploy
 
@@ -30,114 +61,107 @@ nano .env.production  # Fill in your values
 ./deploy.sh
 ```
 
-That's it! The script will:
-- Build the Docker image
-- Start all containers
-- Run migrations
-- Cache configuration
-- Set up automatic HTTPS via Let's Encrypt
+This will build the Docker image, start containers, run migrations, build caches, and obtain HTTPS certificates automatically.
 
-## Manual Commands
+### 4. Point DNS
 
-### Build image
-```bash
-docker compose -f docker-compose.prod.yml build
+Add A records for your domain pointing to your server IP:
+
+```
+pornguru.cam      A    YOUR_SERVER_IP
+www.pornguru.cam  A    YOUR_SERVER_IP
 ```
 
-### Start containers
+FrankenPHP (Caddy) will automatically obtain and renew Let's Encrypt certificates once DNS propagates.
+
+## Commands
+
 ```bash
-docker compose -f docker-compose.prod.yml up -d
+make help          # Show all available commands
+
+# Development
+make dev           # Start dev stack (port 8787)
+make dev-down      # Stop dev stack
+make dev-logs      # Tail dev logs
+make test          # Run tests
+
+# Production
+make prod          # Full deploy (build + restart + migrate + cache)
+make prod-logs     # Tail production logs
+make prod-shell    # Shell into production container
+make build         # Build image only (no restart)
 ```
 
-### View logs
+## Manual deployment
+
+If CI/CD is not set up yet:
+
 ```bash
-docker compose -f docker-compose.prod.yml logs -f app
+git checkout main
+git pull origin main
+./deploy.sh
 ```
 
-### Run artisan commands
-```bash
-docker compose -f docker-compose.prod.yml exec app php artisan <command>
-```
+## CI/CD (GitHub Actions)
 
-### Access container shell
-```bash
-docker compose -f docker-compose.prod.yml exec app sh
-```
+Pushing to `main` triggers the pipeline automatically:
+1. Runs test suite
+2. SSHs into server and runs `deploy.sh`
 
-### Stop containers
-```bash
-docker compose -f docker-compose.prod.yml down
-```
+### Required GitHub Secrets
 
-## SSL/HTTPS
+Go to **Settings → Secrets and variables → Actions** and add:
 
-FrankenPHP (Caddy) handles SSL automatically:
-- Certificates are obtained from Let's Encrypt
-- Auto-renewal is handled automatically
-- HTTP/2 and HTTP/3 are enabled by default
-- Certificates are stored in the `caddy_data` volume
+| Secret | Value |
+|--------|-------|
+| `SSH_HOST` | Your server IP |
+| `SSH_PORT` | SSH port (default: 22) |
+| `SSH_USERNAME` | SSH user |
+| `SSH_PRIVATE_KEY` | Contents of `~/.ssh/id_ed25519` (private key) |
+| `DEPLOY_PATH` | `/var/www/porngurucam` |
+| `FLUX_USERNAME` | *(optional)* Flux UI username |
+| `FLUX_LICENSE_KEY` | *(optional)* Flux UI license key |
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────┐
-│  FrankenPHP (Caddy + PHP 8.3)           │
-│  - Automatic HTTPS                      │
-│  - Worker mode (persistent PHP)         │
-│  - HTTP/2 & HTTP/3                      │
-│  Ports: 80, 443                         │
-├─────────────────────────────────────────┤
-│  Laravel Application                    │
-│  - Config/route/view caching            │
-│  - OPcache enabled                      │
-├─────────────────────────────────────────┤
-│  MySQL 8.0                              │
-│  - Users, favorites, sessions           │
-├─────────────────────────────────────────┤
-│  Redis 7                                │
-│  - Sessions, cache, queue               │
-├─────────────────────────────────────────┤
-│  PostgreSQL (external)                  │
-│  - Cam models data                      │
-└─────────────────────────────────────────┘
-```
-
-## Updating
-
-```bash
-git pull origin production
-./deploy.sh
+Internet
+   │
+   ▼
+┌──────────────────────────────────────┐
+│  FrankenPHP (Caddy + PHP 8.3)        │
+│  Automatic HTTPS · HTTP/2 · HTTP/3   │
+│  Ports: 80, 443                       │
+├──────────────────────────────────────┤
+│  Laravel Application                  │
+│  OPcache · Config/Route/View cache    │
+├──────────────────────────────────────┤
+│  PostgreSQL 16  │  Redis 7            │
+│  Users/Sessions │  Cache/Queue        │
+├──────────────────────────────────────┤
+│  External PostgreSQL                  │
+│  Cam models (read-only)               │
+└──────────────────────────────────────┘
 ```
 
 ## Troubleshooting
 
-### Check container status
 ```bash
+# Check container status
 docker compose -f docker-compose.prod.yml ps
-```
 
-### Check container health
-```bash
+# Check health
 docker inspect porngurucam-app | grep -A 10 "Health"
-```
 
-### View Caddy/PHP logs
-```bash
-docker compose -f docker-compose.prod.yml logs -f app
-```
+# View all logs
+docker compose -f docker-compose.prod.yml logs -f
 
-### Restart containers
-```bash
+# Restart everything
 docker compose -f docker-compose.prod.yml restart
-```
 
-### Clear all caches
-```bash
+# Clear all caches
 docker compose -f docker-compose.prod.yml exec app php artisan optimize:clear
-```
 
-### SSL certificate issues
-Caddy stores certificates in a Docker volume. If you need to force renewal:
-```bash
+# Force SSL certificate renewal
 docker compose -f docker-compose.prod.yml exec app caddy reload --config /etc/caddy/Caddyfile
 ```

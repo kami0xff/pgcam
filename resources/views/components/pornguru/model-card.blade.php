@@ -9,7 +9,7 @@
 <div class="model-card-wrapper">
     <a href="{{ route('cam-models.show', $model) }}" 
        class="model-card" 
-       data-stream-url="{{ $model->stream_url }}"
+       data-stream-url="{{ $model->best_stream_url }}"
        data-model-id="{{ $model->id }}">
         <div class="model-card-image">
             {{-- Static Image --}}
@@ -19,7 +19,7 @@
                  loading="lazy">
             
             {{-- Video Preview (hidden by default) --}}
-            @if($model->is_online && $model->stream_url)
+            @if($model->is_online && $model->best_stream_url)
                 <video class="model-card-video" muted playsinline></video>
             @endif
             

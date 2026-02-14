@@ -43,16 +43,9 @@ pornguru.cam, www.pornguru.cam {
         -Server
     }
 
-    # Handle Laravel with FrankenPHP worker mode
-    php_server {
-        # Worker mode: keeps PHP process alive for better performance
-        worker {
-            # Number of worker processes (adjust based on CPU cores)
-            num 4
-            # Max requests before worker restart (prevents memory leaks)
-            max_requests 1000
-        }
-    }
+    # Handle Laravel with FrankenPHP (standard request-per-process mode)
+    # No worker mode - works with vanilla Laravel out of the box
+    php_server
 
     # Dynamic pages - NO cache (content updates every 30 seconds)
     @dynamic {

@@ -240,26 +240,36 @@ class CamModel extends Model
 
     /**
      * Get best quality HLS stream URL from database
+     * Prefers the highest resolution URL from stream_urls, falls back to stream_url
      */
     public function getBestStreamUrlAttribute(): ?string
     {
-        // Primary: Use stream_url directly
-        if ($this->stream_url) {
-            return $this->stream_url;
-        }
+        // First priority: Check stream_urls array for best quality
+        if (!empty($this->stream_urls) && is_array($this->stream_urls)) {
+            // Quality tiers in descending preference order
+            $qualityTiers = ['1080', '4k', '2160', '1440', '720', 'hd', 'high', '480', 'medium', 'sd', '360', 'low'];
 
-        // Secondary: Check stream_urls array for best quality
-        if (!empty($this->stream_urls)) {
-            // Prefer HD/HQ URLs if available
-            foreach (['1080', '720', 'hd', 'high'] as $quality) {
+            foreach ($qualityTiers as $quality) {
                 foreach ($this->stream_urls as $key => $url) {
-                    if (stripos($key, $quality) !== false || stripos($url, $quality) !== false) {
+                    if (!is_string($url) || empty($url)) continue;
+                    $keyStr = is_string($key) ? $key : '';
+                    if (stripos($keyStr, $quality) !== false || stripos($url, $quality) !== false) {
                         return $url;
                     }
                 }
             }
-            // Otherwise return first available
-            return reset($this->stream_urls);
+
+            // No quality match found — return the first valid URL
+            foreach ($this->stream_urls as $url) {
+                if (is_string($url) && !empty($url)) {
+                    return $url;
+                }
+            }
+        }
+
+        // Fallback: Use the single stream_url
+        if ($this->stream_url) {
+            return $this->stream_url;
         }
 
         return null;
@@ -267,13 +277,33 @@ class CamModel extends Model
 
     /**
      * Get stream aspect ratio from database or default to 16:9
+     * For very tall portrait streams, clamp to a reasonable minimum ratio
      */
     public function getStreamAspectRatioAttribute(): string
     {
         if ($this->stream_width && $this->stream_height && $this->stream_height > 0) {
+            $ratio = $this->stream_width / $this->stream_height;
+
+            // For extreme portrait ratios (taller than 9:16), clamp to 9:16
+            // to prevent absurdly tall players
+            if ($ratio < 0.5625) {
+                return '9 / 16';
+            }
+
             return $this->stream_width . ' / ' . $this->stream_height;
         }
         return '16 / 9';
+    }
+
+    /**
+     * Check if this is a portrait/mobile stream
+     */
+    public function getIsPortraitStreamAttribute(): bool
+    {
+        if ($this->stream_width && $this->stream_height && $this->stream_height > 0) {
+            return $this->stream_height > $this->stream_width;
+        }
+        return false;
     }
 
     /**

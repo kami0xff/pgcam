@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class User extends Authenticatable
@@ -53,12 +54,27 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the user's favorite cam models
+     * Get the IDs of favorited cam models from the local database.
+     *
+     * Note: user_favorites lives on the local DB while cam_models lives on the
+     * external "cam" DB, so we cannot use a belongsToMany JOIN. Instead we
+     * query the pivot table directly and then fetch CamModels via whereIn.
      */
-    public function favorites(): BelongsToMany
+    public function favoriteCamModelIds(): Collection
     {
-        return $this->belongsToMany(CamModel::class, 'user_favorites', 'user_id', 'cam_model_id')
-            ->withTimestamps();
+        return DB::table('user_favorites')
+            ->where('user_id', $this->id)
+            ->pluck('cam_model_id');
+    }
+
+    /**
+     * Get the user's favorite cam models (cross-database safe).
+     *
+     * Returns an Eloquent Builder so callers can chain ->orderBy(), ->get(), etc.
+     */
+    public function favorites()
+    {
+        return CamModel::whereIn('id', $this->favoriteCamModelIds());
     }
 
     /**
@@ -66,7 +82,10 @@ class User extends Authenticatable
      */
     public function hasFavorited(CamModel $model): bool
     {
-        return $this->favorites()->where('cam_model_id', $model->id)->exists();
+        return DB::table('user_favorites')
+            ->where('user_id', $this->id)
+            ->where('cam_model_id', $model->id)
+            ->exists();
     }
 
     /**
@@ -75,11 +94,19 @@ class User extends Authenticatable
     public function toggleFavorite(CamModel $model): bool
     {
         if ($this->hasFavorited($model)) {
-            $this->favorites()->detach($model->id);
+            DB::table('user_favorites')
+                ->where('user_id', $this->id)
+                ->where('cam_model_id', $model->id)
+                ->delete();
             return false;
         }
-        
-        $this->favorites()->attach($model->id);
+
+        DB::table('user_favorites')->insert([
+            'user_id' => $this->id,
+            'cam_model_id' => $model->id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
         return true;
     }
 
@@ -88,6 +115,8 @@ class User extends Authenticatable
      */
     public function onlineFavorites()
     {
-        return $this->favorites()->where('is_online', true)->orderBy('viewers_count', 'desc');
+        return CamModel::whereIn('id', $this->favoriteCamModelIds())
+            ->where('is_online', true)
+            ->orderBy('viewers_count', 'desc');
     }
 }

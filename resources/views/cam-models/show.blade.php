@@ -50,8 +50,8 @@
     <div class="model-detail-wide">
         {{-- Main Stream Area --}}
         <div class="model-stream-wide">
-            <div class="model-stream-player-wide" style="aspect-ratio: {{ $model->stream_aspect_ratio }};">
-                @if($model->is_online && $model->stream_url)
+            <div class="model-stream-player-wide {{ $model->stream_width && $model->stream_height && $model->stream_height > $model->stream_width ? 'portrait-stream' : '' }}" style="aspect-ratio: {{ $model->stream_aspect_ratio }};">
+                @if($model->is_online && $model->best_stream_url)
                     {{-- Loading Skeleton --}}
                     <div class="stream-loading-skeleton" id="stream-skeleton">
                         <img src="{{ $model->best_image_url }}" alt="{{ $model->username }}" class="stream-skeleton-bg">
@@ -440,7 +440,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const video = document.getElementById('stream-player');
         const skeleton = document.getElementById('stream-skeleton');
-        const streamUrl = @json($model->stream_url);
+        const streamUrl = @json($model->best_stream_url);
 
         if (!video || !streamUrl) return;
 
