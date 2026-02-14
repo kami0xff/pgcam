@@ -7,7 +7,7 @@
 @endphp
 
 <div class="model-card-wrapper">
-    <a href="{{ route('cam-models.show', $model) }}" 
+    <a href="{{ $model->url }}" 
        class="model-card" 
        data-stream-url="{{ $model->best_stream_url }}"
        data-model-id="{{ $model->id }}">
@@ -25,14 +25,16 @@
             
             <div class="model-card-overlay"></div>
             
-            {{-- Online Indicator (subtle green dot) --}}
+            {{-- Online Indicator (subtle green dot) / Offline tag --}}
             @if($model->is_online)
-                <div class="model-card-live-dot" title="Live now"></div>
+                <div class="model-card-live-dot" title="{{ __('Live now') }}"></div>
+            @else
+                <div class="model-card-offline-tag">{{ __('Offline') }}</div>
             @endif
             
             {{-- New Badge (if model is new) --}}
             @if($model->is_new ?? false)
-                <div class="model-card-new-badge">NEW</div>
+                <div class="model-card-new-badge">{{ __('NEW') }}</div>
             @endif
             
             {{-- Rating --}}
@@ -58,7 +60,7 @@
                         <span>{{ $model->age }}yo</span>
                     @endif
                     @if($model->viewers_count)
-                        <span>{{ number_format($model->viewers_count) }} viewers</span>
+                        <span>{{ number_format($model->viewers_count) }} {{ __('viewers') }}</span>
                     @endif
                 </div>
             </div>

@@ -4,7 +4,7 @@
 
 @section('meta_description')Watch live {{ $tagName }} {{ strtolower($nicheTitle) }} cams. {{ number_format($models->total()) }} {{ $tagName }} {{ strtolower($nicheTitle) }} models streaming now.@endsection
 
-@section('canonical'){{ $models->currentPage() > 1 ? $models->url($models->currentPage()) : route('niche.tag', [$niche, $tagSlug]) }}@endsection
+@section('canonical'){{ $models->currentPage() > 1 ? $models->url($models->currentPage()) : localized_route('niche.tag', [$niche, $tagSlug]) }}@endsection
 
 @push('seo-pagination')
     @if($models->currentPage() > 1)
@@ -19,9 +19,9 @@
     <div class="container page-section">
         {{-- Breadcrumbs --}}
         <nav class="breadcrumbs">
-            <a href="{{ route('home') }}" class="breadcrumb-link">Home</a>
+            <a href="{{ localized_route('home') }}" class="breadcrumb-link">Home</a>
             <span class="breadcrumbs-separator">/</span>
-            <a href="{{ route('niche.show', $niche) }}" class="breadcrumb-link">{{ $nicheTitle }}</a>
+            <a href="{{ localized_route('niche.show', $niche) }}" class="breadcrumb-link">{{ $nicheTitle }}</a>
             <span class="breadcrumbs-separator">/</span>
             <span class="breadcrumb-current">{{ ucfirst($tagName) }}</span>
         </nav>
@@ -48,11 +48,12 @@
 
         {{-- Related Tags --}}
         <div class="niche-tags">
-            <span class="niche-tags-label">Related:</span>
+            <span class="niche-tags-label">{{ __('Related') }}:</span>
             @foreach(['young', 'mature', 'bbw', 'petite', 'asian', 'latina', 'ebony', 'blonde', 'brunette', 'milf'] as $relatedTag)
-                @if($relatedTag !== $tagSlug)
-                    <a href="{{ route('niche.tag', [$niche, $relatedTag]) }}" class="niche-tag">
-                        {{ ucfirst($relatedTag) }}
+                @php $relatedLocalizedSlug = \App\Models\Tag::localizeSlug($relatedTag); @endphp
+                @if($relatedLocalizedSlug !== $tagSlug)
+                    <a href="{{ localized_route('niche.tag', [$niche, $relatedLocalizedSlug]) }}" class="niche-tag">
+                        {{ \App\Models\Tag::localizeName($relatedTag) }}
                     </a>
                 @endif
             @endforeach
@@ -120,4 +121,15 @@
     {{-- HLS.js and Stream Preview Manager --}}
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script src="{{ asset('js/stream-previews.js') }}"></script>
+    <script>
+        window.infiniteScrollConfig = {
+            apiUrl: '{{ route('api.models.load') }}',
+            currentPage: {{ $models->currentPage() }},
+            hasMore: {{ $models->hasMorePages() ? 'true' : 'false' }},
+            filters: {
+                niche: '{{ $niche }}',
+                niche_tag: '{{ $englishTagSlug }}'
+            }
+        };
+    </script>
 @endsection

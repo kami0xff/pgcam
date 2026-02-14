@@ -1,5 +1,48 @@
 <?php
 
+if (!function_exists('localized_route')) {
+    /**
+     * Generate a URL for a named route, automatically adding the locale prefix
+     * when the current locale is not English.
+     *
+     * Usage:
+     *   localized_route('home')                         → / or /es/
+     *   localized_route('cam-models.show', $model)      → /model/username or /es/model/username
+     *   localized_route('cam-models.show', ['model' => $model]) → same
+     *
+     * If a ".localized" version of the route exists, it will be used with the
+     * current locale automatically injected. Otherwise falls back to the
+     * standard route.
+     */
+    function localized_route(string $name, mixed $parameters = [], bool $absolute = true): string
+    {
+        $locale = app()->getLocale();
+
+        // English uses the default (non-prefixed) routes
+        if ($locale === 'en' || $locale === config('app.fallback_locale', 'en')) {
+            return route($name, $parameters, $absolute);
+        }
+
+        // Check if a .localized version of the route exists
+        $localizedName = $name . '.localized';
+
+        if (\Illuminate\Support\Facades\Route::has($localizedName)) {
+            // Normalize parameters: if it's a Model or scalar, wrap in array
+            if (!is_array($parameters)) {
+                $parameters = [$parameters];
+            }
+
+            // Inject locale into the parameters
+            $parameters['locale'] = $locale;
+
+            return route($localizedName, $parameters, $absolute);
+        }
+
+        // No localized route exists — fall back to default
+        return route($name, $parameters, $absolute);
+    }
+}
+
 if (!function_exists('country_flag')) {
     /**
      * Convert country code or name to flag emoji

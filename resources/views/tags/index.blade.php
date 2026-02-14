@@ -12,7 +12,7 @@
 <div class="container page-section">
     {{-- Breadcrumbs --}}
     <nav class="breadcrumbs">
-        <a href="{{ route('home') }}" class="breadcrumb-link">{{ __('Home') }}</a>
+        <a href="{{ localized_route('home') }}" class="breadcrumb-link">{{ __('Home') }}</a>
         <span class="breadcrumbs-separator">/</span>
         <span class="breadcrumb-current">{{ __('Tags') }}</span>
     </nav>
@@ -37,11 +37,11 @@
             <div class="tags-cloud">
                 @foreach($featuredTags as $tag)
                     @php
-                        $slug = is_array($tag) ? $tag['slug'] : $tag->slug;
+                        $slug = is_array($tag) ? $tag['slug'] : $tag->localized_slug;
                         $name = is_array($tag) ? $tag['localized_name'] : $tag->localized_name;
                         $count = is_array($tag) ? ($tag['models_count'] ?? 0) : ($tag->models_count ?? 0);
                     @endphp
-                    <a href="{{ route('niche.tag', ['niche' => 'girls', 'tagSlug' => $slug]) }}" class="tag-pill tag-pill-featured">
+                    <a href="{{ localized_route('niche.tag', ['niche' => 'girls', 'tagSlug' => $slug]) }}" class="tag-pill tag-pill-featured">
                         {{ $name }}
                         @if($count > 0)
                             <span class="tag-pill-count">{{ number_format($count) }}</span>
@@ -60,24 +60,24 @@
                 <ul class="tags-column-list">
                     @foreach($tags as $tag)
                         @php
-                            $slug = is_array($tag) ? $tag['slug'] : $tag->slug;
+                            $slug = is_array($tag) ? $tag['slug'] : $tag->localized_slug;
                             $name = is_array($tag) ? $tag['localized_name'] : $tag->localized_name;
                         @endphp
                         @php
                             $count = is_array($tag) ? ($tag['models_count'] ?? 0) : ($tag->models_count ?? 0);
                         @endphp
                         <li class="tags-column-item">
-                            <a href="{{ route('niche.tag', ['niche' => 'girls', 'tagSlug' => $slug]) }}" class="tags-column-link">
+                            <a href="{{ localized_route('niche.tag', ['niche' => 'girls', 'tagSlug' => $slug]) }}" class="tags-column-link">
                                 <span class="tag-name">{{ $name }}</span>
                                 @if($count > 0)
                                     <span class="tags-column-count">{{ number_format($count) }}</span>
                                 @endif
                             </a>
                             <span class="tags-column-niches">
-                                <a href="{{ route('niche.tag', ['niche' => 'girls', 'tagSlug' => $slug]) }}" title="{{ __('Girls') }}">G</a>
-                                <a href="{{ route('niche.tag', ['niche' => 'couples', 'tagSlug' => $slug]) }}" title="{{ __('Couples') }}">C</a>
-                                <a href="{{ route('niche.tag', ['niche' => 'men', 'tagSlug' => $slug]) }}" title="{{ __('Men') }}">M</a>
-                                <a href="{{ route('niche.tag', ['niche' => 'trans', 'tagSlug' => $slug]) }}" title="{{ __('Trans') }}">T</a>
+                                <a href="{{ localized_route('niche.tag', ['niche' => 'girls', 'tagSlug' => $slug]) }}" title="{{ __('Girls') }}">G</a>
+                                <a href="{{ localized_route('niche.tag', ['niche' => 'couples', 'tagSlug' => $slug]) }}" title="{{ __('Couples') }}">C</a>
+                                <a href="{{ localized_route('niche.tag', ['niche' => 'men', 'tagSlug' => $slug]) }}" title="{{ __('Men') }}">M</a>
+                                <a href="{{ localized_route('niche.tag', ['niche' => 'trans', 'tagSlug' => $slug]) }}" title="{{ __('Trans') }}">T</a>
                             </span>
                         </li>
                     @endforeach

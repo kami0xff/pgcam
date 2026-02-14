@@ -622,6 +622,44 @@ PROMPT;
     }
 
     /**
+     * Translate a homepage section title
+     */
+    public function translateHomepageSection(string $title, string $targetLocale): array
+    {
+        $cacheKey = "homepage_section_translation:{$title}:{$targetLocale}";
+
+        return Cache::remember($cacheKey, 86400, function () use ($title, $targetLocale) {
+            $langName = $this->getLanguageName($targetLocale);
+
+            $prompt = <<<PROMPT
+Translate this section title for an adult live cam site to {$langName}.
+
+Section title: "{$title}"
+
+Respond in this exact JSON format:
+{
+    "title": "translated section title"
+}
+
+Rules:
+- Keep it concise and natural
+- This is a category heading on a cam site (e.g. "Latina Sex Cams", "MILF Sex Cams")
+- All text in {$langName}
+- Maintain the same meaning and SEO intent
+PROMPT;
+
+            $response = $this->callAnthropic($prompt);
+
+            try {
+                $data = json_decode($response, true);
+                return ['title' => $data['title'] ?? $title];
+            } catch (\Exception $e) {
+                return ['title' => $title];
+            }
+        });
+    }
+
+    /**
      * Translate existing page SEO content
      */
     public function translatePageSeoContent(string $title, string $content, string $targetLocale): array

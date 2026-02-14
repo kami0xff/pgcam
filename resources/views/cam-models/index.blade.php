@@ -1,10 +1,12 @@
 @extends('layouts.pornguru')
 
-@section('title', 'Live Cam Models' . ($models->currentPage() > 1 ? ' - Page ' . $models->currentPage() : ''))
+@section('title', __('Live Cam Models') . ($models->currentPage() > 1 ? ' - ' . __('Page') . ' ' . $models->currentPage() : ''))
 
-@section('meta_description')Watch {{ number_format($onlineCount) }} live cam models streaming now. Free live sex cams from top adult platforms.@endsection
+@section('meta_description'){{ __('Watch :count live cam models streaming now. Free live sex cams from top adult platforms.', ['count' => number_format($onlineCount)]) }}@endsection
 
-@section('canonical'){{ $models->currentPage() > 1 ? $models->url($models->currentPage()) : route('home') }}@endsection
+@section('canonical'){{ $models->currentPage() > 1 ? $models->url($models->currentPage()) : localized_route('home') }}@endsection
+
+@section('og_title', __('Live Cam Models') . ' - PornGuru.cam')
 
 {{-- SEO Pagination Links (for search engine crawlers) --}}
 @push('seo-pagination')
@@ -32,14 +34,14 @@
                     <path d="M12 23a7.5 7.5 0 01-5.138-12.963C8.204 8.774 11.5 6.5 11 1.5c6 4 9 8 3 14 1 0 2.5 0 5-2.47.27.773.5 1.604.5 2.47A7.5 7.5 0 0112 23z"/>
                 </svg>
             </div>
-            <h1 class="page-title-text">LIVE CAMS</h1>
+            <h1 class="page-title-text">{{ __('LIVE CAMS') }}</h1>
         </div>
         
         {{-- Stats --}}
         <div class="page-stats">
-            <span class="page-stats-total">{{ number_format($totalCount) }} models total</span>
+            <span class="page-stats-total">{{ number_format($totalCount) }} {{ __('models total') }}</span>
             <span class="page-stats-separator">•</span>
-            <span class="page-stats-online">{{ number_format($onlineCount) }} online now</span>
+            <span class="page-stats-online">{{ number_format($onlineCount) }} {{ __('online now') }}</span>
         </div>
 
         {{-- Top SEO Content (if configured) --}}
@@ -47,7 +49,7 @@
 
         {{-- Filters --}}
         <x-pornguru.filter-panel 
-            :action="route('home')" 
+            :action="localized_route('home')" 
             :filters="$filters" 
             :platforms="$platforms" 
             :genders="$genders" 
@@ -62,10 +64,10 @@
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                             </svg>
-                            <h2>Your Favorites</h2>
-                            <span class="favorites-count">{{ $onlineFavorites->count() }} online</span>
+                            <h2>{{ __('Your Favorites') }}</h2>
+                            <span class="favorites-count">{{ $onlineFavorites->count() }} {{ __('online') }}</span>
                         </div>
-                        <a href="{{ route('dashboard') }}" class="favorites-link">View all</a>
+                        <a href="{{ route('dashboard') }}" class="favorites-link">{{ __('View all') }}</a>
                     </div>
                     <div class="favorites-grid">
                         @foreach($onlineFavorites as $model)
@@ -86,8 +88,8 @@
                             <x-pornguru.model-card :model="$model" />
                         @endforeach
                     </div>
-                    <a href="{{ route('home', ['tags' => $section['slug'], 'online' => 1]) }}" class="seo-section-more">
-                        View all {{ $section['title'] }}
+                    <a href="{{ localized_route('home', ['tags' => $section['slug'], 'online' => 1]) }}" class="seo-section-more">
+                        {{ __('View all :category', ['category' => $section['title']]) }}
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M9 5l7 7-7 7"/>
                         </svg>
@@ -108,7 +110,7 @@
                         <rect x="6" y="4" width="4" height="16"/>
                         <rect x="14" y="4" width="4" height="16"/>
                     </svg>
-                    <span id="preview-label">Play All</span>
+                    <span id="preview-label">{{ __('Play All') }}</span>
                 </button>
             </div>
         </div>
@@ -116,8 +118,8 @@
         {{-- Models Grid or Empty State --}}
         @if($models->isEmpty())
             <x-pornguru.empty-state 
-                title="No models found" 
-                text="Try adjusting your filters." 
+                :title="__('No models found')" 
+                :text="__('Try adjusting your filters.')" 
             />
         @else
             <div class="models-grid" id="models-grid">
@@ -130,7 +132,7 @@
             @if($models->hasMorePages())
                 <div class="infinite-scroll-loader" id="infinite-loader">
                     <div class="loader-spinner"></div>
-                    <span>Loading more models...</span>
+                    <span>{{ __('Loading more models...') }}</span>
                 </div>
             @endif
 
@@ -140,13 +142,13 @@
             {{-- SEO Pagination (hidden from users, visible to search engines) --}}
             <nav class="seo-pagination" aria-label="Pagination">
                 @if($models->currentPage() > 1)
-                    <a href="{{ $models->previousPageUrl() }}" rel="prev">Previous Page</a>
+                    <a href="{{ $models->previousPageUrl() }}" rel="prev">{{ __('Previous Page') }}</a>
                 @endif
                 
-                <span>Page {{ $models->currentPage() }} of {{ $models->lastPage() }}</span>
+                <span>{{ __('Page') }} {{ $models->currentPage() }} {{ __('of') }} {{ $models->lastPage() }}</span>
                 
                 @if($models->hasMorePages())
-                    <a href="{{ $models->nextPageUrl() }}" rel="next">Next Page</a>
+                    <a href="{{ $models->nextPageUrl() }}" rel="next">{{ __('Next Page') }}</a>
                 @endif
             </nav>
         @endif
@@ -298,7 +300,7 @@
                 if (toggle) {
                     const offIcon = toggle.querySelector('.preview-off');
                     const onIcon = toggle.querySelector('.preview-on');
-                    label.textContent = 'Stop All';
+                    label.textContent = @json(__('Stop All'));
                     offIcon.style.display = 'none';
                     onIcon.style.display = 'block';
                     toggle.classList.add('active');
@@ -309,7 +311,7 @@
                 if (toggle) {
                     const offIcon = toggle.querySelector('.preview-off');
                     const onIcon = toggle.querySelector('.preview-on');
-                    label.textContent = 'Play All';
+                    label.textContent = @json(__('Play All'));
                     offIcon.style.display = 'block';
                     onIcon.style.display = 'none';
                     toggle.classList.remove('active');
@@ -335,13 +337,13 @@
             const onIcon = toggle.querySelector('.preview-on');
 
             if (allPreviewsPlaying) {
-                label.textContent = 'Stop All';
+                label.textContent = @json(__('Stop All'));
                 offIcon.style.display = 'none';
                 onIcon.style.display = 'block';
                 toggle.classList.add('active');
                 playAllVisibleStreams();
             } else {
-                label.textContent = 'Play All';
+                label.textContent = @json(__('Play All'));
                 offIcon.style.display = 'block';
                 onIcon.style.display = 'none';
                 toggle.classList.remove('active');

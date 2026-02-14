@@ -2,7 +2,7 @@
 
 @php
     $countryName = isset($country->localized_name) ? $country->localized_name : $country->name;
-    $countryUrl = isset($country->url) ? $country->url : route('countries.show', $country->slug);
+    $countryUrl = isset($country->url) ? $country->url : localized_route('countries.show', $country->slug);
     $countryFlag = isset($country->flag) ? $country->flag : \App\Helpers\FlagHelper::getFlag($country->code ?? '');
     $countryCode = $country->code ?? '';
     $modelsCount = isset($country->models_count) ? $country->models_count : $models->total();
@@ -30,8 +30,8 @@
 @section('content')
 <div class="container page-section">
     <x-seo.breadcrumbs :items="[
-        ['name' => 'Home', 'url' => route('home')],
-        ['name' => 'Countries', 'url' => route('countries.index')],
+        ['name' => 'Home', 'url' => localized_route('home')],
+        ['name' => 'Countries', 'url' => localized_route('countries.index')],
         ['name' => $countryName, 'url' => $countryUrl],
     ]" />
 
@@ -120,4 +120,14 @@
 {{-- HLS.js and Stream Preview Manager --}}
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <script src="{{ asset('js/stream-previews.js') }}"></script>
+<script>
+    window.infiniteScrollConfig = {
+        apiUrl: '{{ route('api.models.load') }}',
+        currentPage: {{ $models->currentPage() }},
+        hasMore: {{ $models->hasMorePages() ? 'true' : 'false' }},
+        filters: {
+            country: '{{ $country->slug ?? '' }}'
+        }
+    };
+</script>
 @endsection

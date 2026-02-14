@@ -1,15 +1,15 @@
 <header class="site-header">
     <div class="navbar">
         <!-- Logo -->
-        <a href="/" class="logo">
+        <a href="{{ localized_route('home') }}" class="logo">
             <span class="logo-porn">PORNGURU</span><span class="logo-guru">.CAM</span>
         </a>
 
         <!-- Desktop Nav -->
         <nav class="nav-center">
-            <a href="https://pornguru.com" class="nav-link">Best Porn Sites</a>
-            <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Live Cams</a>
-            <a href="#" class="nav-link">Blog</a>
+            <a href="https://pornguru.com" class="nav-link">{{ __('Best Porn Sites') }}</a>
+            <a href="{{ localized_route('home') }}" class="nav-link {{ request()->routeIs('home*') ? 'active' : '' }}">{{ __('Live Cams') }}</a>
+            <a href="#" class="nav-link">{{ __('Blog') }}</a>
         </nav>
 
         <!-- Right Side -->
@@ -31,17 +31,14 @@
                 <div class="lang-selector-dropdown">
                     @foreach($priorityLocales as $loc)
                         @php
-                            // Build URL for this locale
+                            // Build URL for this locale by manipulating the current path
                             $path = request()->path();
+                            // Strip any existing locale prefix
+                            $cleanPath = preg_replace('#^[a-z]{2}(-[A-Z]{2})?(/|$)#', '', $path);
                             if ($loc === 'en') {
-                                // Strip any locale prefix for English
-                                $langUrl = url(preg_replace('#^[a-z]{2}(-[A-Z]{2})?/#', '', $path));
-                            } elseif ($currentLocale !== 'en') {
-                                // Replace existing locale prefix
-                                $langUrl = url(preg_replace('#^[a-z]{2}(-[A-Z]{2})?/#', $loc . '/', $path));
+                                $langUrl = url('/' . $cleanPath);
                             } else {
-                                // Add locale prefix
-                                $langUrl = url($loc . '/' . $path);
+                                $langUrl = url('/' . $loc . '/' . $cleanPath);
                             }
                         @endphp
                         <a href="{{ $langUrl }}" class="lang-option {{ $currentLocale === $loc ? 'active' : '' }}">
@@ -74,30 +71,22 @@
     <!-- Niche Navigation -->
     <nav class="niche-bar">
         <div class="niche-bar-inner">
-            <a href="{{ route('niche.show', 'girls') }}" class="niche-bar-link {{ request()->segment(1) === 'girls' ? 'active' : '' }}">Girls</a>
-            <a href="{{ route('niche.show', 'couples') }}" class="niche-bar-link {{ request()->segment(1) === 'couples' ? 'active' : '' }}">Couples</a>
-            <a href="{{ route('niche.show', 'men') }}" class="niche-bar-link {{ request()->segment(1) === 'men' ? 'active' : '' }}">Men</a>
-            <a href="{{ route('niche.show', 'trans') }}" class="niche-bar-link {{ request()->segment(1) === 'trans' ? 'active' : '' }}">Trans</a>
+            <a href="{{ localized_route('niche.show', 'girls') }}" class="niche-bar-link {{ request()->segment(1) === 'girls' || (request()->segment(2) === 'girls') ? 'active' : '' }}">{{ __('Girls') }}</a>
+            <a href="{{ localized_route('niche.show', 'couples') }}" class="niche-bar-link {{ request()->segment(1) === 'couples' || (request()->segment(2) === 'couples') ? 'active' : '' }}">{{ __('Couples') }}</a>
+            <a href="{{ localized_route('niche.show', 'men') }}" class="niche-bar-link {{ request()->segment(1) === 'men' || (request()->segment(2) === 'men') ? 'active' : '' }}">{{ __('Men') }}</a>
+            <a href="{{ localized_route('niche.show', 'trans') }}" class="niche-bar-link {{ request()->segment(1) === 'trans' || (request()->segment(2) === 'trans') ? 'active' : '' }}">{{ __('Trans') }}</a>
             <span class="niche-bar-separator"></span>
-            <a href="{{ route('tags.index') }}" class="niche-bar-link {{ request()->routeIs('tags.index*') ? 'active' : '' }}">Tags</a>
-            <a href="{{ route('countries.index') }}" class="niche-bar-link {{ request()->routeIs('countries.index*') ? 'active' : '' }}">Countries</a>
+            <a href="{{ localized_route('tags.index') }}" class="niche-bar-link {{ request()->routeIs('tags.index*') ? 'active' : '' }}">{{ __('Tags') }}</a>
+            <a href="{{ localized_route('countries.index') }}" class="niche-bar-link {{ request()->routeIs('countries.index*') ? 'active' : '' }}">{{ __('Countries') }}</a>
         </div>
     </nav>
 
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="mobile-menu">
-        <div class="mobile-menu-niches">
-            <a href="{{ route('niche.show', 'girls') }}" class="mobile-niche-link">Girls</a>
-            <a href="{{ route('niche.show', 'couples') }}" class="mobile-niche-link">Couples</a>
-            <a href="{{ route('niche.show', 'men') }}" class="mobile-niche-link">Men</a>
-            <a href="{{ route('niche.show', 'trans') }}" class="mobile-niche-link">Trans</a>
-        </div>
-        <div class="mobile-menu-divider"></div>
-        <a href="https://pornguru.com" class="mobile-menu-link">Best Porn Sites</a>
-        <a href="{{ route('home') }}" class="mobile-menu-link {{ request()->routeIs('home') ? 'active' : '' }}">Live Cams</a>
-        <a href="{{ route('tags.index') }}" class="mobile-menu-link">Tags</a>
-        <a href="{{ route('countries.index') }}" class="mobile-menu-link">Countries</a>
-        <a href="#" class="mobile-menu-link">Blog</a>
+        <a href="{{ localized_route('home') }}" class="mobile-menu-link {{ request()->routeIs('home*') ? 'active' : '' }}">{{ __('Live Cams') }}</a>
+        <a href="{{ localized_route('tags.index') }}" class="mobile-menu-link">{{ __('Tags') }}</a>
+        <a href="{{ localized_route('countries.index') }}" class="mobile-menu-link">{{ __('Countries') }}</a>
+        <a href="https://pornguru.com" class="mobile-menu-link">{{ __('Best Porn Sites') }}</a>
         <div class="mobile-menu-divider"></div>
         @auth
             <a href="{{ route('dashboard') }}" class="mobile-menu-link">{{ __('Dashboard') }}</a>
@@ -114,12 +103,11 @@
             @foreach(array_slice($priorityLocales, 0, 8) as $loc)
                 @php
                     $path = request()->path();
+                    $cleanPath = preg_replace('#^[a-z]{2}(-[A-Z]{2})?(/|$)#', '', $path);
                     if ($loc === 'en') {
-                        $mLangUrl = url(preg_replace('#^[a-z]{2}(-[A-Z]{2})?/#', '', $path));
-                    } elseif ($currentLocale !== 'en') {
-                        $mLangUrl = url(preg_replace('#^[a-z]{2}(-[A-Z]{2})?/#', $loc . '/', $path));
+                        $mLangUrl = url('/' . $cleanPath);
                     } else {
-                        $mLangUrl = url($loc . '/' . $path);
+                        $mLangUrl = url('/' . $loc . '/' . $cleanPath);
                     }
                 @endphp
                 <a href="{{ $mLangUrl }}" class="mobile-lang-item {{ $currentLocale === $loc ? 'active' : '' }}">

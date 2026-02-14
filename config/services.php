@@ -43,4 +43,17 @@ return [
         'analytics_id' => env('GOOGLE_ANALYTICS_ID'),
     ],
 
+    'affiliates' => [
+        'stripchat' => [
+            'base_url' => 'https://stripchat.com',
+            'campaign_id' => env('STRIPCHAT_CAMPAIGN_ID', ''),
+            // URL format: https://stripchat.com/{username}?utm_campaign={campaign_id}
+        ],
+        'xlovecam' => [
+            'base_url' => 'https://www.xlovecam.com/chat',
+            'affiliate_id' => env('XLOVECAM_AFFILIATE_ID', '333'),
+            // URL format: https://www.xlovecam.com/chat/{username}/?id_affilie={affiliate_id}
+        ],
+    ],
+
 ];

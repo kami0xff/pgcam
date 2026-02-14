@@ -20,8 +20,8 @@
 @section('content')
 <div class="container page-section">
     <x-seo.breadcrumbs :items="[
-        ['name' => 'Home', 'url' => route('home')],
-        ['name' => 'Tags', 'url' => route('tags.index')],
+        ['name' => 'Home', 'url' => localized_route('home')],
+        ['name' => 'Tags', 'url' => localized_route('tags.index')],
         ['name' => $tag->localized_name, 'url' => $tag->url],
     ]" />
 

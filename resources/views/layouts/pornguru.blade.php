@@ -10,12 +10,30 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('favicon.png') }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="@yield('canonical', url()->current())">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:site_name" content="PornGuru.cam">
+    <meta property="og:title" content="@yield('og_title', View::yieldContent('title', 'PornGuru - The Ultimate Adult Guide'))">
+    <meta property="og:description" content="@yield('og_description', View::yieldContent('meta_description', 'Watch free live cam shows from the hottest models.'))">
+    <meta property="og:url" content="@yield('canonical', url()->current())">
+    @hasSection('og_image')
+    <meta property="og:image" content="@yield('og_image')">
+    <meta property="og:image:width" content="@yield('og_image_width', '800')">
+    <meta property="og:image:height" content="@yield('og_image_height', '600')">
+    @endif
+    <meta property="og:locale" content="{{ str_replace('-', '_', app()->getLocale()) }}">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="@yield('twitter_card', 'summary_large_image')">
+    <meta name="twitter:title" content="@yield('og_title', View::yieldContent('title', 'PornGuru - The Ultimate Adult Guide'))">
+    <meta name="twitter:description" content="@yield('og_description', View::yieldContent('meta_description', 'Watch free live cam shows from the hottest models.'))">
+    @hasSection('og_image')
+    <meta name="twitter:image" content="@yield('og_image')">
+    @endif
 
     <!-- SEO Pagination (for search engines to crawl all pages) -->
     @stack('seo-pagination')
@@ -26,6 +44,9 @@
 
     <!-- Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- HLS.js -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
     <!-- Additional Head Content (JSON-LD, etc.) -->
     @stack('head')

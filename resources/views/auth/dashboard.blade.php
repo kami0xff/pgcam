@@ -39,7 +39,7 @@
                 </svg>
                 <h3>No favorites yet</h3>
                 <p>Click the heart icon on models to add them to your favorites</p>
-                <a href="{{ route('home') }}" class="btn btn-primary">Browse Models</a>
+                <a href="{{ localized_route('home') }}" class="btn btn-primary">Browse Models</a>
             </div>
         @else
             <div class="models-grid">

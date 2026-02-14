@@ -95,15 +95,17 @@ class SyncModelGoals extends Command
 
         // If no current goal, create a new one
         if (!$currentGoal) {
+            $isAlreadyCompleted = $tokensNeeded > 0 && $tokensEarned >= $tokensNeeded;
             ModelGoal::create([
                 'model_id' => $modelId,
                 'goal_message' => $goalMessage,
                 'tokens_needed' => $tokensNeeded,
                 'tokens_earned' => $tokensEarned,
-                'was_completed' => false,
+                'was_completed' => $isAlreadyCompleted,
                 'started_at' => now(),
+                'completed_at' => $isAlreadyCompleted ? now() : null,
             ]);
-            return 'new';
+            return $isAlreadyCompleted ? 'completed' : 'new';
         }
 
         // Check if goal changed (different message = new goal, old one completed)

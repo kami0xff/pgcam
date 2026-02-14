@@ -1,4 +1,15 @@
+Monitoring: Add Sentry or similar for error tracking
+Backups: Set up PostgreSQL backup cron job
+
+CI/CD: Configure GitHub Actions for auto-deploy
+the auto deploy would be especially nice when we push changes to the production branch 
+
+
+
 ## Completed Features
+
+
+
 
 ### Tip Menu & Model Descriptions (Feb 2026)
 - [x] Created `tip_action_types` table with 21 predefined actions

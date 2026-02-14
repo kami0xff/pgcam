@@ -2,27 +2,31 @@
 
 @php
     $validNiches = ['girls', 'couples', 'men', 'trans'];
-    $tagName = $tag;
+    $englishSlug = $tag;
     $tagUrl = null;
     
-    // Parse niche/tag format (e.g., "girls/young" -> niche="girls", tagName="young")
+    // Parse niche/tag format (e.g., "girls/young" -> niche="girls", englishSlug="young")
     if (str_contains($tag, '/')) {
         $parts = explode('/', $tag, 2);
         $niche = $parts[0];
-        $tagName = $parts[1] ?? $tag;
+        $englishSlug = $parts[1] ?? $tag;
         
         // Only use niche route if niche is valid
         if (in_array($niche, $validNiches)) {
-            $tagUrl = route('niche.tag', [$niche, $tagName]);
+            $localizedSlug = \App\Models\Tag::localizeSlug($englishSlug);
+            $tagUrl = localized_route('niche.tag', [$niche, $localizedSlug]);
         }
     }
     
     // Fallback to simple tag route
     if (!$tagUrl) {
-        $tagUrl = route('tags.show', \Illuminate\Support\Str::slug($tagName));
+        $englishSlug = \Illuminate\Support\Str::slug($englishSlug);
+        $localizedSlug = \App\Models\Tag::localizeSlug($englishSlug);
+        $tagUrl = localized_route('tags.show', $localizedSlug);
     }
     
-    $displayName = str_replace(['-', '_'], ' ', $tagName);
+    // Get proper localized display name
+    $displayName = \App\Models\Tag::localizeName($englishSlug);
 @endphp
 
 <a href="{{ $tagUrl }}" {{ $attributes->merge(['class' => 'model-tag']) }}>{{ $showHash ? '#' : '' }}{{ $displayName }}</a>

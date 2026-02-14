@@ -35,6 +35,27 @@ services:
     networks:
       - porngurucam
 
+  # Laravel scheduler (runs scheduled commands in the foreground)
+  scheduler:
+    build:
+      context: .
+      target: development
+    container_name: porngurucam-scheduler
+    volumes:
+      - .:/var/www/html
+    networks:
+      - porngurucam
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    command: php artisan schedule:work --no-interaction
+    restart: unless-stopped
+
   db:
     image: postgres:16-alpine
     container_name: porngurucam-db

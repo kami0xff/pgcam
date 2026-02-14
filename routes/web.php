@@ -17,28 +17,33 @@ Route::get('/up', function () {
 // Main Routes (English - default)
 // ==============================================
 
-// Home
-Route::get('/', [CamModelController::class, 'index'])->name('home');
+// Auto-detect browser language on first visit and redirect to locale-prefixed URL
+Route::middleware('detect.locale')->group(function () {
+    // Home
+    Route::get('/', [CamModelController::class, 'index'])->name('home');
+
+    // Model pages
+    Route::get('/model/{model}', [CamModelController::class, 'show'])->name('cam-models.show');
+
+    // Tag pages
+    Route::get('/tags', [TagController::class, 'index'])->name('tags.index');
+    Route::get('/tag/{slug}', [TagController::class, 'show'])->name('tags.show');
+
+    // Niche pages (girls, couples, men, trans)
+    Route::get('/{niche}', [TagController::class, 'niche'])
+        ->where('niche', 'girls|couples|men|trans')
+        ->name('niche.show');
+    Route::get('/{niche}/{tagSlug}', [TagController::class, 'nicheTag'])
+        ->where('niche', 'girls|couples|men|trans')
+        ->name('niche.tag');
+
+    // Country pages
+    Route::get('/countries', [CountryController::class, 'index'])->name('countries.index');
+    Route::get('/country/{slug}', [CountryController::class, 'show'])->name('countries.show');
+});
+
+// API endpoint (no locale detection needed)
 Route::get('/api/models', [CamModelController::class, 'loadMore'])->name('api.models.load');
-
-// Model pages
-Route::get('/model/{model}', [CamModelController::class, 'show'])->name('cam-models.show');
-
-// Tag pages
-Route::get('/tags', [TagController::class, 'index'])->name('tags.index');
-Route::get('/tag/{slug}', [TagController::class, 'show'])->name('tags.show');
-
-// Niche pages (girls, couples, men, trans)
-Route::get('/{niche}', [TagController::class, 'niche'])
-    ->where('niche', 'girls|couples|men|trans')
-    ->name('niche.show');
-Route::get('/{niche}/{tagSlug}', [TagController::class, 'nicheTag'])
-    ->where('niche', 'girls|couples|men|trans')
-    ->name('niche.tag');
-
-// Country pages
-Route::get('/countries', [CountryController::class, 'index'])->name('countries.index');
-Route::get('/country/{slug}', [CountryController::class, 'show'])->name('countries.show');
 
 // Sitemap Index
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
@@ -132,3 +137,6 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/api/favorites', [FavoriteController::class, 'index'])->name('api.favorites');
 Route::post('/api/favorite/{model}', [FavoriteController::class, 'toggle'])->name('api.favorite.toggle');
+
+// Model goal polling (live refresh)
+Route::get('/api/model/{model}/goal', [CamModelController::class, 'goalData'])->name('api.model.goal');

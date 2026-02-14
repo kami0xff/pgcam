@@ -4,7 +4,7 @@
 
 @section('meta_description')Watch live {{ strtolower($nicheTitle) }} cams. {{ number_format($models->total()) }} {{ strtolower($nicheTitle) }} models streaming now.@endsection
 
-@section('canonical'){{ $models->currentPage() > 1 ? $models->url($models->currentPage()) : route('niche.show', $niche) }}@endsection
+@section('canonical'){{ $models->currentPage() > 1 ? $models->url($models->currentPage()) : localized_route('niche.show', $niche) }}@endsection
 
 @push('seo-pagination')
     @if($models->currentPage() > 1)
@@ -40,10 +40,10 @@
         {{-- Popular Tags for this Niche --}}
         @if(!empty($popularTags))
             <div class="niche-tags">
-                <span class="niche-tags-label">Popular:</span>
+                <span class="niche-tags-label">{{ __('Popular') }}:</span>
                 @foreach($popularTags as $tag)
-                    <a href="{{ route('niche.tag', [$niche, $tag]) }}" class="niche-tag">
-                        {{ ucfirst(str_replace('-', ' ', $tag)) }}
+                    <a href="{{ localized_route('niche.tag', [$niche, \App\Models\Tag::localizeSlug($tag)]) }}" class="niche-tag">
+                        {{ \App\Models\Tag::localizeName($tag) }}
                     </a>
                 @endforeach
             </div>
@@ -111,4 +111,14 @@
     {{-- HLS.js and Stream Preview Manager --}}
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script src="{{ asset('js/stream-previews.js') }}"></script>
+    <script>
+        window.infiniteScrollConfig = {
+            apiUrl: '{{ route('api.models.load') }}',
+            currentPage: {{ $models->currentPage() }},
+            hasMore: {{ $models->hasMorePages() ? 'true' : 'false' }},
+            filters: {
+                niche: '{{ $niche }}'
+            }
+        };
+    </script>
 @endsection

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CamModel;
+use App\Models\HomepageSection;
 use App\Models\ModelDescription;
 use App\Models\ModelFaq;
 use App\Services\SeoService;
@@ -58,6 +59,33 @@ class CamModelController extends Controller
                 ? $request->input('tags') 
                 : explode(',', $request->input('tags'));
             $query->withTags($tags);
+        }
+
+        // Filter: Niche (girls, couples, men, trans) with optional tag
+        if ($request->filled('niche')) {
+            $niche = $request->input('niche');
+            if (in_array($niche, ['girls', 'couples', 'men', 'trans'])) {
+                if ($request->filled('niche_tag')) {
+                    // withNicheTag already applies inNiche internally
+                    $query->withNicheTag($niche, $request->input('niche_tag'));
+                } else {
+                    $query->inNiche($niche);
+                }
+            }
+        }
+
+        // Filter: Country slug
+        if ($request->filled('country')) {
+            $countrySlug = $request->input('country');
+            $country = \App\Models\Country::where('slug', $countrySlug)->first();
+            if ($country) {
+                $query->where(function ($q) use ($country) {
+                    $q->where('country', $country->name)
+                      ->orWhere('country', $country->code);
+                });
+            } else {
+                $query->where('country', ucwords(str_replace('-', ' ', $countrySlug)));
+            }
         }
 
         // Sorting
@@ -134,47 +162,29 @@ class CamModelController extends Controller
     private function getSeoSections(): array
     {
         $sections = [];
+        $dbSections = HomepageSection::getActiveSections();
 
-        // Define SEO categories with their tags/filters
-        $categories = [
-            [
-                'title' => 'Big Ass Sex Cams',
-                'slug' => 'big-ass',
-                'tags' => ['big-ass', 'bigass', 'big ass', 'booty', 'pawg'],
-            ],
-            [
-                'title' => 'Asian Sex Cams',
-                'slug' => 'asian',
-                'tags' => ['asian', 'japanese', 'korean', 'chinese', 'thai', 'filipina'],
-            ],
-            [
-                'title' => 'Latina Sex Cams',
-                'slug' => 'latina',
-                'tags' => ['latina', 'latin', 'colombian', 'brazilian'],
-            ],
-            [
-                'title' => 'MILF Sex Cams',
-                'slug' => 'milf',
-                'tags' => ['milf', 'mature', 'mom'],
-            ],
-        ];
+        foreach ($dbSections as $section) {
+            $tags = $section->tags ?? [];
+            if (empty($tags)) {
+                continue;
+            }
 
-        foreach ($categories as $category) {
             $models = CamModel::where('is_online', true)
-                ->where(function ($q) use ($category) {
-                    foreach ($category['tags'] as $tag) {
+                ->where(function ($q) use ($tags) {
+                    foreach ($tags as $tag) {
                         $q->orWhereJsonContains('tags', $tag)
                           ->orWhere('username', 'ilike', '%' . $tag . '%');
                     }
                 })
                 ->orderBy('viewers_count', 'desc')
-                ->limit(8)
+                ->limit($section->max_models)
                 ->get();
 
-            if ($models->count() >= 4) {
+            if ($models->count() >= $section->min_models) {
                 $sections[] = [
-                    'title' => $category['title'],
-                    'slug' => $category['slug'],
+                    'title' => $section->localized_title,
+                    'slug' => $section->slug,
                     'models' => $models,
                 ];
             }
@@ -207,6 +217,24 @@ class CamModelController extends Controller
             'hasMore' => $models->hasMorePages(),
             'nextPage' => $models->currentPage() + 1,
             'total' => $models->total(),
+        ]);
+    }
+
+    /**
+     * API endpoint for live goal data refresh
+     */
+    public function goalData(CamModel $model)
+    {
+        // Refresh model from DB to get latest goal data
+        $model->refresh();
+
+        return response()->json([
+            'goal_message' => $model->goal_message,
+            'goal_needed' => $model->goal_needed,
+            'goal_earned' => $model->goal_earned,
+            'goal_progress' => $model->goal_progress,
+            'is_online' => $model->is_online,
+            'viewers_count' => $model->viewers_count,
         ]);
     }
 

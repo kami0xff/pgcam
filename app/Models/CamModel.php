@@ -6,6 +6,7 @@ use App\Enums\StripchatTag;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\App;
 
 class CamModel extends Model
 {
@@ -234,11 +235,55 @@ class CamModel extends Model
     }
 
     /**
+     * Get the localized URL for this model's detail page.
+     */
+    public function getUrlAttribute(): string
+    {
+        return localized_route('cam-models.show', $this);
+    }
+
+    /**
      * Get display name
      */
     public function getDisplayNameAttribute(): string
     {
         return $this->username;
+    }
+
+    /**
+     * Get the affiliate URL to the source platform.
+     * Falls back to stored profile_url, then generates one from config.
+     */
+    public function getAffiliateUrlAttribute(): string
+    {
+        // If we already have a stored profile_url with affiliate tracking, use it
+        if (!empty($this->profile_url)) {
+            return $this->profile_url;
+        }
+
+        // Generate affiliate URL based on source platform
+        if ($this->source_platform === 'stripchat') {
+            $baseUrl = config('services.affiliates.stripchat.base_url', 'https://stripchat.com');
+            $campaignId = config('services.affiliates.stripchat.campaign_id', '');
+            $url = rtrim($baseUrl, '/') . '/' . $this->username;
+            if ($campaignId) {
+                $url .= '?utm_campaign=' . $campaignId;
+            }
+            return $url;
+        }
+
+        if ($this->source_platform === 'xlovecam') {
+            $baseUrl = config('services.affiliates.xlovecam.base_url', 'https://www.xlovecam.com/chat');
+            $affiliateId = config('services.affiliates.xlovecam.affiliate_id', '');
+            $url = rtrim($baseUrl, '/') . '/' . strtolower($this->username) . '/';
+            if ($affiliateId) {
+                $url .= '?id_affilie=' . $affiliateId;
+            }
+            return $url;
+        }
+
+        // Fallback: just return a search URL
+        return 'https://stripchat.com/' . $this->username;
     }
 
     /**

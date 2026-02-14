@@ -124,6 +124,38 @@ class Country extends Model
     }
 
     /**
+     * Get a cached mapping of English slug → localized slug for the current locale.
+     *
+     * @return array<string, string>  [english_slug => localized_slug]
+     */
+    public static function getSlugMap(?string $locale = null): array
+    {
+        $locale = $locale ?? App::getLocale();
+
+        if ($locale === 'en') {
+            return [];
+        }
+
+        return cache()->remember("country_slug_map:{$locale}", 3600, function () use ($locale) {
+            return CountryTranslation::where('country_translations.locale', $locale)
+                ->join('countries', 'countries.id', '=', 'country_translations.country_id')
+                ->select('countries.slug as en_slug', 'country_translations.slug as loc_slug')
+                ->get()
+                ->pluck('loc_slug', 'en_slug')
+                ->toArray();
+        });
+    }
+
+    /**
+     * Translate a single English country slug to its localized slug.
+     */
+    public static function localizeSlug(string $englishSlug, ?string $locale = null): string
+    {
+        $map = self::getSlugMap($locale);
+        return $map[$englishSlug] ?? $englishSlug;
+    }
+
+    /**
      * Get all URLs for hreflang
      */
     public function getHreflangUrls(): array

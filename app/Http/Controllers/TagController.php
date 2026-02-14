@@ -57,8 +57,8 @@ class TagController extends Controller
             'useEnum' => $dbTags->isEmpty(),
             'seoSchemas' => [
                 $this->seoService->getBreadcrumbSchema([
-                    ['name' => 'Home', 'url' => route('home')],
-                    ['name' => 'Tags', 'url' => route('tags.index')],
+                    ['name' => __('Home'), 'url' => localized_route('home')],
+                    ['name' => __('Tags'), 'url' => localized_route('tags.index')],
                 ]),
             ],
         ]);
@@ -158,12 +158,13 @@ class TagController extends Controller
         $query = CamModel::query();
 
         // Filter by tag using PostgreSQL-compatible text search
-        // This matches tags like "girls/young", "men/young", etc.
-        $query->where(function ($q) use ($tag) {
-            // Match the tag in any niche format (e.g., "girls/young", "men/young")
-            $q->whereRaw("tags::text ILIKE ?", ['%"' . $tag->slug . '"%'])
-              ->orWhereRaw("tags::text ILIKE ?", ['%/' . $tag->slug . '"%'])
-              ->orWhereRaw("tags::text ILIKE ?", ['%"' . $tag->name . '"%']);
+        // Always use the ENGLISH slug/name for DB queries (cam DB stores English tags)
+        $englishSlug = $tag->slug;
+        $englishName = $tag->name;
+        $query->where(function ($q) use ($englishSlug, $englishName) {
+            $q->whereRaw("tags::text ILIKE ?", ['%"' . $englishSlug . '"%'])
+              ->orWhereRaw("tags::text ILIKE ?", ['%/' . $englishSlug . '"%'])
+              ->orWhereRaw("tags::text ILIKE ?", ['%"' . $englishName . '"%']);
         });
 
         // Apply additional filters
@@ -219,15 +220,15 @@ class TagController extends Controller
             'niches' => $this->validNiches,
             'seoSchemas' => [
                 $this->seoService->getBreadcrumbSchema([
-                    ['name' => 'Home', 'url' => route('home')],
-                    ['name' => $this->getNicheTitle($niche), 'url' => route('niche.show', $niche)],
+                    ['name' => __('Home'), 'url' => localized_route('home')],
+                    ['name' => $this->getNicheTitle($niche), 'url' => localized_route('niche.show', $niche)],
                 ]),
             ],
         ]);
     }
 
     /**
-     * Show models for a specific niche + tag combination (e.g., /girls/young)
+     * Show models for a specific niche + tag combination (e.g., /girls/young or /fr/girls/gros-seins)
      */
     public function nicheTag(Request $request, string $niche, string $tagSlug)
     {
@@ -238,13 +239,13 @@ class TagController extends Controller
         $locale = App::getLocale();
         $tag = Tag::findBySlug($tagSlug, $locale);
 
-        // Use the slug for database queries (tags are stored as slugs)
-        // The tagSlug from URL is already the format we need
-        $tagName = $tag?->name ?? ucwords(str_replace('-', ' ', $tagSlug));
-        $fullTag = $niche . '/' . $tagSlug;
+        // Use the ENGLISH slug for database queries — tags in cam DB are always English
+        $englishSlug = $tag?->slug ?? $tagSlug;
+        $tagName = $tag?->localized_name ?? ucwords(str_replace('-', ' ', $tagSlug));
+        $fullTag = $niche . '/' . $englishSlug;
 
-        // Query using the slug, not the display name
-        $query = CamModel::withNicheTag($niche, $tagSlug);
+        // Query using the English slug (tags stored as English in cam database)
+        $query = CamModel::withNicheTag($niche, $englishSlug);
 
         if ($request->boolean('online')) {
             $query->online();
@@ -255,20 +256,24 @@ class TagController extends Controller
 
         $models = $query->paginate(48)->withQueryString();
 
+        // Use localized slug for URLs shown to the user
+        $localizedSlug = $tag?->localized_slug ?? $tagSlug;
+
         return view('niches.tag', [
             'niche' => $niche,
             'nicheTitle' => $this->getNicheTitle($niche),
             'tag' => $tag,
             'tagName' => $tagName,
-            'tagSlug' => $tagSlug,
+            'tagSlug' => $localizedSlug,
+            'englishTagSlug' => $englishSlug,
             'fullTag' => $fullTag,
             'models' => $models,
             'niches' => $this->validNiches,
             'seoSchemas' => [
                 $this->seoService->getBreadcrumbSchema([
-                    ['name' => 'Home', 'url' => route('home')],
-                    ['name' => $this->getNicheTitle($niche), 'url' => route('niche.show', $niche)],
-                    ['name' => ucfirst($tagName), 'url' => route('niche.tag', [$niche, $tagSlug])],
+                    ['name' => __('Home'), 'url' => localized_route('home')],
+                    ['name' => $this->getNicheTitle($niche), 'url' => localized_route('niche.show', $niche)],
+                    ['name' => ucfirst($tagName), 'url' => localized_route('niche.tag', [$niche, $localizedSlug])],
                 ]),
             ],
         ]);

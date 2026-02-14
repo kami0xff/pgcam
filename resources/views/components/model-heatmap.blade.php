@@ -15,8 +15,10 @@
     $bestTimes = ModelHeatmap::getBestTimes($modelId, 5);
     $scheduleBlocks = ModelHeatmap::getScheduleBlocks($modelId, 40);
     
-    $days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    $daysFull = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    // Monday-first order: map display index to day_of_week (0=Sun,...6=Sat)
+    $dayOrder = [1, 2, 3, 4, 5, 6, 0]; // Mon, Tue, Wed, Thu, Fri, Sat, Sun
+    $dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    $dayLabelsFull = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     
     // Generate JSON-LD if we have the required data
     $jsonLd = null;
@@ -56,23 +58,24 @@
     {{-- Grid --}}
     <div class="heatmap-card-body">
         <div class="heatmap-grid-wrapper">
-            {{-- Day headers --}}
+            {{-- Day headers (Monday first) --}}
             <div class="heatmap-day-row">
                 <div class="heatmap-hour-cell"></div>
-                @foreach($days as $index => $day)
-                    <div class="heatmap-day-cell" title="{{ $daysFull[$index] }}">{{ $day }}</div>
+                @foreach($dayLabels as $index => $day)
+                    <div class="heatmap-day-cell" title="{{ $dayLabelsFull[$index] }}">{{ $day }}</div>
                 @endforeach
             </div>
             
-            {{-- Hour rows --}}
+            {{-- Hour rows (columns reordered: Mon-Sun) --}}
             @foreach($grid as $hour => $row)
                 @if(!$compact || $hour % 2 === 0)
                 <div class="heatmap-grid-row">
                     <div class="heatmap-hour-cell">{{ sprintf('%02d', $hour) }}</div>
-                    @foreach($row as $slot)
+                    @foreach($dayOrder as $displayIdx => $dbDay)
+                        @php $slot = $row[$dbDay] ?? $row[0]; @endphp
                         <div 
                             class="heatmap-slot heat-level-{{ $slot['heat_level'] }}"
-                            title="{{ $daysFull[$slot['day']] }} {{ sprintf('%02d:00', $slot['hour']) }} - {{ round($slot['percentage']) }}% {{ __('online') }}"
+                            title="{{ $dayLabelsFull[$displayIdx] }} {{ sprintf('%02d:00', $slot['hour']) }} - {{ round($slot['percentage']) }}% {{ __('online') }}"
                         ></div>
                     @endforeach
                 </div>

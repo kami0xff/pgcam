@@ -11,8 +11,8 @@
 @section('content')
 <div class="container page-section">
     <x-seo.breadcrumbs :items="[
-        ['name' => 'Home', 'url' => route('home')],
-        ['name' => 'Countries', 'url' => route('countries.index')],
+        ['name' => 'Home', 'url' => localized_route('home')],
+        ['name' => 'Countries', 'url' => localized_route('countries.index')],
     ]" />
 
     <div class="page-title-bar">
@@ -25,7 +25,7 @@
     <div class="countries-grid">
         @foreach($countries as $country)
             @php
-                $url = isset($country->url) ? $country->url : route('countries.show', $country->slug);
+                $url = isset($country->url) ? $country->url : localized_route('countries.show', $country->slug);
                 $flag = isset($country->flag) ? $country->flag : \App\Helpers\FlagHelper::getFlag($country->code ?? '');
                 $name = isset($country->localized_name) ? $country->localized_name : $country->name;
                 $count = isset($country->models_count) ? $country->models_count : 0;

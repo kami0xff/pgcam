@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\CamModel;
+use App\Models\HomepageSection;
+use App\Models\HomepageSectionTranslation;
 use App\Models\ModelDescription;
 use App\Models\ModelFaq;
 use App\Models\ModelTipMenuItem;
@@ -45,6 +47,7 @@ class TranslationWorker extends Command
     protected array $stats = [
         'tags' => 0,
         'countries' => 0,
+        'homepage_sections' => 0,
         'descriptions' => 0,
         'faqs' => 0,
         'tip_menus' => 0,
@@ -76,10 +79,11 @@ class TranslationWorker extends Command
         $this->minuteStart = microtime(true);
 
         do {
-            // Phase 1: Translate tags and countries
+            // Phase 1: Translate tags, countries, and homepage sections
             if ($type === 'all' || $type === 'tags') {
                 $this->translateMissingTags($locales, $rateLimit);
                 $this->translateMissingCountries($locales, $rateLimit);
+                $this->translateMissingHomepageSections($locales, $rateLimit);
             }
 
             // Phase 2: Translate model content
@@ -192,6 +196,64 @@ class TranslationWorker extends Command
                     foreach ($translations as $trans) {
                         $this->saveCountryTranslation($trans, $locale);
                         $this->stats['countries']++;
+                    }
+                } catch (\Exception $e) {
+                    $this->stats['errors']++;
+                    $this->error("    Error: " . $e->getMessage());
+                }
+            }
+        }
+    }
+
+    /**
+     * Translate missing homepage section translations
+     */
+    protected function translateMissingHomepageSections(array $locales, int $rateLimit): void
+    {
+        $sections = HomepageSection::active()->get();
+        if ($sections->isEmpty()) return;
+
+        foreach ($locales as $locale) {
+            $existingIds = HomepageSectionTranslation::where('locale', $locale)
+                ->pluck('homepage_section_id')
+                ->toArray();
+            $missing = $sections->whereNotIn('id', $existingIds);
+
+            if ($missing->isEmpty()) continue;
+
+            $this->line("  Translating {$missing->count()} homepage sections to {$locale}...");
+
+            foreach ($missing as $section) {
+                $this->enforceRateLimit($rateLimit);
+
+                if ($this->option('dry-run')) {
+                    $this->line("    [DRY RUN] Would translate: {$section->title}");
+                    continue;
+                }
+
+                try {
+                    $langName = $this->getLanguageName($locale);
+
+                    $prompt = <<<PROMPT
+Translate this section title for an adult live cam site to {$langName}.
+
+Section title: "{$section->title}"
+
+Respond with ONLY JSON:
+{"title": "translated title"}
+
+Keep it concise and natural. This is a category heading like "Latina Sex Cams" or "MILF Sex Cams".
+PROMPT;
+
+                    $response = $this->callApi($prompt);
+                    $data = $this->parseJson($response);
+
+                    if (!empty($data['title'])) {
+                        HomepageSectionTranslation::updateOrCreate(
+                            ['homepage_section_id' => $section->id, 'locale' => $locale],
+                            ['title' => $data['title']]
+                        );
+                        $this->stats['homepage_sections']++;
                     }
                 } catch (\Exception $e) {
                     $this->stats['errors']++;
@@ -636,7 +698,7 @@ PROMPT;
         $total = array_sum($this->stats);
         $this->newLine();
         $this->info("📊 Progress: {$total} items translated");
-        $this->line("   Tags: {$this->stats['tags']}, Countries: {$this->stats['countries']}");
+        $this->line("   Tags: {$this->stats['tags']}, Countries: {$this->stats['countries']}, Sections: {$this->stats['homepage_sections']}");
         $this->line("   Descriptions: {$this->stats['descriptions']}, FAQs: {$this->stats['faqs']}");
         $this->line("   Tip Menus: {$this->stats['tip_menus']}, Errors: {$this->stats['errors']}");
     }
@@ -652,6 +714,7 @@ PROMPT;
             [
                 ['Tags', $this->stats['tags']],
                 ['Countries', $this->stats['countries']],
+                ['Homepage Sections', $this->stats['homepage_sections']],
                 ['Descriptions', $this->stats['descriptions']],
                 ['FAQs', $this->stats['faqs']],
                 ['Tip Menus', $this->stats['tip_menus']],

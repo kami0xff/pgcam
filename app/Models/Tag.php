@@ -152,6 +152,74 @@ class Tag extends Model
     }
 
     /**
+     * Get a cached mapping of English slug → localized slug for the current locale.
+     * Used by tag-link.blade.php and other views to generate localized URLs
+     * without N+1 queries.
+     *
+     * @return array<string, string>  [english_slug => localized_slug]
+     */
+    public static function getSlugMap(?string $locale = null): array
+    {
+        $locale = $locale ?? App::getLocale();
+
+        if ($locale === 'en') {
+            return []; // No translation needed for English
+        }
+
+        return cache()->remember("tag_slug_map:{$locale}", 3600, function () use ($locale) {
+            return TagTranslation::where('tag_translations.locale', $locale)
+                ->join('tags', 'tags.id', '=', 'tag_translations.tag_id')
+                ->select('tags.slug as en_slug', 'tag_translations.slug as loc_slug')
+                ->get()
+                ->pluck('loc_slug', 'en_slug')
+                ->toArray();
+        });
+    }
+
+    /**
+     * Translate a single English tag slug to its localized slug.
+     * Returns the original slug if no translation exists.
+     */
+    public static function localizeSlug(string $englishSlug, ?string $locale = null): string
+    {
+        $map = self::getSlugMap($locale);
+        return $map[$englishSlug] ?? $englishSlug;
+    }
+
+    /**
+     * Get a cached mapping of English slug → localized name for the current locale.
+     *
+     * @return array<string, string>  [english_slug => localized_name]
+     */
+    public static function getNameMap(?string $locale = null): array
+    {
+        $locale = $locale ?? App::getLocale();
+
+        if ($locale === 'en') {
+            return [];
+        }
+
+        return cache()->remember("tag_name_map:{$locale}", 3600, function () use ($locale) {
+            return TagTranslation::where('tag_translations.locale', $locale)
+                ->join('tags', 'tags.id', '=', 'tag_translations.tag_id')
+                ->select('tags.slug as en_slug', 'tag_translations.name as loc_name')
+                ->get()
+                ->pluck('loc_name', 'en_slug')
+                ->toArray();
+        });
+    }
+
+    /**
+     * Translate a single English tag slug to its localized display name.
+     * Returns a formatted version of the slug if no translation exists.
+     */
+    public static function localizeName(string $englishSlug, ?string $locale = null): string
+    {
+        $map = self::getNameMap($locale);
+        return $map[$englishSlug] ?? ucwords(str_replace(['-', '_'], ' ', $englishSlug));
+    }
+
+    /**
      * Get all URLs for hreflang
      */
     public function getHreflangUrls(): array

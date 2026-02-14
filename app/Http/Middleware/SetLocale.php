@@ -33,6 +33,14 @@ class SetLocale
             $request->route()->forgetParameter('locale');
         }
 
-        return $next($request);
+        $response = $next($request);
+
+        // Update the locale_detected cookie so browser detection doesn't override
+        // the user's explicit locale choice (via URL prefix)
+        if ($locale && in_array($locale, $supportedLocales)) {
+            $response->cookie('locale_detected', $locale, 60 * 24 * 365); // 1 year
+        }
+
+        return $response;
     }
 }

@@ -36,8 +36,8 @@ class CountryController extends Controller
             'countries' => $countries,
             'seoSchemas' => [
                 $this->seoService->getBreadcrumbSchema([
-                    ['name' => 'Home', 'url' => route('home')],
-                    ['name' => 'Countries', 'url' => route('countries.index')],
+                    ['name' => __('Home'), 'url' => localized_route('home')],
+                    ['name' => __('Countries'), 'url' => localized_route('countries.index')],
                 ]),
             ],
         ]);
@@ -152,13 +152,13 @@ class CountryController extends Controller
                     '@context' => 'https://schema.org',
                     '@type' => 'CollectionPage',
                     'name' => $country->name . ' Cams',
-                    'url' => route('countries.show', $country->slug),
+                    'url' => localized_route('countries.show', $country->slug),
                     'numberOfItems' => $models->total(),
                 ],
                 $this->seoService->getBreadcrumbSchema([
-                    ['name' => 'Home', 'url' => route('home')],
-                    ['name' => 'Countries', 'url' => route('countries.index')],
-                    ['name' => $country->name, 'url' => route('countries.show', $country->slug)],
+                    ['name' => __('Home'), 'url' => localized_route('home')],
+                    ['name' => __('Countries'), 'url' => localized_route('countries.index')],
+                    ['name' => $country->name, 'url' => localized_route('countries.show', $country->slug)],
                 ]),
             ];
         }
