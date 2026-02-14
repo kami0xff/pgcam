@@ -35,7 +35,7 @@ class Tag extends Model
      */
     public function models()
     {
-        return CamModel::on('camguru_pgsql')
+        return CamModel::on('cam')
             ->whereRaw("tags::text ILIKE ?", ['%"' . $this->name . '"%']);
     }
 
@@ -45,7 +45,7 @@ class Tag extends Model
     public function modelsInNiche(string $niche)
     {
         $fullTag = $niche . '/' . $this->name;
-        return CamModel::on('camguru_pgsql')
+        return CamModel::on('cam')
             ->whereRaw("tags::text ILIKE ?", ['%"' . $fullTag . '"%']);
     }
 

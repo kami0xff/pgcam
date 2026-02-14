@@ -108,6 +108,16 @@ Schedule::command('seo:generate-faqs', [
     ->withoutOverlapping()
     ->appendOutputTo(storage_path('logs/faqs.log'));
 
+// Generate SEO page content for tags & countries (7:30 AM)
+Schedule::command('seo:generate-page-content', [
+    '--tags' => true,
+    '--countries' => true,
+    '--limit' => 20,
+])
+    ->dailyAt('07:30')
+    ->withoutOverlapping()
+    ->appendOutputTo(storage_path('logs/page-seo-content.log'));
+
 // Translate tags & countries if new ones appeared (8 AM)
 Schedule::command('translate:all', [
     '--priority' => true,

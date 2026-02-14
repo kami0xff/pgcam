@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\StripchatTag;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CamModel extends Model
 {
@@ -99,6 +100,24 @@ class CamModel extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(Creator::class);
+    }
+
+    /**
+     * Get FAQs for this model (cross-database: model_faqs is on default connection)
+     * Note: This won't work with whereDoesntHave across connections.
+     * Use ModelFaq::where('model_id', $this->id) for cross-DB queries.
+     */
+    public function faqs(): HasMany
+    {
+        return $this->hasMany(ModelFaq::class, 'model_id');
+    }
+
+    /**
+     * Get SEO content for this model (cross-database: model_seo_content is on default connection)
+     */
+    public function seoContent(): HasMany
+    {
+        return $this->hasMany(ModelSeoContent::class, 'cam_model_id');
     }
 
     /**

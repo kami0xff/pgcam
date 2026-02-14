@@ -3,10 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\CamModel;
+use App\Models\ModelDescription;
+use App\Models\ModelFaq;
+use App\Services\SeoService;
 use Illuminate\Http\Request;
 
 class CamModelController extends Controller
 {
+    public function __construct(
+        protected SeoService $seoService
+    ) {}
+
     /**
      * Apply common filters to query
      */
@@ -245,11 +252,24 @@ class CamModelController extends Controller
                 ->first();
         }
 
+        // Get SEO data: description, FAQs, schemas
+        $modelDescription = ModelDescription::getForModel($model->username);
+        $modelFaqs = ModelFaq::forModel($model->id);
+        $seoSchemas = $this->seoService->getModelSchema($model);
+
+        // Build meta description from generated content or fallback
+        $metaDescription = $modelDescription['short_description']
+            ?? "Watch {$model->username} live on PornGuru.cam. Join the free chat and interact with this amazing model.";
+
         return view('cam-models.show', [
             'model' => $model,
             'similarModels' => $similarModels,
             'nextModel' => $nextModel,
             'prevModel' => $prevModel,
+            'modelDescription' => $modelDescription,
+            'modelFaqs' => $modelFaqs,
+            'seoSchemas' => $seoSchemas,
+            'metaDescription' => $metaDescription,
         ]);
     }
 }

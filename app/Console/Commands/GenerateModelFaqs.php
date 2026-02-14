@@ -12,6 +12,7 @@ class GenerateModelFaqs extends Command
 {
     protected $signature = 'seo:generate-faqs 
                             {--limit=10 : Number of models to process}
+                            {--model= : Generate FAQs for a specific model (username)}
                             {--locale=en : Locale for FAQs}
                             {--force : Regenerate existing FAQs}';
 
@@ -31,16 +32,35 @@ class GenerateModelFaqs extends Command
         $locale = $this->option('locale');
         $force = $this->option('force');
 
-        // Get models without FAQs (prioritize popular ones)
-        $query = CamModel::orderBy('viewers_count', 'desc');
+        // Target a specific model if --model is provided
+        $modelUsername = $this->option('model');
 
-        if (!$force) {
-            $query->whereDoesntHave('faqs', function ($q) use ($locale) {
-                $q->where('locale', $locale);
-            });
+        if ($modelUsername) {
+            $model = CamModel::where('username', $modelUsername)->first();
+            if (!$model) {
+                $this->error("Model '{$modelUsername}' not found.");
+                return 1;
+            }
+            $models = collect([$model]);
+        } else {
+            // Get models without FAQs (prioritize popular ones)
+            // CamModel is on a separate DB connection, so we can't use whereDoesntHave.
+            // Instead, fetch IDs that already have FAQs and exclude them.
+            $query = CamModel::orderBy('viewers_count', 'desc');
+
+            if (!$force) {
+                $existingModelIds = ModelFaq::where('locale', $locale)
+                    ->distinct()
+                    ->pluck('model_id')
+                    ->toArray();
+
+                if (!empty($existingModelIds)) {
+                    $query->whereNotIn('id', $existingModelIds);
+                }
+            }
+
+            $models = $query->limit($limit)->get();
         }
-
-        $models = $query->limit($limit)->get();
 
         if ($models->isEmpty()) {
             $this->info('No models need FAQs generated.');
@@ -64,7 +84,7 @@ class GenerateModelFaqs extends Command
 
                 // Delete old FAQs if forcing
                 if ($force) {
-                    ModelFaq::where('cam_model_id', $model->id)
+                    ModelFaq::where('model_id', $model->id)
                         ->where('locale', $locale)
                         ->delete();
                 }
@@ -72,7 +92,7 @@ class GenerateModelFaqs extends Command
                 // Save FAQs
                 foreach ($faqs as $index => $faq) {
                     ModelFaq::create([
-                        'cam_model_id' => $model->id,
+                        'model_id' => $model->id,
                         'locale' => $locale,
                         'question' => $faq['question'],
                         'answer' => $faq['answer'],

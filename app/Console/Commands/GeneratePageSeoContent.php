@@ -186,8 +186,7 @@ class GeneratePageSeoContent extends Command
     {
         $this->info("📝 Generating tag page content...");
 
-        $tags = Tag::withCount('models')
-            ->having('models_count', '>', 10)
+        $tags = Tag::where('models_count', '>', 10)
             ->orderByDesc('models_count')
             ->limit($limit)
             ->get();
@@ -246,8 +245,7 @@ class GeneratePageSeoContent extends Command
     {
         $this->info("📝 Generating country page content...");
 
-        $countries = Country::withCount('models')
-            ->having('models_count', '>', 10)
+        $countries = Country::where('models_count', '>', 10)
             ->orderByDesc('models_count')
             ->limit($limit)
             ->get();

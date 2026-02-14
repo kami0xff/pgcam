@@ -61,7 +61,7 @@ class ModelFaq extends Model
     /**
      * Get FAQs for a model in current locale
      */
-    public static function forModel(string $modelId, ?string $locale = null): \Illuminate\Database\Eloquent\Collection
+    public static function forModel(int|string $modelId, ?string $locale = null): \Illuminate\Database\Eloquent\Collection
     {
         $locale = $locale ?? App::getLocale();
         
@@ -82,7 +82,7 @@ class ModelFaq extends Model
     /**
      * Get FAQ Schema.org JSON-LD
      */
-    public static function getSchemaForModel(string $modelId, ?string $locale = null): ?array
+    public static function getSchemaForModel(int|string $modelId, ?string $locale = null): ?array
     {
         $faqs = self::forModel($modelId, $locale);
         

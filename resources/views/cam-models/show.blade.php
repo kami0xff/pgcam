@@ -2,6 +2,12 @@
 
 @section('title', $model->username . ' - Live Cam')
 
+@section('meta_description'){{ $metaDescription }}@endsection
+
+@push('seo-pagination')
+<x-seo.schema :schemas="$seoSchemas" />
+@endpush
+
 @push('head')
 {{-- Broadcast Schedule JSON-LD for SEO --}}
 <x-broadcast-schedule-schema 
@@ -220,29 +226,26 @@
     </div>
 
     {{-- Description (directly below stream) --}}
-    @php
-        $modelDescription = \App\Models\ModelDescription::getForModel($model->id);
-    @endphp
     <section class="model-section model-about-section">
-        <h3 class="model-section-title">About {{ $model->username }}</h3>
-        @if($modelDescription && $modelDescription->long_description)
+        <h3 class="model-section-title">{{ __('About') }} {{ $model->username }}</h3>
+        @if($modelDescription && !empty($modelDescription['long_description']))
             <div class="model-description-full">
-                @if($modelDescription->short_description)
-                    <p class="model-description-intro">{{ $modelDescription->short_description }}</p>
+                @if(!empty($modelDescription['short_description']))
+                    <p class="model-description-intro">{{ $modelDescription['short_description'] }}</p>
                 @endif
                 <div class="model-description-text">
-                    {!! nl2br(e($modelDescription->long_description)) !!}
+                    {!! nl2br(e($modelDescription['long_description'])) !!}
                 </div>
-                @if($modelDescription->traits_array && count($modelDescription->traits_array) > 0)
+                @if(!empty($modelDescription['personality_traits']) && count($modelDescription['personality_traits']) > 0)
                     <div class="model-personality-traits">
-                        @foreach($modelDescription->traits_array as $trait)
+                        @foreach($modelDescription['personality_traits'] as $trait)
                             <span class="personality-trait">{{ $trait }}</span>
                         @endforeach
                     </div>
                 @endif
-                @if($modelDescription->specialties)
+                @if(!empty($modelDescription['specialties']))
                     <p class="model-specialties">
-                        <strong>{{ __('Known for:') }}</strong> {{ $modelDescription->specialties }}
+                        <strong>{{ __('Known for:') }}</strong> {{ $modelDescription['specialties'] }}
                     </p>
                 @endif
             </div>
@@ -252,6 +255,23 @@
             </p>
         @endif
     </section>
+
+    {{-- FAQs Section --}}
+    @if($modelFaqs->isNotEmpty())
+        <section class="model-section model-faqs-section">
+            <h3 class="model-section-title">{{ __('Frequently Asked Questions') }}</h3>
+            <div class="model-faqs">
+                @foreach($modelFaqs as $faq)
+                    <details class="model-faq-item">
+                        <summary class="model-faq-question">{{ $faq->localized_question }}</summary>
+                        <div class="model-faq-answer">
+                            {!! nl2br(e($faq->localized_answer)) !!}
+                        </div>
+                    </details>
+                @endforeach
+            </div>
+        </section>
+    @endif
 
     {{-- Tags Section --}}
     @if(!empty($model->tags) && count($model->tags) > 0)
