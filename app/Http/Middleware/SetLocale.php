@@ -27,6 +27,10 @@ class SetLocale
             if (in_array($locale, $rtlLocales)) {
                 $request->attributes->set('text_direction', 'rtl');
             }
+
+            // Remove locale from route parameters so controllers don't receive it
+            // as a positional argument (fixes {locale}/model/{model} type errors)
+            $request->route()->forgetParameter('locale');
         }
 
         return $next($request);

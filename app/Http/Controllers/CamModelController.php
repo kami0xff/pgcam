@@ -261,6 +261,9 @@ class CamModelController extends Controller
         $metaDescription = $modelDescription['short_description']
             ?? "Watch {$model->username} live on PornGuru.cam. Join the free chat and interact with this amazing model.";
 
+        // Build hreflang URLs for all priority locales
+        $hreflangUrls = $this->buildModelHreflangUrls($model);
+
         return view('cam-models.show', [
             'model' => $model,
             'similarModels' => $similarModels,
@@ -270,6 +273,30 @@ class CamModelController extends Controller
             'modelFaqs' => $modelFaqs,
             'seoSchemas' => $seoSchemas,
             'metaDescription' => $metaDescription,
+            'hreflangUrls' => $hreflangUrls,
         ]);
+    }
+
+    /**
+     * Build hreflang URLs for a model page across all priority locales.
+     * Model usernames are not translated, only the URL prefix changes.
+     */
+    private function buildModelHreflangUrls(CamModel $model): array
+    {
+        $urls = [];
+        $priorityLocales = config('locales.priority', ['en', 'es', 'fr', 'de', 'pt']);
+
+        foreach ($priorityLocales as $locale) {
+            if ($locale === 'en') {
+                $urls['en'] = route('cam-models.show', $model);
+            } else {
+                $urls[$locale] = url("/{$locale}/model/{$model->username}");
+            }
+        }
+
+        // x-default points to English
+        $urls['x-default'] = route('cam-models.show', $model);
+
+        return $urls;
     }
 }

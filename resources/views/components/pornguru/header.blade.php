@@ -14,14 +14,52 @@
 
         <!-- Right Side -->
         <div class="nav-right">
+            {{-- Language Selector --}}
+            @php
+                $currentLocale = app()->getLocale();
+                $allLocales = config('locales.supported', []);
+                $priorityLocales = config('locales.priority', ['en','es','fr','de','pt','it','nl','pl','ru','ja','ko','zh','ar','tr','pt-BR','es-MX']);
+            @endphp
+            <div class="lang-selector" id="lang-selector">
+                <button class="lang-selector-btn" onclick="document.getElementById('lang-selector').classList.toggle('open')" type="button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                    </svg>
+                    <span>{{ strtoupper($currentLocale) }}</span>
+                </button>
+                <div class="lang-selector-dropdown">
+                    @foreach($priorityLocales as $loc)
+                        @php
+                            // Build URL for this locale
+                            $path = request()->path();
+                            if ($loc === 'en') {
+                                // Strip any locale prefix for English
+                                $langUrl = url(preg_replace('#^[a-z]{2}(-[A-Z]{2})?/#', '', $path));
+                            } elseif ($currentLocale !== 'en') {
+                                // Replace existing locale prefix
+                                $langUrl = url(preg_replace('#^[a-z]{2}(-[A-Z]{2})?/#', $loc . '/', $path));
+                            } else {
+                                // Add locale prefix
+                                $langUrl = url($loc . '/' . $path);
+                            }
+                        @endphp
+                        <a href="{{ $langUrl }}" class="lang-option {{ $currentLocale === $loc ? 'active' : '' }}">
+                            <span class="lang-option-code">{{ strtoupper($loc) }}</span>
+                            <span class="lang-option-name">{{ $allLocales[$loc]['native'] ?? $loc }}</span>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+
             @auth
                 <a href="{{ route('dashboard') }}" class="nav-user">
                     <span class="nav-user-avatar">{{ auth()->user()->initials() }}</span>
                     <span class="nav-user-name">{{ auth()->user()->name }}</span>
                 </a>
             @else
-                <a href="{{ route('login') }}" class="nav-link-btn">Sign In</a>
-                <a href="{{ route('register') }}" class="nav-link-btn nav-link-btn-primary">Sign Up</a>
+                <a href="{{ route('login') }}" class="nav-link-btn">{{ __('Sign In') }}</a>
+                <a href="{{ route('register') }}" class="nav-link-btn nav-link-btn-primary">{{ __('Sign Up') }}</a>
             @endauth
             
             <!-- Mobile Menu Button -->
@@ -62,14 +100,32 @@
         <a href="#" class="mobile-menu-link">Blog</a>
         <div class="mobile-menu-divider"></div>
         @auth
-            <a href="{{ route('dashboard') }}" class="mobile-menu-link">Dashboard</a>
+            <a href="{{ route('dashboard') }}" class="mobile-menu-link">{{ __('Dashboard') }}</a>
             <form method="POST" action="{{ route('logout') }}" class="mobile-menu-logout">
                 @csrf
-                <button type="submit" class="mobile-menu-link">Sign Out</button>
+                <button type="submit" class="mobile-menu-link">{{ __('Sign Out') }}</button>
             </form>
         @else
-            <a href="{{ route('login') }}" class="mobile-menu-link">Sign In</a>
-            <a href="{{ route('register') }}" class="mobile-menu-link mobile-menu-link-primary">Sign Up</a>
+            <a href="{{ route('login') }}" class="mobile-menu-link">{{ __('Sign In') }}</a>
+            <a href="{{ route('register') }}" class="mobile-menu-link mobile-menu-link-primary">{{ __('Sign Up') }}</a>
         @endauth
+        <div class="mobile-menu-divider"></div>
+        <div class="mobile-lang-grid">
+            @foreach(array_slice($priorityLocales, 0, 8) as $loc)
+                @php
+                    $path = request()->path();
+                    if ($loc === 'en') {
+                        $mLangUrl = url(preg_replace('#^[a-z]{2}(-[A-Z]{2})?/#', '', $path));
+                    } elseif ($currentLocale !== 'en') {
+                        $mLangUrl = url(preg_replace('#^[a-z]{2}(-[A-Z]{2})?/#', $loc . '/', $path));
+                    } else {
+                        $mLangUrl = url($loc . '/' . $path);
+                    }
+                @endphp
+                <a href="{{ $mLangUrl }}" class="mobile-lang-item {{ $currentLocale === $loc ? 'active' : '' }}">
+                    {{ strtoupper($loc) }}
+                </a>
+            @endforeach
+        </div>
     </div>
 </header>

@@ -247,6 +247,83 @@ button {
   gap: 0.75rem;
 }
 
+/* Language Selector */
+.lang-selector {
+  position: relative;
+}
+
+.lang-selector-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.375rem 0.5rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.lang-selector-btn:hover {
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.lang-selector-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  min-width: 180px;
+  max-height: 320px;
+  overflow-y: auto;
+  z-index: 100;
+  padding: 0.25rem;
+}
+
+.lang-selector.open .lang-selector-dropdown {
+  display: block;
+}
+
+.lang-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.8rem;
+  border-radius: var(--radius);
+  transition: all 0.1s;
+}
+
+.lang-option:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.lang-option.active {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.lang-option-code {
+  font-weight: 700;
+  min-width: 2.5rem;
+}
+
+.lang-option-name {
+  opacity: 0.8;
+}
+
 /* Nav Buttons */
 .nav-link-btn {
   display: none;
@@ -344,6 +421,39 @@ button {
 .mobile-menu-link-primary {
   color: var(--accent);
   font-weight: 700;
+}
+
+.mobile-lang-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  padding: 0 1rem 0.5rem;
+}
+
+.mobile-lang-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.mobile-lang-item:hover {
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.mobile-lang-item.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(139, 92, 246, 0.1);
 }
 
 /* Reviews Button in Navbar */
@@ -2950,6 +3060,96 @@ input[type="checkbox"] {
 .model-btn-favorite svg {
   width: 1.25rem;
   height: 1.25rem;
+}
+
+/* Favorite Popup (sign-up prompt) */
+.favorite-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.favorite-popup {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+}
+
+.favorite-popup-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.favorite-popup-close:hover {
+  color: var(--text-primary);
+}
+
+.favorite-popup h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.favorite-popup p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.favorite-popup-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.favorite-popup-btn {
+  display: block;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.15s;
+}
+
+.favorite-popup-btn-primary {
+  background: var(--accent);
+  color: white;
+}
+
+.favorite-popup-btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+.favorite-popup-btn-secondary {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.favorite-popup-btn-secondary:hover {
+  background: var(--bg-tertiary);
 }
 
 /* Model Action Buttons */

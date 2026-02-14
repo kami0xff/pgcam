@@ -9,10 +9,10 @@
     <meta name="description" content="@yield('meta_description', 'Watch free live cam shows from the hottest models. Browse thousands of live sex cams on PornGuru.cam')">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('favicon.png') }}">
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('favicon.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="@yield('canonical', url()->current())">
@@ -29,6 +29,30 @@
 
     <!-- Additional Head Content (JSON-LD, etc.) -->
     @stack('head')
+
+    <!-- Google Analytics -->
+    @if(config('services.google.analytics_id'))
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.google.analytics_id') }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ config('services.google.analytics_id') }}');
+
+        // Track affiliate link clicks
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('a[href*="stripguru"], a[href*="stripchat"], a[data-affiliate]');
+            if (link) {
+                gtag('event', 'affiliate_click', {
+                    'event_category': 'outbound',
+                    'event_label': link.href,
+                    'model_name': link.dataset.model || '',
+                    'transport_type': 'beacon'
+                });
+            }
+        });
+    </script>
+    @endif
 </head>
 <body>
     <div class="page-wrapper">
@@ -40,5 +64,15 @@
 
         <x-pornguru.footer />
     </div>
+
+    <script>
+        // Close language selector on outside click
+        document.addEventListener('click', function(e) {
+            const sel = document.getElementById('lang-selector');
+            if (sel && !sel.contains(e.target)) {
+                sel.classList.remove('open');
+            }
+        });
+    </script>
 </body>
 </html>

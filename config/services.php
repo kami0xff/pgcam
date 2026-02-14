@@ -39,4 +39,8 @@ return [
         'api_key' => env('ANTHROPIC_API_KEY'),
     ],
 
+    'google' => [
+        'analytics_id' => env('GOOGLE_ANALYTICS_ID'),
+    ],
+
 ];

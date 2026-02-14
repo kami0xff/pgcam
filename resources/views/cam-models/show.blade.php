@@ -4,8 +4,11 @@
 
 @section('meta_description'){{ $metaDescription }}@endsection
 
+@section('canonical'){{ route('cam-models.show', $model) }}@endsection
+
 @push('seo-pagination')
 <x-seo.schema :schemas="$seoSchemas" />
+<x-seo.hreflang :urls="$hreflangUrls" />
 @endpush
 
 @push('head')
@@ -150,8 +153,8 @@
                 <div class="model-info-bar-right">
                     <button class="model-btn-favorite {{ $isFavorited ? 'is-favorited' : '' }}" 
                             id="favorite-btn"
-                            onclick="toggleFavoriteModel({{ $model->id }})"
-                            title="{{ $isFavorited ? 'Remove from favorites' : 'Add to favorites' }}">
+                            onclick="toggleFavoriteModel('{{ $model->username }}')"
+                            title="{{ $isFavorited ? __('Remove from favorites') : __('Add to favorites') }}">
                         <svg viewBox="0 0 24 24" fill="{{ $isFavorited ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                         </svg>
@@ -391,9 +394,9 @@
     }
 
     // Favorite toggle
-    async function toggleFavoriteModel(modelId) {
+    async function toggleFavoriteModel(modelUsername) {
         try {
-            const response = await fetch(`/api/favorite/${modelId}`, {
+            const response = await fetch(`/api/favorite/${modelUsername}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -405,7 +408,7 @@
             const data = await response.json();
 
             if (data.requiresAuth) {
-                window.location.href = '{{ route("login") }}';
+                showFavoritePopup();
                 return;
             }
 
@@ -423,6 +426,37 @@
         } catch (error) {
             console.error('Error toggling favorite:', error);
         }
+    }
+
+    function showFavoritePopup() {
+        // Remove existing popup if any
+        const existing = document.getElementById('favorite-popup');
+        if (existing) existing.remove();
+
+        const popup = document.createElement('div');
+        popup.id = 'favorite-popup';
+        popup.innerHTML = `
+            <div class="favorite-popup-overlay" onclick="closeFavoritePopup()">
+                <div class="favorite-popup" onclick="event.stopPropagation()">
+                    <button class="favorite-popup-close" onclick="closeFavoritePopup()">&times;</button>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:48px;height:48px;color:var(--accent);margin-bottom:1rem">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                    <h3>{{ __('Save Your Favorites') }}</h3>
+                    <p>{{ __('Create a free account to build your personal favorites list and get notified when your favorite models go live.') }}</p>
+                    <div class="favorite-popup-actions">
+                        <a href="{{ route('register') }}" class="favorite-popup-btn favorite-popup-btn-primary">{{ __('Sign Up Free') }}</a>
+                        <a href="{{ route('login') }}" class="favorite-popup-btn favorite-popup-btn-secondary">{{ __('Log In') }}</a>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(popup);
+    }
+
+    function closeFavoritePopup() {
+        const popup = document.getElementById('favorite-popup');
+        if (popup) popup.remove();
     }
 
     function scrollSimilar(direction) {

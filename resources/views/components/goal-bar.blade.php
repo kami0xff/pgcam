@@ -178,8 +178,9 @@
 }
 
 .goal-bar-tokens {
-    color: #a3e635;
+    color: #fbbf24;
     font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .goal-bar-message {

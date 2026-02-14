@@ -117,6 +117,13 @@ else
 fi
 
 # --------------------------------------------------
+# Ping search engines
+# --------------------------------------------------
+step "Pinging search engines..."
+curl -s "https://www.google.com/ping?sitemap=https://pornguru.cam/sitemap.xml" > /dev/null 2>&1 && ok "Google pinged" || warn "Google ping failed (non-critical)"
+curl -s "https://www.bing.com/ping?sitemap=https://pornguru.cam/sitemap.xml" > /dev/null 2>&1 && ok "Bing pinged" || warn "Bing ping failed (non-critical)"
+
+# --------------------------------------------------
 # Status
 # --------------------------------------------------
 echo ""
