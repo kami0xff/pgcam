@@ -88,7 +88,7 @@ services:
       retries: 3
 
 # ==============================================
-# Volumes
+# Volumes (named, persist across rebuilds)
 # ==============================================
 volumes:
   caddy_data:
@@ -108,4 +108,3 @@ volumes:
 networks:
   pornguru-network:
     name: pornguru-network
-    driver: bridge
