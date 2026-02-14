@@ -3,6 +3,8 @@
 # FrankenPHP with automatic HTTPS
 # ==============================================
 
+name: pgcam-prod
+
 services:
   # ==============================================
   # Main Application (FrankenPHP)
@@ -50,18 +52,18 @@ services:
   # ==============================================
   db:
     image: postgres:16-alpine
-    container_name: porngurucam-db
+    container_name: porngurucam-db-prod
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${DB_DATABASE:-porngurucam}
-      POSTGRES_USER: ${DB_USERNAME:-porngurucam}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: porngurucam
+      POSTGRES_USER: porngurucam
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - pornguru-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-porngurucam} -d ${DB_DATABASE:-porngurucam}"]
+      test: ["CMD-SHELL", "pg_isready -U porngurucam -d porngurucam"]
       interval: 10s
       timeout: 5s
       retries: 5

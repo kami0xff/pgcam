@@ -1,3 +1,5 @@
+name: pgcam-dev
+
 services:
   app:
     build:

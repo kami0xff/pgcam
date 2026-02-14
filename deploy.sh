@@ -12,7 +12,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-COMPOSE_FILE="docker-compose.prod.yml"
+COMPOSE="docker compose --env-file .env.production -f docker-compose.prod.yml"
 BRANCH="main"
 
 log()  { echo -e "${BLUE}[deploy]${NC} $1"; }
@@ -52,14 +52,14 @@ mkdir -p logs/caddy
 # Build new image (old containers keep running)
 # --------------------------------------------------
 log "Building production image..."
-docker compose -f "${COMPOSE_FILE}" build
+${COMPOSE} build
 ok "Image built"
 
 # --------------------------------------------------
 # Restart with new image
 # --------------------------------------------------
 log "Restarting containers..."
-docker compose -f "${COMPOSE_FILE}" up -d --remove-orphans
+${COMPOSE} up -d --remove-orphans
 ok "Containers started"
 
 # --------------------------------------------------
@@ -67,7 +67,7 @@ ok "Containers started"
 # --------------------------------------------------
 log "Waiting for database..."
 for i in $(seq 1 30); do
-    if docker compose -f "${COMPOSE_FILE}" exec -T db pg_isready -U porngurucam -d porngurucam > /dev/null 2>&1; then
+    if ${COMPOSE} exec -T db pg_isready -U porngurucam -d porngurucam > /dev/null 2>&1; then
         ok "Database ready"
         break
     fi
@@ -82,24 +82,24 @@ done
 # Run migrations
 # --------------------------------------------------
 log "Running migrations..."
-docker compose -f "${COMPOSE_FILE}" exec -T app php artisan migrate --force
+${COMPOSE} exec -T app php artisan migrate --force
 ok "Migrations done"
 
 # --------------------------------------------------
 # Optimize for production
 # --------------------------------------------------
 log "Optimizing caches..."
-docker compose -f "${COMPOSE_FILE}" exec -T app php artisan optimize:clear
-docker compose -f "${COMPOSE_FILE}" exec -T app php artisan optimize
-docker compose -f "${COMPOSE_FILE}" exec -T app php artisan view:cache
-docker compose -f "${COMPOSE_FILE}" exec -T app php artisan event:cache
+${COMPOSE} exec -T app php artisan optimize:clear
+${COMPOSE} exec -T app php artisan optimize
+${COMPOSE} exec -T app php artisan view:cache
+${COMPOSE} exec -T app php artisan event:cache
 ok "Caches built"
 
 # --------------------------------------------------
 # Generate sitemaps (non-fatal)
 # --------------------------------------------------
 log "Generating sitemaps..."
-docker compose -f "${COMPOSE_FILE}" exec -T app php artisan sitemap:generate --static 2>/dev/null || warn "Sitemap generation skipped"
+${COMPOSE} exec -T app php artisan sitemap:generate --static 2>/dev/null || warn "Sitemap generation skipped"
 
 # --------------------------------------------------
 # Health check
@@ -120,7 +120,7 @@ fi
 # Status
 # --------------------------------------------------
 echo ""
-docker compose -f "${COMPOSE_FILE}" ps
+${COMPOSE} ps
 echo ""
 ok "Deployment complete!"
 echo ""

@@ -76,19 +76,19 @@ prod:
 	./deploy.sh
 
 build:
-	docker compose -f docker-compose.prod.yml build
+	docker compose --env-file .env.production -f docker-compose.prod.yml build
 
 prod-up:
-	docker compose -f docker-compose.prod.yml up -d
+	docker compose --env-file .env.production -f docker-compose.prod.yml up -d
 
 prod-down:
-	docker compose -f docker-compose.prod.yml down
+	docker compose --env-file .env.production -f docker-compose.prod.yml down
 
 prod-logs:
-	docker compose -f docker-compose.prod.yml logs -f app
+	docker compose --env-file .env.production -f docker-compose.prod.yml logs -f app
 
 prod-shell:
-	docker compose -f docker-compose.prod.yml exec app sh
+	docker compose --env-file .env.production -f docker-compose.prod.yml exec app sh
 
 # ==============================================
 # Git Workflow Helpers
