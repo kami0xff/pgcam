@@ -43,6 +43,10 @@ return [
         'analytics_id' => env('GOOGLE_ANALYTICS_ID'),
     ],
 
+    'indexnow' => [
+        'key' => env('INDEXNOW_KEY', '9382709b6acf468c8e4e61cab366dfe7'),
+    ],
+
     'affiliates' => [
         'stripchat' => [
             'base_url' => 'https://stripchat.com',

@@ -129,6 +129,12 @@ Schedule::command('translate:all', [
     ->withoutOverlapping()
     ->appendOutputTo(storage_path('logs/translate-tags.log'));
 
+// Submit online model URLs to IndexNow (Bing) — daily at 10 AM
+Schedule::command('indexnow:submit', ['--type' => 'models', '--limit' => 5000])
+    ->dailyAt('10:00')
+    ->withoutOverlapping()
+    ->appendOutputTo(storage_path('logs/indexnow.log'));
+
 // ============================================================================
 // WEEKLY TASKS (Sunday)
 // ============================================================================
@@ -142,6 +148,12 @@ Schedule::command('heatmap:record', ['--prune' => true])
 Schedule::command('sitemap:generate', ['--warm-cache' => true])
     ->weeklyOn(0, '06:00')
     ->appendOutputTo(storage_path('logs/sitemap-generate.log'));
+
+// Submit all URLs to IndexNow after sitemap refresh (Sunday 6:30 AM)
+Schedule::command('indexnow:submit', ['--type' => 'all', '--limit' => 10000])
+    ->weeklyOn(0, '06:30')
+    ->withoutOverlapping()
+    ->appendOutputTo(storage_path('logs/indexnow.log'));
 
 // Sync tags from enum (Sunday 7 AM)
 Schedule::command('tags:sync', ['--seed' => true])
