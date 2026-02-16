@@ -1,24 +1,20 @@
 # ==============================================
 # Caddyfile for pornguru.cam
-# FrankenPHP with automatic HTTPS
+# FrankenPHP behind Cloudflare Tunnel (HTTP only)
+# Cloudflare handles TLS termination
 # ==============================================
 
 {
     # Global options
     frankenphp
-    
-    # Enable HTTP/3
-    servers {
-        protocols h1 h2 h3
-    }
-    
-    # Email for Let's Encrypt notifications
-    email admin@pornguru.cam
+
+    # Disable automatic HTTPS — Cloudflare handles TLS
+    auto_https off
 }
 
-# Main domain with automatic HTTPS
-pornguru.cam, www.pornguru.cam {
-    # Redirect www to non-www
+# Main domain — HTTP only (Cloudflare Tunnel connects via HTTP)
+http://pornguru.cam, http://www.pornguru.cam {
+    # Redirect www to non-www (Cloudflare will keep it HTTPS on the public side)
     @www host www.pornguru.cam
     redir @www https://pornguru.cam{uri} permanent
 
@@ -28,23 +24,16 @@ pornguru.cam, www.pornguru.cam {
     # Encode responses with gzip/zstd
     encode zstd gzip
 
-    # Security headers
+    # Security headers (HSTS is handled by Cloudflare)
     header {
-        # HSTS - force HTTPS
-        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-        # Prevent clickjacking
         X-Frame-Options "SAMEORIGIN"
-        # XSS protection
         X-Content-Type-Options "nosniff"
         X-XSS-Protection "1; mode=block"
-        # Referrer policy
         Referrer-Policy "strict-origin-when-cross-origin"
-        # Remove server identification
         -Server
     }
 
     # Handle Laravel with FrankenPHP (standard request-per-process mode)
-    # No worker mode - works with vanilla Laravel out of the box
     php_server
 
     # Dynamic pages - NO cache (content updates every 30 seconds)
@@ -76,7 +65,7 @@ pornguru.cam, www.pornguru.cam {
     }
 }
 
-# Local development fallback (when SERVER_NAME is set to :80)
+# Catch-all fallback (health checks, localhost, etc.)
 :80 {
     root * /app/public
     encode zstd gzip

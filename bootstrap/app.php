@@ -11,6 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Trust Cloudflare Tunnel as a reverse proxy so Laravel reads
+        // X-Forwarded-Proto, X-Forwarded-For, etc. correctly
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'set.locale' => \App\Http\Middleware\SetLocale::class,
             'detect.locale' => \App\Http\Middleware\DetectLocale::class,
