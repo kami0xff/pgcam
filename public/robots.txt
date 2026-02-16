@@ -1,14 +1,7 @@
 # robots.txt for pornguru.cam
-# https://pornguru.cam
 
 User-agent: *
 Allow: /
-
-# Sitemaps
-Sitemap: https://pornguru.cam/sitemap.xml
-
-# Crawl-delay for politeness
-Crawl-delay: 1
 
 # Block unnecessary paths
 Disallow: /api/
@@ -16,9 +9,6 @@ Disallow: /login
 Disallow: /register
 Disallow: /dashboard
 Disallow: /logout
-Disallow: /*.json$
-Disallow: /*?*sort=
-Disallow: /*?*direction=
 
 # Allow search engines to access static assets
 Allow: /build/
@@ -28,3 +18,13 @@ Allow: /*.png
 Allow: /*.jpg
 Allow: /*.webp
 Allow: /*.svg
+
+# Crawl-delay for polite bots (Bing/Yandex)
+User-agent: bingbot
+Crawl-delay: 1
+
+User-agent: Yandex
+Crawl-delay: 1
+
+# Sitemaps
+Sitemap: https://pornguru.cam/sitemap.xml
