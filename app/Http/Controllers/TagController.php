@@ -33,8 +33,8 @@ class TagController extends Controller
             // Fallback to StripchatTag enum
             $tagsByCategory = $this->getTagsFromEnum();
             $featuredTags = collect($tagsByCategory)
-                ->flatten()
-                ->filter(fn($t) => in_array($t['slug'], $this->getFeaturedSlugs()))
+                ->flatten(1)
+                ->filter(fn($t) => is_array($t) && in_array($t['slug'] ?? '', $this->getFeaturedSlugs()))
                 ->take(20);
         } else {
             // Calculate model counts for each tag (cached for performance)
