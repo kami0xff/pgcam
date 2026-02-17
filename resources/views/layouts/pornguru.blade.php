@@ -51,7 +51,7 @@
     <!-- Additional Head Content (JSON-LD, etc.) -->
     @stack('head')
 
-    <!-- Google Analytics -->
+    <!-- Google Analytics (GA4) -->
     @if(config('services.google.analytics_id'))
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.google.analytics_id') }}"></script>
     <script>
@@ -60,18 +60,61 @@
         gtag('js', new Date());
         gtag('config', '{{ config('services.google.analytics_id') }}');
 
-        // Track affiliate link clicks
-        document.addEventListener('click', function(e) {
-            const link = e.target.closest('a[href*="stripguru"], a[href*="stripchat"], a[data-affiliate]');
-            if (link) {
-                gtag('event', 'affiliate_click', {
-                    'event_category': 'outbound',
-                    'event_label': link.href,
-                    'model_name': link.dataset.model || '',
-                    'transport_type': 'beacon'
-                });
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Track model card clicks (homepage, tag pages, favorites)
+            document.addEventListener('click', function(e) {
+                var card = e.target.closest('.model-card');
+                if (card) {
+                    gtag('event', 'select_content', {
+                        content_type: 'model',
+                        item_id: card.dataset.modelName || card.dataset.modelId || '',
+                        model_name: card.dataset.modelName || '',
+                        model_status: card.dataset.modelStatus || '',
+                        page_section: card.closest('[data-section]') ? card.closest('[data-section]').dataset.section : 'unknown'
+                    });
+                }
+            });
+
+            // 2. Track outbound affiliate clicks (whitelabel links)
+            document.addEventListener('click', function(e) {
+                var link = e.target.closest('a[data-affiliate], a[href*="stripchat"], a[href*="xlovecam"], a[href*="stripguru"]');
+                if (link) {
+                    gtag('event', 'click', {
+                        event_category: 'affiliate_outbound',
+                        link_url: link.href,
+                        link_domain: link.hostname,
+                        model_name: link.dataset.modelName || link.closest('[data-model-name]')?.dataset.modelName || '',
+                        affiliate_platform: link.dataset.affiliate || '',
+                        link_text: link.textContent.trim().substring(0, 50),
+                        transport_type: 'beacon'
+                    });
+                }
+            });
+
+            // 3. Track favorite toggles
+            document.addEventListener('click', function(e) {
+                var favBtn = e.target.closest('.model-card-favorite');
+                if (favBtn) {
+                    var wasFavorited = favBtn.classList.contains('is-favorited');
+                    var card = favBtn.closest('.model-card-wrapper');
+                    var modelCard = card ? card.querySelector('.model-card') : null;
+                    gtag('event', wasFavorited ? 'remove_from_wishlist' : 'add_to_wishlist', {
+                        content_type: 'model',
+                        item_id: modelCard ? (modelCard.dataset.modelName || modelCard.dataset.modelId) : '',
+                        model_name: modelCard ? (modelCard.dataset.modelName || '') : ''
+                    });
+                }
+            });
         });
+    </script>
+    @endif
+
+    {{-- Fire sign_up event after successful registration --}}
+    @if(session('ga_event'))
+    <script>
+        if (typeof gtag === 'function') {
+            gtag('event', {!! json_encode(session('ga_event.name')) !!}, {!! json_encode(session('ga_event.params', [])) !!});
+        }
     </script>
     @endif
 </head>

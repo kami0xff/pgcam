@@ -58,7 +58,7 @@
         {{-- Your Favorites Section (if logged in and has online favorites) --}}
         @auth
             @if($onlineFavorites->isNotEmpty())
-                <section class="favorites-section">
+                <section class="favorites-section" data-section="favorites">
                     <div class="favorites-header">
                         <div class="favorites-title">
                             <svg viewBox="0 0 24 24" fill="currentColor">
@@ -81,7 +81,7 @@
         {{-- SEO Featured Sections (server-rendered for SEO) --}}
         @if(!empty($seoSections))
             @foreach($seoSections as $section)
-                <section class="seo-section">
+                <section class="seo-section" data-section="{{ $section['slug'] ?? Str::slug($section['title']) }}">
                     <h2 class="seo-section-title">{{ $section['title'] }}</h2>
                     <div class="seo-section-grid">
                         @foreach($section['models'] as $model)
@@ -122,7 +122,7 @@
                 :text="__('Try adjusting your filters.')" 
             />
         @else
-            <div class="models-grid" id="models-grid">
+            <div class="models-grid" id="models-grid" data-section="main-grid">
                 @foreach($models as $model)
                     <x-pornguru.model-card :model="$model" />
                 @endforeach

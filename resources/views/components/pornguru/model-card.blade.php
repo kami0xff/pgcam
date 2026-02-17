@@ -10,7 +10,9 @@
     <a href="{{ $model->url }}" 
        class="model-card" 
        data-stream-url="{{ $model->best_stream_url }}"
-       data-model-id="{{ $model->id }}">
+       data-model-id="{{ $model->id }}"
+       data-model-name="{{ $model->username }}"
+       data-model-status="{{ $model->is_online ? 'online' : 'offline' }}">
         <div class="model-card-image">
             {{-- Static Image --}}
             <img src="{{ $model->best_image_url }}" 

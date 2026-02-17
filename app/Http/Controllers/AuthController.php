@@ -65,6 +65,11 @@ class AuthController extends Controller
 
         Auth::login($user);
 
+        session()->flash('ga_event', [
+            'name' => 'sign_up',
+            'params' => ['method' => 'email'],
+        ]);
+
         return redirect()->route('home');
     }
 

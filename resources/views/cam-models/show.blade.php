@@ -27,7 +27,7 @@
 @endpush
 
 @section('content')
-<div class="container page-section">
+<div class="container page-section" data-model-name="{{ $model->username }}">
 
     {{-- Mobile swipe tutorial (shown once) --}}
     <div class="swipe-tutorial" id="swipe-tutorial">
@@ -118,7 +118,7 @@
                     <div class="model-stream-preview">
                         <img src="{{ $model->best_image_url }}" alt="{{ $model->username }}">
                         <div class="model-stream-preview-overlay">
-                            <a href="{{ $model->affiliate_url }}" target="_blank" rel="nofollow" class="model-stream-play-btn" data-affiliate="{{ $model->source_platform }}">
+                            <a href="{{ $model->affiliate_url }}" target="_blank" rel="nofollow" class="model-stream-play-btn" data-affiliate="{{ $model->source_platform }}" data-model-name="{{ $model->username }}">
                                 <svg viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M8 5v14l11-7z"/>
                                 </svg>
@@ -967,6 +967,24 @@
     };
     document.head.appendChild(s);
 }();
+</script>
+@endif
+
+{{-- GA4: Track model page view --}}
+@if(config('services.google.analytics_id'))
+<script>
+    if (typeof gtag === 'function') {
+        gtag('event', 'view_item', {
+            content_type: 'model',
+            item_id: @json($model->username),
+            model_name: @json($model->username),
+            model_status: @json($model->is_online ? 'online' : 'offline'),
+            model_platform: @json($model->source_platform),
+            model_age: @json($model->age),
+            model_country: @json($model->country),
+            model_viewers: @json($model->viewers_count ?? 0)
+        });
+    }
 </script>
 @endif
 @endsection
