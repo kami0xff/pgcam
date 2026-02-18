@@ -61,7 +61,9 @@ return [
         'bongacams' => [
             'track_url' => env('BONGACAMS_TRACK_URL', 'https://bongacams11.com/track'),
             'campaign_id' => env('BONGACAMS_CAMPAIGN_ID', '833673'),
-            // URL format: https://bongacams11.com/track?c={campaign_id}
+            'site_url' => env('BONGACAMS_SITE_URL', 'https://bongacams.com'),
+            // Chat room: track?c={id}&csurl=https://bongacams.com/{username}
+            // Profile:   track?c={id}&csurl=https://bongacams.com/profile/{username}
         ],
     ],
 

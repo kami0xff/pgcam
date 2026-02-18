@@ -252,17 +252,19 @@ class CamModel extends Model
     }
 
     /**
-     * Get the affiliate URL to the source platform.
+     * Get the affiliate URL to the source platform's chat room.
      * Falls back to stored profile_url, then generates one from config.
      */
     public function getAffiliateUrlAttribute(): string
     {
-        // If we already have a stored profile_url with affiliate tracking, use it
+        if ($this->source_platform === 'bongacams') {
+            return $this->getBongacamsUrl($this->username);
+        }
+
         if (!empty($this->profile_url)) {
             return $this->profile_url;
         }
 
-        // Generate affiliate URL based on source platform
         if ($this->source_platform === 'stripchat') {
             $baseUrl = config('services.affiliates.stripchat.base_url', 'https://stripchat.com');
             $campaignId = config('services.affiliates.stripchat.campaign_id', '');
@@ -283,14 +285,35 @@ class CamModel extends Model
             return $url;
         }
 
-        if ($this->source_platform === 'bongacams') {
-            $trackUrl = config('services.affiliates.bongacams.track_url', 'https://bongacams11.com/track');
-            $campaignId = config('services.affiliates.bongacams.campaign_id', '833673');
-            return $trackUrl . '?c=' . $campaignId;
-        }
-
-        // Fallback: just return a search URL
         return 'https://stripchat.com/' . $this->username;
+    }
+
+    /**
+     * Build a BongaCams affiliate tracking URL for a given destination path.
+     */
+    protected function getBongacamsUrl(string $path): string
+    {
+        $trackUrl = config('services.affiliates.bongacams.track_url', 'https://bongacams11.com/track');
+        $campaignId = config('services.affiliates.bongacams.campaign_id', '833673');
+        $siteUrl = config('services.affiliates.bongacams.site_url', 'https://bongacams.com');
+
+        return $trackUrl . '?c=' . $campaignId . '&csurl=' . urlencode(rtrim($siteUrl, '/') . '/' . ltrim($path, '/'));
+    }
+
+    /**
+     * Get BongaCams chat room URL (model's live page).
+     */
+    public function getBongacamsChatUrlAttribute(): string
+    {
+        return $this->getBongacamsUrl($this->username);
+    }
+
+    /**
+     * Get BongaCams profile URL (static profile page).
+     */
+    public function getBongacamsProfileUrlAttribute(): string
+    {
+        return $this->getBongacamsUrl('profile/' . $this->username);
     }
 
     /**
