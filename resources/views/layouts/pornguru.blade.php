@@ -77,7 +77,7 @@
 
             // 2. Track outbound affiliate clicks (whitelabel links)
             document.addEventListener('click', function(e) {
-                var link = e.target.closest('a[data-affiliate], a[href*="stripchat"], a[href*="xlovecam"], a[href*="stripguru"]');
+                var link = e.target.closest('a[data-affiliate], a[href*="stripchat"], a[href*="xlovecam"], a[href*="stripguru"], a[href*="bongacams"]');
                 if (link) {
                     gtag('event', 'click', {
                         event_category: 'affiliate_outbound',

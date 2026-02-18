@@ -52,6 +52,7 @@ class CamModel extends Model
         'stream_urls',
         'stream_width',
         'stream_height',
+        'stream_title',
         'is_hd',
         'is_vr',
         'viewers_count',
@@ -280,6 +281,12 @@ class CamModel extends Model
                 $url .= '?id_affilie=' . $affiliateId;
             }
             return $url;
+        }
+
+        if ($this->source_platform === 'bongacams') {
+            $trackUrl = config('services.affiliates.bongacams.track_url', 'https://bongacams11.com/track');
+            $campaignId = config('services.affiliates.bongacams.campaign_id', '833673');
+            return $trackUrl . '?c=' . $campaignId;
         }
 
         // Fallback: just return a search URL

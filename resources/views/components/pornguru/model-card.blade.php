@@ -68,7 +68,7 @@
             </div>
         </div>
         
-        {{-- Goal Bar --}}
+        {{-- Goal Bar or Stream Title --}}
         @if($model->goal_message && $model->goal_progress !== null)
             <div class="model-card-goal">
                 <div class="model-card-goal-header">
@@ -82,6 +82,10 @@
                 <div class="model-card-goal-bar">
                     <div class="model-card-goal-fill" style="width: {{ min($model->goal_progress, 100) }}%"></div>
                 </div>
+            </div>
+        @elseif($model->stream_title && $model->is_online)
+            <div class="model-card-stream-title">
+                <span>{{ Str::limit($model->stream_title, 50) }}</span>
             </div>
         @endif
     </a>

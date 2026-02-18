@@ -247,6 +247,13 @@
                         :tokensEarned="$model->goal_earned"
                         :progress="$model->goal_progress"
                     />
+                @elseif($model->stream_title && $model->is_online)
+                    <div class="model-stream-title-bar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                        </svg>
+                        <span>{{ $model->stream_title }}</span>
+                    </div>
                 @endif
             </div>
         </div>

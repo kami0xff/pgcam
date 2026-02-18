@@ -58,6 +58,11 @@ return [
             'affiliate_id' => env('XLOVECAM_AFFILIATE_ID', '333'),
             // URL format: https://www.xlovecam.com/chat/{username}/?id_affilie={affiliate_id}
         ],
+        'bongacams' => [
+            'track_url' => env('BONGACAMS_TRACK_URL', 'https://bongacams11.com/track'),
+            'campaign_id' => env('BONGACAMS_CAMPAIGN_ID', '833673'),
+            // URL format: https://bongacams11.com/track?c={campaign_id}
+        ],
     ],
 
 ];
