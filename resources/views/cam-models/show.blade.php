@@ -306,29 +306,13 @@
 
     {{-- Stripchat Private CTA Section --}}
     @if($model->source_platform === 'stripchat')
-        <section class="stripchat-private-cta">
-            <div class="stripchat-private-inner">
-                <div class="stripchat-private-left">
-                    <img src="{{ asset('stripchat-logo.svg') }}" alt="Stripchat" class="stripchat-private-logo">
-                    <div class="stripchat-private-text">
-                        <h3>{{ __('Talk to') }} {{ $model->username }} {{ __('privately') }}</h3>
-                        <p>{{ __('Go 1-on-1 with cam2cam, voice chat, and exclusive private shows on Stripchat.') }}</p>
-                    </div>
-                </div>
-                <div class="stripchat-private-actions">
-                    <a href="{{ $model->affiliate_url }}" target="_blank" rel="nofollow" class="btn-stripchat-private" data-affiliate="stripchat">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                            <path d="M7 11V7a5 5 0 0110 0v4"/>
-                        </svg>
-                        {{ __('Request Private Show') }}
-                    </a>
-                    <a href="{{ $model->affiliate_signup_url }}" target="_blank" rel="nofollow" class="btn-stripchat-signup" data-affiliate="stripchat">
-                        {{ __('Sign Up Free') }}
-                    </a>
-                </div>
+        <a href="{{ $model->affiliate_signup_url }}" target="_blank" rel="nofollow" class="stripchat-private-cta" data-affiliate="stripchat">
+            <img src="{{ asset('stripchat-logo.svg') }}" alt="Stripchat" class="stripchat-private-logo">
+            <div class="stripchat-private-text">
+                <h3>{{ __('Talk to') }} {{ $model->username }} {{ __('privately') }}</h3>
+                <p>{{ __('Go 1-on-1 with cam2cam, voice chat, and exclusive private shows on Stripchat.') }}</p>
             </div>
-        </section>
+        </a>
     @endif
 
     {{-- Description (directly below stream) --}}
