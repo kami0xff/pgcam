@@ -9,7 +9,8 @@
     <meta name="description" content="@yield('meta_description', 'Watch free live cam shows from the hottest models. Browse thousands of live sex cams on PornGuru.cam')">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('favicon-nobg.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="@yield('canonical', url()->current())">

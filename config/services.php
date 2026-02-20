@@ -47,6 +47,10 @@ return [
         'key' => env('INDEXNOW_KEY', '9382709b6acf468c8e4e61cab366dfe7'),
     ],
 
+    'prelander' => [
+        'allowed_origins' => env('PRELANDER_ALLOWED_ORIGINS', ''),
+    ],
+
     'affiliates' => [
         'stripchat' => [
             'base_url' => 'https://stripchat.com',

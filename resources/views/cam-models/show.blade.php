@@ -233,13 +233,13 @@
                         </svg>
                         <span>{{ __('Chat') }}</span>
                     </a>
-                    <a href="{{ $profileUrl }}" target="_blank" rel="nofollow" class="model-btn-profile" data-affiliate="{{ $model->source_platform }}">
+                    <a href="{{ $model->source_platform === 'stripchat' ? $model->affiliate_signup_url : $profileUrl }}" target="_blank" rel="nofollow" class="model-btn-profile" data-affiliate="{{ $model->source_platform }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
                             <polyline points="15 3 21 3 21 9"/>
                             <line x1="10" y1="14" x2="21" y2="3"/>
                         </svg>
-                        <span>{{ __('Profile') }}</span>
+                        <span>{{ $model->source_platform === 'stripchat' ? __('Stripchat') : __('Profile') }}</span>
                     </a>
                 </div>
             </div>
@@ -273,22 +273,63 @@
                 <div class="model-chat-messages" id="chat-messages">
                     <div class="model-chat-welcome">{{ __('Welcome to') }} {{ $model->username }}{{ __("'s room!") }}</div>
                 </div>
-                <div class="model-chat-input">
-                    <input type="text" placeholder="{{ __('Type a message...') }}" onfocus="showChatOverlay()">
-                </div>
-                <div class="model-chat-overlay" id="chat-overlay" style="display: none;">
-                    <div class="model-chat-overlay-card">
-                        <h3 class="model-chat-overlay-title">{{ __('Join the Chat') }}</h3>
-                        <p class="model-chat-overlay-text">{{ __('Create a free account to chat!') }}</p>
-                        <a href="{{ $model->affiliate_url }}" target="_blank" rel="nofollow" class="btn btn-primary" data-affiliate="{{ $model->source_platform }}" style="width: 100%;">
-                            {{ __('Sign Up Free') }}
-                        </a>
-                        <button onclick="hideChatOverlay()" class="model-chat-overlay-close">{{ __('Maybe later') }}</button>
+                @if($model->source_platform === 'stripchat')
+                    <div class="model-chat-overlay" id="chat-overlay" style="display: flex;">
+                        <div class="model-chat-overlay-card">
+                            <img src="{{ asset('stripchat-logo.svg') }}" alt="Stripchat" class="chat-overlay-platform-logo">
+                            <h3 class="model-chat-overlay-title">{{ __('Chat with') }} {{ $model->username }}</h3>
+                            <p class="model-chat-overlay-text">{{ __('Create a free Stripchat account to join the chat, send tips, and request private shows.') }}</p>
+                            <a href="{{ $model->affiliate_signup_url }}" target="_blank" rel="nofollow" class="btn btn-stripchat" data-affiliate="stripchat" style="width: 100%;">
+                                {{ __('Sign Up Free on Stripchat') }}
+                            </a>
+                        </div>
                     </div>
-                </div>
+                @else
+                    <div class="model-chat-input">
+                        <input type="text" placeholder="{{ __('Type a message...') }}" onfocus="showChatOverlay()">
+                    </div>
+                    <div class="model-chat-overlay" id="chat-overlay" style="display: none;">
+                        <div class="model-chat-overlay-card">
+                            <h3 class="model-chat-overlay-title">{{ __('Join the Chat') }}</h3>
+                            <p class="model-chat-overlay-text">{{ __('Create a free account to chat!') }}</p>
+                            <a href="{{ $model->affiliate_signup_url }}" target="_blank" rel="nofollow" class="btn btn-primary" data-affiliate="{{ $model->source_platform }}" style="width: 100%;">
+                                {{ __('Sign Up Free') }}
+                            </a>
+                            <button onclick="hideChatOverlay()" class="model-chat-overlay-close">{{ __('Maybe later') }}</button>
+                        </div>
+                    </div>
+                @endif
             </div>
+
         </div>
     </div>
+
+    {{-- Stripchat Private CTA Section --}}
+    @if($model->source_platform === 'stripchat')
+        <section class="stripchat-private-cta">
+            <div class="stripchat-private-inner">
+                <div class="stripchat-private-left">
+                    <img src="{{ asset('stripchat-logo.svg') }}" alt="Stripchat" class="stripchat-private-logo">
+                    <div class="stripchat-private-text">
+                        <h3>{{ __('Talk to') }} {{ $model->username }} {{ __('privately') }}</h3>
+                        <p>{{ __('Go 1-on-1 with cam2cam, voice chat, and exclusive private shows on Stripchat.') }}</p>
+                    </div>
+                </div>
+                <div class="stripchat-private-actions">
+                    <a href="{{ $model->affiliate_url }}" target="_blank" rel="nofollow" class="btn-stripchat-private" data-affiliate="stripchat">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0110 0v4"/>
+                        </svg>
+                        {{ __('Request Private Show') }}
+                    </a>
+                    <a href="{{ $model->affiliate_signup_url }}" target="_blank" rel="nofollow" class="btn-stripchat-signup" data-affiliate="stripchat">
+                        {{ __('Sign Up Free') }}
+                    </a>
+                </div>
+            </div>
+        </section>
+    @endif
 
     {{-- Description (directly below stream) --}}
     <section class="model-section model-about-section">

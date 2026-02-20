@@ -13,7 +13,8 @@ class CamModelController extends Controller
 {
     public function __construct(
         protected SeoService $seoService
-    ) {}
+    ) {
+    }
 
     /**
      * Apply common filters to query
@@ -55,8 +56,8 @@ class CamModelController extends Controller
 
         // Filter: Tags (array of tag slugs)
         if ($request->filled('tags')) {
-            $tags = is_array($request->input('tags')) 
-                ? $request->input('tags') 
+            $tags = is_array($request->input('tags'))
+                ? $request->input('tags')
                 : explode(',', $request->input('tags'));
             $query->withTags($tags);
         }
@@ -81,7 +82,7 @@ class CamModelController extends Controller
             if ($country) {
                 $query->where(function ($q) use ($country) {
                     $q->where('country', $country->name)
-                      ->orWhere('country', $country->code);
+                        ->orWhere('country', $country->code);
                 });
             } else {
                 $query->where('country', ucwords(str_replace('-', ' ', $countrySlug)));
@@ -91,7 +92,7 @@ class CamModelController extends Controller
         // Sorting
         $sortField = $request->input('sort', 'viewers_count');
         $sortDirection = $request->input('direction', 'desc');
-        
+
         // Always prioritize online models
         $query->orderBy('is_online', 'desc');
 
@@ -99,9 +100,9 @@ class CamModelController extends Controller
         if ($sortField === 'goal_progress') {
             // Only show models with active goals, sorted by closest to completion
             $query->whereNotNull('goal_progress')
-                  ->where('goal_progress', '>', 0)
-                  ->where('goal_progress', '<', 100)
-                  ->orderBy('goal_progress', 'desc');
+                ->where('goal_progress', '>', 0)
+                ->where('goal_progress', '<', 100)
+                ->orderBy('goal_progress', 'desc');
         } else {
             $allowedSorts = ['viewers_count', 'rating', 'favorited_count', 'last_online_at', 'username', 'age'];
             if (in_array($sortField, $allowedSorts)) {
@@ -174,7 +175,7 @@ class CamModelController extends Controller
                 ->where(function ($q) use ($tags) {
                     foreach ($tags as $tag) {
                         $q->orWhereJsonContains('tags', $tag)
-                          ->orWhere('username', 'ilike', '%' . $tag . '%');
+                            ->orWhere('username', 'ilike', '%' . $tag . '%');
                     }
                 })
                 ->orderBy('viewers_count', 'desc')
@@ -203,7 +204,7 @@ class CamModelController extends Controller
 
         $perPage = 48;
         $page = $request->input('page', 1);
-        
+
         $models = $query->paginate($perPage, ['*'], 'page', $page);
 
         // Render model cards HTML

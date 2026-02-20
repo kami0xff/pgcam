@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CamModelController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\PrelanderApiController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
@@ -29,7 +30,7 @@ Route::middleware('detect.locale')->group(function () {
     Route::get('/tags', [TagController::class, 'index'])->name('tags.index');
     Route::get('/tag/{slug}', [TagController::class, 'show'])->name('tags.show');
 
-    // Niche pages (girls, couples, men, trans)
+    // Niche p ages (girls, couples, men, trans)
     Route::get('/{niche}', [TagController::class, 'niche'])
         ->where('niche', 'girls|couples|men|trans')
         ->name('niche.show');
@@ -94,14 +95,14 @@ Route::prefix('{locale}')
     ->group(function () {
         // Localized home
         Route::get('/', [CamModelController::class, 'index'])->name('home.localized');
-        
+
         // Localized model pages
         Route::get('/model/{model}', [CamModelController::class, 'show'])->name('cam-models.show.localized');
-        
+
         // Localized tag pages
         Route::get('/tags', [TagController::class, 'index'])->name('tags.index.localized');
         Route::get('/tag/{slug}', [TagController::class, 'show'])->name('tags.show.localized');
-        
+
         // Localized niche pages
         Route::get('/{niche}', [TagController::class, 'niche'])
             ->where('niche', 'girls|couples|men|trans')
@@ -109,7 +110,7 @@ Route::prefix('{locale}')
         Route::get('/{niche}/{tagSlug}', [TagController::class, 'nicheTag'])
             ->where('niche', 'girls|couples|men|trans')
             ->name('niche.tag.localized');
-        
+
         // Localized country pages
         Route::get('/countries', [CountryController::class, 'index'])->name('countries.index.localized');
         Route::get('/country/{slug}', [CountryController::class, 'show'])->name('countries.show.localized');
@@ -140,3 +141,13 @@ Route::post('/api/favorite/{model}', [FavoriteController::class, 'toggle'])->nam
 
 // Model goal polling (live refresh)
 Route::get('/api/model/{model}/goal', [CamModelController::class, 'goalData'])->name('api.model.goal');
+
+// ==============================================
+// Prelander Public API (CORS-enabled, cached)
+// ==============================================
+
+Route::prefix('api/v1/cam-models')->group(function () {
+    Route::get('/online', [PrelanderApiController::class, 'online']);
+    Route::get('/near-goal', [PrelanderApiController::class, 'nearGoal']);
+    Route::get('/stats', [PrelanderApiController::class, 'stats']);
+});

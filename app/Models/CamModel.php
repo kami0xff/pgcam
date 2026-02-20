@@ -65,6 +65,8 @@ class CamModel extends Model
         'blocked_countries',
         'blocked_regions',
         'blocked_languages',
+        'affiliate_url',
+        'affiliate_signup_url',
         'last_online_at',
         'last_synced_at',
         'discovered_at',
@@ -253,10 +255,15 @@ class CamModel extends Model
 
     /**
      * Get the affiliate URL to the source platform's chat room.
-     * Falls back to stored profile_url, then generates one from config.
+     * Prefers DB-stored affiliate_url, then profile_url, then generates from config.
      */
     public function getAffiliateUrlAttribute(): string
     {
+        $dbValue = $this->attributes['affiliate_url'] ?? null;
+        if (!empty($dbValue)) {
+            return $dbValue;
+        }
+
         if ($this->source_platform === 'bongacams') {
             return $this->getBongacamsUrl($this->username);
         }
@@ -286,6 +293,15 @@ class CamModel extends Model
         }
 
         return 'https://stripchat.com/' . $this->username;
+    }
+
+    /**
+     * Get the affiliate signup URL (for registration CTAs).
+     * Falls back to affiliate_url if no dedicated signup URL exists.
+     */
+    public function getAffiliateSignupUrlAttribute(): string
+    {
+        return $this->attributes['affiliate_signup_url'] ?? $this->affiliate_url;
     }
 
     /**
