@@ -81,6 +81,10 @@ class Country extends Model
     {
         $locale = App::getLocale();
         $slug = $this->localized_slug;
+
+        if (empty($slug)) {
+            return route('countries.index');
+        }
         
         if ($locale === 'en') {
             return route('countries.show', $slug);
