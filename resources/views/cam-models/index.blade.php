@@ -258,12 +258,10 @@
             return false;
         }
 
-        // Load autoplay preference from localStorage or use smart default
-        document.addEventListener('DOMContentLoaded', () => {
+        function initAutoplay() {
             const savedPref = localStorage.getItem('autoplayPreviews');
             const checkbox = document.getElementById('autoplay-checkbox');
-            
-            // If user has explicitly set a preference, respect it
+
             if (savedPref !== null) {
                 if (savedPref === 'true') {
                     if (checkbox) checkbox.checked = true;
@@ -271,17 +269,22 @@
                 }
                 return;
             }
-            
-            // First visit: check connection quality
+
             if (isSlowConnection()) {
-                // Slow connection: keep off, show hint
-                console.log('Slow connection detected, autoplay disabled by default');
                 return;
             }
-            
-            // Good connection: enable autoplay by default
+
             if (checkbox) checkbox.checked = true;
             toggleAutoplay(true, true);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initAutoplay();
+            window.addEventListener('load', () => {
+                if (allPreviewsPlaying) {
+                    setTimeout(playAllVisibleStreams, 500);
+                }
+            });
         });
 
         function toggleAutoplay(enabled, save = true) {

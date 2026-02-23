@@ -20,6 +20,7 @@ class PrelanderApiController extends Controller
             return CamModel::where('is_online', true)
                 ->whereNotNull('snapshot_url')
                 ->where('snapshot_url', '!=', '')
+                ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
                 ->orderBy('viewers_count', 'desc')
                 ->limit($limit)
                 ->get()
