@@ -92,13 +92,17 @@ window.StreamPreviewManager = (function() {
         updateToggleButtonState(allPreviewsPlaying);
         localStorage.setItem('autoplayPreviews', allPreviewsPlaying);
         
-        // Update checkbox if exists
         const checkbox = document.getElementById('autoplay-checkbox');
         if (checkbox) {
             checkbox.checked = allPreviewsPlaying;
         }
 
         if (allPreviewsPlaying) {
+            failedStreams.clear();
+            document.querySelectorAll('.stream-failed').forEach(el => {
+                el.classList.remove('stream-failed');
+                el.dataset.retryCount = '0';
+            });
             playAllVisibleStreams();
         } else {
             stopAllStreams();
@@ -131,14 +135,25 @@ window.StreamPreviewManager = (function() {
     }
 
     /**
-     * Play all visible streams
+     * Play all visible streams with staggered loading to avoid
+     * overwhelming the browser's connection pool
      */
     function playAllVisibleStreams() {
         const cards = document.querySelectorAll('.model-card[data-stream-url]');
+        let delay = 0;
         cards.forEach(card => {
             const streamUrl = card.dataset.streamUrl;
-            if (streamUrl && isElementInViewport(card)) {
-                startStream(card, streamUrl);
+            if (streamUrl && isElementInViewport(card) && !activeStreams.has(card)) {
+                if (delay === 0) {
+                    startStream(card, streamUrl);
+                } else {
+                    setTimeout(() => {
+                        if (allPreviewsPlaying && isElementInViewport(card)) {
+                            startStream(card, streamUrl);
+                        }
+                    }, delay);
+                }
+                delay += 300;
             }
         });
     }
@@ -161,20 +176,25 @@ window.StreamPreviewManager = (function() {
         const video = card.querySelector('.model-card-video');
         if (!video) return;
 
-        // Loading timeout
+        const retryCount = parseInt(card.dataset.retryCount || '0', 10);
+
         const loadTimeout = setTimeout(() => {
             if (!card.classList.contains('stream-playing')) {
                 handleStreamError(card, streamUrl);
             }
-        }, 8000);
+        }, 15000);
 
         if (typeof Hls !== 'undefined' && Hls.isSupported()) {
             const hls = new Hls({
                 maxBufferLength: 10,
                 maxMaxBufferLength: 20,
-                startLevel: -1, // Auto-select best quality for player size
+                startLevel: -1,
                 capLevelToPlayerSize: true,
-                capLevelOnFPSDrop: true
+                capLevelOnFPSDrop: true,
+                manifestLoadingTimeOut: 12000,
+                manifestLoadingMaxRetry: 2,
+                levelLoadingTimeOut: 12000,
+                fragLoadingTimeOut: 15000
             });
             
             hls.loadSource(streamUrl);
@@ -182,6 +202,7 @@ window.StreamPreviewManager = (function() {
             
             hls.on(Hls.Events.MANIFEST_PARSED, () => {
                 clearTimeout(loadTimeout);
+                card.dataset.retryCount = '0';
                 video.play().catch(() => handleStreamError(card, streamUrl));
                 card.classList.add('stream-playing');
             });
@@ -195,7 +216,6 @@ window.StreamPreviewManager = (function() {
 
             activeStreams.set(card, { hls, timeout: loadTimeout });
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            // Safari native HLS
             video.src = streamUrl;
             video.play().catch(() => handleStreamError(card, streamUrl));
             card.classList.add('stream-playing');
@@ -204,12 +224,23 @@ window.StreamPreviewManager = (function() {
     }
 
     /**
-     * Handle stream error
+     * Handle stream error — retry once before blacklisting
      */
     function handleStreamError(card, streamUrl) {
-        failedStreams.add(streamUrl);
         stopStream(card);
-        card.classList.add('stream-failed');
+
+        const retryCount = parseInt(card.dataset.retryCount || '0', 10);
+        if (retryCount < 1) {
+            card.dataset.retryCount = String(retryCount + 1);
+            setTimeout(() => {
+                if (allPreviewsPlaying && isElementInViewport(card)) {
+                    startStream(card, streamUrl);
+                }
+            }, 2000);
+        } else {
+            failedStreams.add(streamUrl);
+            card.classList.add('stream-failed');
+        }
     }
 
     /**
@@ -246,6 +277,7 @@ window.StreamPreviewManager = (function() {
      */
     function setupHoverEvents() {
         document.addEventListener('mouseenter', (e) => {
+            if (!(e.target instanceof Element)) return;
             const card = e.target.closest('.model-card');
             if (!card || allPreviewsPlaying) return;
             
@@ -256,6 +288,7 @@ window.StreamPreviewManager = (function() {
         }, true);
 
         document.addEventListener('mouseleave', (e) => {
+            if (!(e.target instanceof Element)) return;
             const card = e.target.closest('.model-card');
             if (!card || allPreviewsPlaying) return;
             

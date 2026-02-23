@@ -239,22 +239,15 @@
         let autoplayEnabled = false;
         let hoverTimeout = null;
         const activeStreams = new Map();
+        const failedStreams = new Set();
 
-        // Check if user has slow connection
         function isSlowConnection() {
             const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
             if (!connection) return false;
-            
-            // Check for save-data mode
             if (connection.saveData) return true;
-            
-            // Check effective connection type
             const slowTypes = ['slow-2g', '2g', '3g'];
             if (slowTypes.includes(connection.effectiveType)) return true;
-            
-            // Check downlink speed (Mbps) - less than 1.5 Mbps is slow for video
             if (connection.downlink && connection.downlink < 1.5) return true;
-            
             return false;
         }
 
@@ -270,9 +263,7 @@
                 return;
             }
 
-            if (isSlowConnection()) {
-                return;
-            }
+            if (isSlowConnection()) return;
 
             if (checkbox) checkbox.checked = true;
             toggleAutoplay(true, true);
@@ -287,38 +278,36 @@
             });
         });
 
-        function toggleAutoplay(enabled, save = true) {
-            autoplayEnabled = enabled;
-            
-            if (save) {
-                localStorage.setItem('autoplayPreviews', enabled);
-            }
-
-            // Sync with the Play All button state
+        function updateToggleUI(playing) {
             const toggle = document.getElementById('preview-toggle');
             const label = document.getElementById('preview-label');
-            
+            if (!toggle || !label) return;
+            const offIcon = toggle.querySelector('.preview-off');
+            const onIcon = toggle.querySelector('.preview-on');
+            if (playing) {
+                label.textContent = @json(__('Stop All'));
+                if (offIcon) offIcon.style.display = 'none';
+                if (onIcon) onIcon.style.display = 'block';
+                toggle.classList.add('active');
+            } else {
+                label.textContent = @json(__('Play All'));
+                if (offIcon) offIcon.style.display = 'block';
+                if (onIcon) onIcon.style.display = 'none';
+                toggle.classList.remove('active');
+            }
+        }
+
+        function toggleAutoplay(enabled, save = true) {
+            autoplayEnabled = enabled;
+            if (save) localStorage.setItem('autoplayPreviews', enabled);
+
             if (enabled) {
                 allPreviewsPlaying = true;
-                if (toggle) {
-                    const offIcon = toggle.querySelector('.preview-off');
-                    const onIcon = toggle.querySelector('.preview-on');
-                    label.textContent = @json(__('Stop All'));
-                    offIcon.style.display = 'none';
-                    onIcon.style.display = 'block';
-                    toggle.classList.add('active');
-                }
+                updateToggleUI(true);
                 playAllVisibleStreams();
             } else {
                 allPreviewsPlaying = false;
-                if (toggle) {
-                    const offIcon = toggle.querySelector('.preview-off');
-                    const onIcon = toggle.querySelector('.preview-on');
-                    label.textContent = @json(__('Play All'));
-                    offIcon.style.display = 'block';
-                    onIcon.style.display = 'none';
-                    toggle.classList.remove('active');
-                }
+                updateToggleUI(false);
                 stopAllStreams();
             }
         }
@@ -326,62 +315,56 @@
         function toggleAllPreviews() {
             allPreviewsPlaying = !allPreviewsPlaying;
             autoplayEnabled = allPreviewsPlaying;
-            
-            // Sync checkbox
-            const checkbox = document.getElementById('autoplay-checkbox');
-            if (checkbox) {
-                checkbox.checked = allPreviewsPlaying;
-            }
-            localStorage.setItem('autoplayPreviews', allPreviewsPlaying);
 
-            const toggle = document.getElementById('preview-toggle');
-            const label = document.getElementById('preview-label');
-            const offIcon = toggle.querySelector('.preview-off');
-            const onIcon = toggle.querySelector('.preview-on');
+            const checkbox = document.getElementById('autoplay-checkbox');
+            if (checkbox) checkbox.checked = allPreviewsPlaying;
+            localStorage.setItem('autoplayPreviews', allPreviewsPlaying);
+            updateToggleUI(allPreviewsPlaying);
 
             if (allPreviewsPlaying) {
-                label.textContent = @json(__('Stop All'));
-                offIcon.style.display = 'none';
-                onIcon.style.display = 'block';
-                toggle.classList.add('active');
+                failedStreams.clear();
+                document.querySelectorAll('.stream-failed').forEach(el => {
+                    el.classList.remove('stream-failed');
+                    el.dataset.retryCount = '0';
+                });
                 playAllVisibleStreams();
             } else {
-                label.textContent = @json(__('Play All'));
-                offIcon.style.display = 'block';
-                onIcon.style.display = 'none';
-                toggle.classList.remove('active');
                 stopAllStreams();
             }
         }
 
         function playAllVisibleStreams() {
             const cards = document.querySelectorAll('.model-card[data-stream-url]');
+            let delay = 0;
             cards.forEach(card => {
                 const streamUrl = card.dataset.streamUrl;
-                if (streamUrl && isElementInViewport(card)) {
-                    startStream(card, streamUrl);
+                if (streamUrl && isElementInViewport(card) && !activeStreams.has(card)) {
+                    if (delay === 0) {
+                        startStream(card, streamUrl);
+                    } else {
+                        setTimeout(() => {
+                            if (allPreviewsPlaying && isElementInViewport(card)) {
+                                startStream(card, streamUrl);
+                            }
+                        }, delay);
+                    }
+                    delay += 300;
                 }
             });
         }
 
         function stopAllStreams() {
-            activeStreams.forEach((hls, card) => {
+            activeStreams.forEach((data, card) => {
                 stopStream(card);
             });
         }
 
-        // Track streams that failed to load (don't retry them)
-        const failedStreams = new Set();
-
         function startStream(card, streamUrl) {
-            if (!streamUrl || activeStreams.has(card)) return;
-            
-            if (failedStreams.has(streamUrl)) return;
+            if (!streamUrl || activeStreams.has(card) || failedStreams.has(streamUrl)) return;
 
             const video = card.querySelector('.model-card-video');
             if (!video) return;
 
-            // Only swap thumbnail for video once actual frames are rendering
             video.addEventListener('playing', () => {
                 card.classList.add('stream-playing');
             }, { once: true });
@@ -390,7 +373,7 @@
                 if (!card.classList.contains('stream-playing')) {
                     handleStreamError(card, streamUrl);
                 }
-            }, 8000);
+            }, 15000);
 
             if (Hls.isSupported()) {
                 const hls = new Hls({
@@ -398,15 +381,18 @@
                     maxMaxBufferLength: 20,
                     startLevel: 0,
                     capLevelToPlayerSize: true,
-                    manifestLoadingTimeOut: 6000,
-                    levelLoadingTimeOut: 6000
+                    manifestLoadingTimeOut: 12000,
+                    manifestLoadingMaxRetry: 2,
+                    levelLoadingTimeOut: 12000,
+                    fragLoadingTimeOut: 15000
                 });
-                
+
                 hls.loadSource(streamUrl);
                 hls.attachMedia(video);
-                
+
                 hls.on(Hls.Events.MANIFEST_PARSED, () => {
                     clearTimeout(loadTimeout);
+                    card.dataset.retryCount = '0';
                     video.play().catch(() => handleStreamError(card, streamUrl));
                 });
 
@@ -433,34 +419,33 @@
         }
 
         function handleStreamError(card, streamUrl) {
-            // Mark this stream as failed so we don't retry it
-            failedStreams.add(streamUrl);
-            
-            // Stop the stream and show the thumbnail
             stopStream(card);
-            
-            // Mark card as having failed stream (optional: for styling)
-            card.classList.add('stream-failed');
+            const retryCount = parseInt(card.dataset.retryCount || '0', 10);
+            if (retryCount < 1) {
+                card.dataset.retryCount = String(retryCount + 1);
+                setTimeout(() => {
+                    if (allPreviewsPlaying && isElementInViewport(card)) {
+                        startStream(card, streamUrl);
+                    }
+                }, 2000);
+            } else {
+                failedStreams.add(streamUrl);
+                card.classList.add('stream-failed');
+            }
         }
 
         function stopStream(card) {
             const streamData = activeStreams.get(card);
             if (streamData) {
-                if (streamData.hls) {
-                    streamData.hls.destroy();
-                }
-                if (streamData.timeout) {
-                    clearTimeout(streamData.timeout);
-                }
+                if (streamData.hls) streamData.hls.destroy();
+                if (streamData.timeout) clearTimeout(streamData.timeout);
             }
-            
             const video = card.querySelector('.model-card-video');
             if (video) {
                 video.pause();
                 video.src = '';
-                video.load(); // Reset video element
+                video.load();
             }
-            
             card.classList.remove('stream-playing');
             activeStreams.delete(card);
         }
@@ -475,51 +460,32 @@
             );
         }
 
-        // Hover preview
         document.addEventListener('mouseenter', (e) => {
+            if (!(e.target instanceof Element)) return;
             const card = e.target.closest('.model-card');
             if (!card || allPreviewsPlaying) return;
-
-            // Already playing (from Play All or prior hover) — do nothing
             if (activeStreams.has(card)) return;
-
             const streamUrl = card.dataset.streamUrl;
             if (!streamUrl) return;
-
-            hoverTimeout = setTimeout(() => {
-                startStream(card, streamUrl);
-            }, 500);
+            hoverTimeout = setTimeout(() => startStream(card, streamUrl), 500);
         }, true);
 
         document.addEventListener('mouseleave', (e) => {
+            if (!(e.target instanceof Element)) return;
             const card = e.target.closest('.model-card');
             if (!card || allPreviewsPlaying) return;
-
-            if (hoverTimeout) {
-                clearTimeout(hoverTimeout);
-                hoverTimeout = null;
-            }
-
-            // Only stop streams that were started by this hover, not by Play All
-            if (!autoplayEnabled) {
-                stopStream(card);
-            }
+            if (hoverTimeout) { clearTimeout(hoverTimeout); hoverTimeout = null; }
+            if (!autoplayEnabled) stopStream(card);
         }, true);
 
-        // Handle scroll when playing all
         let scrollTimeout;
         window.addEventListener('scroll', () => {
             if (!allPreviewsPlaying) return;
-            
             clearTimeout(scrollTimeout);
             scrollTimeout = setTimeout(() => {
-                // Stop streams not in viewport
-                activeStreams.forEach((hls, card) => {
-                    if (!isElementInViewport(card)) {
-                        stopStream(card);
-                    }
+                activeStreams.forEach((data, card) => {
+                    if (!isElementInViewport(card)) stopStream(card);
                 });
-                // Start streams in viewport
                 playAllVisibleStreams();
             }, 200);
         });

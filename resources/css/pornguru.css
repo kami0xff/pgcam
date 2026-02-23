@@ -5586,6 +5586,25 @@ input[type="checkbox"] {
   margin-bottom: 0;
 }
 
+/* Section headings in SEO content */
+.seo-text-content h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 1.5rem 0 0.5rem;
+}
+
+.seo-text-content h3:first-child {
+  margin-top: 0;
+}
+
+@media (min-width: 640px) {
+  .seo-text-content h3 {
+    font-size: 1.125rem;
+    margin: 2rem 0 0.75rem;
+  }
+}
+
 /* Highlighted keywords in text */
 .seo-text-content strong,
 .seo-text-content b {

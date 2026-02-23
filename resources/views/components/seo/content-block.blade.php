@@ -17,7 +17,11 @@
     @endif
     
     <div class="seo-text-content">
-        {!! nl2br(e($seoContent->content)) !!}
+        @if(preg_match('/<[a-z][\s\S]*>/i', $seoContent->content))
+            {!! $seoContent->content !!}
+        @else
+            {!! nl2br(e($seoContent->content)) !!}
+        @endif
     </div>
     
     @if($seoContent->keywords_array)
