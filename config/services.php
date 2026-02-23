@@ -69,6 +69,10 @@ return [
             // Chat room: track?c={id}&csurl=https://bongacams.com/{username}
             // Profile:   track?c={id}&csurl=https://bongacams.com/profile/{username}
         ],
+        'chaturbate' => [
+            'base_url' => env('CHATURBATE_BASE_URL', 'https://chaturbate.com'),
+            'campaign_slug' => env('CHATURBATE_CAMPAIGN_SLUG', ''),
+        ],
     ],
 
 ];

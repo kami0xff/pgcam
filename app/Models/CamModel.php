@@ -268,6 +268,10 @@ class CamModel extends Model
             return $this->getBongacamsUrl($this->username);
         }
 
+        if ($this->source_platform === 'chaturbate') {
+            return $this->getChaturbateUrl($this->username);
+        }
+
         if (!empty($this->profile_url)) {
             return $this->profile_url;
         }
@@ -330,6 +334,21 @@ class CamModel extends Model
     public function getBongacamsProfileUrlAttribute(): string
     {
         return $this->getBongacamsUrl('profile/' . $this->username);
+    }
+
+    /**
+     * Build a Chaturbate affiliate URL for a given username.
+     */
+    protected function getChaturbateUrl(string $username): string
+    {
+        $baseUrl = config('services.affiliates.chaturbate.base_url', 'https://chaturbate.com');
+        $slug = config('services.affiliates.chaturbate.campaign_slug', '');
+
+        $url = rtrim($baseUrl, '/') . '/' . $username . '/';
+        if ($slug) {
+            $url .= '?campaign=' . $slug;
+        }
+        return $url;
     }
 
     /**

@@ -173,6 +173,7 @@ class TagController extends Controller
         }
 
         $query->orderBy('is_online', 'desc')
+              ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
               ->orderBy('viewers_count', 'desc');
 
         $models = $query->paginate(48)->withQueryString();
@@ -205,6 +206,7 @@ class TagController extends Controller
         }
 
         $query->orderBy('is_online', 'desc')
+              ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
               ->orderBy('viewers_count', 'desc');
 
         $models = $query->paginate(48)->withQueryString();
@@ -252,6 +254,7 @@ class TagController extends Controller
         }
 
         $query->orderBy('is_online', 'desc')
+              ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
               ->orderBy('viewers_count', 'desc');
 
         $models = $query->paginate(48)->withQueryString();

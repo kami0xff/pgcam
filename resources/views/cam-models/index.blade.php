@@ -373,13 +373,16 @@
         function startStream(card, streamUrl) {
             if (!streamUrl || activeStreams.has(card)) return;
             
-            // Don't retry streams that already failed
             if (failedStreams.has(streamUrl)) return;
 
             const video = card.querySelector('.model-card-video');
             if (!video) return;
 
-            // Set a timeout - if stream doesn't start within 8 seconds, show fallback
+            // Only swap thumbnail for video once actual frames are rendering
+            video.addEventListener('playing', () => {
+                card.classList.add('stream-playing');
+            }, { once: true });
+
             const loadTimeout = setTimeout(() => {
                 if (!card.classList.contains('stream-playing')) {
                     handleStreamError(card, streamUrl);
@@ -402,7 +405,6 @@
                 hls.on(Hls.Events.MANIFEST_PARSED, () => {
                     clearTimeout(loadTimeout);
                     video.play().catch(() => handleStreamError(card, streamUrl));
-                    card.classList.add('stream-playing');
                 });
 
                 hls.on(Hls.Events.ERROR, (event, data) => {
@@ -423,7 +425,6 @@
                     clearTimeout(loadTimeout);
                     handleStreamError(card, streamUrl);
                 });
-                card.classList.add('stream-playing');
                 activeStreams.set(card, { hls: null, timeout: loadTimeout });
             }
         }
@@ -476,6 +477,9 @@
             const card = e.target.closest('.model-card');
             if (!card || allPreviewsPlaying) return;
 
+            // Already playing (from Play All or prior hover) — do nothing
+            if (activeStreams.has(card)) return;
+
             const streamUrl = card.dataset.streamUrl;
             if (!streamUrl) return;
 
@@ -492,7 +496,11 @@
                 clearTimeout(hoverTimeout);
                 hoverTimeout = null;
             }
-            stopStream(card);
+
+            // Only stop streams that were started by this hover, not by Play All
+            if (!autoplayEnabled) {
+                stopStream(card);
+            }
         }, true);
 
         // Handle scroll when playing all

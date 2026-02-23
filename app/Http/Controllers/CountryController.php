@@ -22,14 +22,21 @@ class CountryController extends Controller
      */
     public function index(Request $request)
     {
-        // Try database first
-        $countries = Country::withModels()
-            ->orderBy('models_count', 'desc')
+        $countries = Country::orderBy('models_count', 'desc')
+            ->orderBy('name', 'asc')
             ->get();
 
-        // If database is empty, get countries directly from CamModel
+        // If local DB has no countries at all, pull directly from cam DB
         if ($countries->isEmpty()) {
             $countries = $this->getCountriesFromCamModels();
+        }
+
+        // If counts are stale (all zero), refresh them from the cam DB
+        if ($countries->isNotEmpty() && $countries->every(fn ($c) => ($c->models_count ?? 0) === 0)) {
+            $liveCounts = $this->getCountriesFromCamModels();
+            if ($liveCounts->isNotEmpty()) {
+                $countries = $liveCounts;
+            }
         }
 
         return view('countries.index', [
@@ -59,16 +66,18 @@ class CountryController extends Controller
                 ->get();
 
             return $countryData->map(function ($item) {
+                $slug = \Illuminate\Support\Str::slug($item->country);
                 return (object) [
                     'name' => $item->country,
-                    'slug' => \Illuminate\Support\Str::slug($item->country),
+                    'slug' => $slug,
                     'code' => $this->getCountryCode($item->country),
                     'models_count' => $item->models_count,
                     'localized_name' => $item->country,
-                    'url' => route('countries.show', \Illuminate\Support\Str::slug($item->country)),
+                    'url' => localized_route('countries.show', $slug),
                 ];
             });
         } catch (\Exception $e) {
+            \Log::warning('Countries fallback failed: ' . $e->getMessage());
             return collect();
         }
     }
@@ -132,6 +141,7 @@ class CountryController extends Controller
         }
 
         $query->orderBy('is_online', 'desc')
+              ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
               ->orderBy('viewers_count', 'desc');
 
         $models = $query->paginate(48)->withQueryString();

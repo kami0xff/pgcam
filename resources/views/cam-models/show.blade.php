@@ -962,52 +962,6 @@
     })();
 </script>
 
-{{-- Stripchat Interstitial for offline models --}}
-@if(!$model->is_online && $model->source_platform === 'stripchat')
-<script>
-!function(){
-    const e = {
-        url: @json($model->affiliate_url),
-        decryptUrl: false,
-        contentUrl: @json($model->affiliate_url),
-        decryptContentUrl: false,
-        contentType: "iframe",
-        width: "85%",
-        height: "91%",
-        timeout: 15000,
-        delayClose: 2500,
-        clickStart: false,
-        closeIntent: true,
-        borderColor: "#000",
-        closeButtonColor: "#000",
-        closeCrossColor: "#fff",
-        shadow: true,
-        shadowColor: "#000",
-        shadowOpacity: ".5",
-        shadeColor: "#111",
-        shadeOpacity: ".5",
-        border: "1px",
-        borderRadius: "8px",
-        leadOut: true,
-        animation: "fade",
-        direction: "up",
-        verticalPosition: "center",
-        horizontalPosition: "center",
-        expireDays: 1
-    };
-    // Load the popin script and initialize
-    const s = document.createElement('script');
-    s.src = 'https://creative.mavrtracktor.com/js/popin.js';
-    s.onload = function() {
-        if (window.popinMin) {
-            window.popinMin(e);
-        }
-    };
-    document.head.appendChild(s);
-}();
-</script>
-@endif
-
 {{-- GA4: Track model page view --}}
 @if(config('services.google.analytics_id'))
 <script>

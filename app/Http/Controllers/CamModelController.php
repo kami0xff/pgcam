@@ -19,24 +19,24 @@ class CamModelController extends Controller
     /**
      * Apply common filters to query
      */
+    /**
+     * Apply filters and sorting to the query.
+     * Chaturbate models (no HLS preview) are always pushed to the bottom.
+     */
     private function applyFilters(Request $request, $query)
     {
-        // Filter: Online only
         if ($request->boolean('online')) {
             $query->online();
         }
 
-        // Filter: Platform (stripchat, xlovecam)
         if ($request->filled('platform')) {
             $query->platform($request->input('platform'));
         }
 
-        // Filter: Gender
         if ($request->filled('gender')) {
             $query->gender($request->input('gender'));
         }
 
-        // Filter: Age range
         if ($request->filled('age_min')) {
             $query->where('age', '>=', (int) $request->input('age_min'));
         }
@@ -44,17 +44,14 @@ class CamModelController extends Controller
             $query->where('age', '<=', (int) $request->input('age_max'));
         }
 
-        // Filter: HD only
         if ($request->boolean('hd')) {
             $query->hdOnly();
         }
 
-        // Filter: Search by username
         if ($request->filled('search')) {
             $query->where('username', 'ilike', '%' . $request->input('search') . '%');
         }
 
-        // Filter: Tags (array of tag slugs)
         if ($request->filled('tags')) {
             $tags = is_array($request->input('tags'))
                 ? $request->input('tags')
@@ -62,12 +59,10 @@ class CamModelController extends Controller
             $query->withTags($tags);
         }
 
-        // Filter: Niche (girls, couples, men, trans) with optional tag
         if ($request->filled('niche')) {
             $niche = $request->input('niche');
             if (in_array($niche, ['girls', 'couples', 'men', 'trans'])) {
                 if ($request->filled('niche_tag')) {
-                    // withNicheTag already applies inNiche internally
                     $query->withNicheTag($niche, $request->input('niche_tag'));
                 } else {
                     $query->inNiche($niche);
@@ -75,7 +70,6 @@ class CamModelController extends Controller
             }
         }
 
-        // Filter: Country slug
         if ($request->filled('country')) {
             $countrySlug = $request->input('country');
             $country = \App\Models\Country::where('slug', $countrySlug)->first();
@@ -89,16 +83,14 @@ class CamModelController extends Controller
             }
         }
 
-        // Sorting
+        // Sorting: HLS-capable platforms first, then chaturbate at the bottom
         $sortField = $request->input('sort', 'viewers_count');
         $sortDirection = $request->input('direction', 'desc');
 
-        // Always prioritize online models
+        $query->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC");
         $query->orderBy('is_online', 'desc');
 
-        // Special handling for goal_progress - sort by closest to 100%
         if ($sortField === 'goal_progress') {
-            // Only show models with active goals, sorted by closest to completion
             $query->whereNotNull('goal_progress')
                 ->where('goal_progress', '>', 0)
                 ->where('goal_progress', '<', 100)
@@ -178,6 +170,7 @@ class CamModelController extends Controller
                             ->orWhere('username', 'ilike', '%' . $tag . '%');
                     }
                 })
+                ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
                 ->orderBy('viewers_count', 'desc')
                 ->limit($section->max_models)
                 ->get();
@@ -250,6 +243,7 @@ class CamModelController extends Controller
                 $q->where('gender', $model->gender);
             })
             ->orderBy('is_online', 'desc')
+            ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
             ->orderBy('viewers_count', 'desc')
             ->limit(12)
             ->get();

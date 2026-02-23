@@ -38,6 +38,11 @@
             @if($model->is_new ?? false)
                 <div class="model-card-new-badge">{{ __('NEW') }}</div>
             @endif
+
+            {{-- Platform Badge (for non-HLS platforms) --}}
+            @if($model->source_platform === 'chaturbate')
+                <div class="chaturbate-badge">CB</div>
+            @endif
             
             {{-- Rating --}}
             @if($model->rating)
