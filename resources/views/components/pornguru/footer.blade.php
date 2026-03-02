@@ -29,7 +29,7 @@
                 <ul class="footer-links">
                     <li><a href="{{ localized_route('tags.index') }}">{{ __('Tags') }}</a></li>
                     <li><a href="{{ localized_route('countries.index') }}">{{ __('Countries') }}</a></li>
-                    <li><a href="https://pornguru.com">{{ __('Best Porn Sites') }}</a></li>
+                    <li><a href="https://thepornlinks.com/" title="Best Porn Sites" target="_blank">{{ __('Best Porn Sites') }}</a></li>
                 </ul>
             </div>
 
