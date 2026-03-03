@@ -20,7 +20,7 @@ class DebugTags extends Command
             // Get a few models with tags
             $models = CamModel::on('cam')
                 ->whereNotNull('tags')
-                ->whereJsonLength('tags', '>', '0')s
+                ->whereJsonLength('tags', '>', '0')
                 ->limit((int) $this->option('limit'))
                 ->get(['username', 'gender', 'tags']);
 
