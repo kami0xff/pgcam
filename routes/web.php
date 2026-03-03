@@ -123,9 +123,9 @@ Route::prefix('{locale}')
         Route::get('/explore', [CamModelController::class, 'explore'])->name('explore.localized');
 
         // Redirects for broken URL patterns
-        Route::get('/country', fn(string $locale) => redirect("/{$locale}/countries", 301));
-        Route::get('/guys/{tagSlug?}', fn(string $locale, ?string $tagSlug = null) =>
-            redirect($tagSlug ? "/{$locale}/men/{$tagSlug}" : "/{$locale}/men", 301));
+        Route::get('/country', fn() => redirect('/' . app()->getLocale() . '/countries', 301));
+        Route::get('/guys/{tagSlug?}', fn(?string $tagSlug = null) =>
+            redirect($tagSlug ? '/' . app()->getLocale() . "/men/{$tagSlug}" : '/' . app()->getLocale() . '/men', 301));
     });
 
 // ==============================================
