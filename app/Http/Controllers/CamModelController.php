@@ -350,6 +350,66 @@ class CamModelController extends Controller
     }
 
     /**
+     * Full-screen TikTok-style explore feed (mobile-first).
+     */
+    public function explore()
+    {
+        $models = CamModel::where('is_online', true)
+            ->whereNotNull('best_stream_url')
+            ->where('best_stream_url', '!=', '')
+            ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
+            ->orderBy('viewers_count', 'desc')
+            ->limit(10)
+            ->get();
+
+        return view('cam-models.explore', [
+            'models' => $models,
+        ]);
+    }
+
+    /**
+     * API endpoint for explore feed — returns next batch of models as JSON.
+     */
+    public function exploreApi(Request $request)
+    {
+        $offset = (int) $request->input('offset', 0);
+        $limit = min((int) $request->input('limit', 6), 20);
+        $exclude = $request->input('exclude', []);
+
+        $query = CamModel::where('is_online', true)
+            ->whereNotNull('best_stream_url')
+            ->where('best_stream_url', '!=', '')
+            ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
+            ->orderBy('viewers_count', 'desc');
+
+        if (!empty($exclude)) {
+            $query->whereNotIn('id', array_slice((array) $exclude, 0, 200));
+        }
+
+        $models = $query->offset($offset)->limit($limit)->get();
+
+        return response()->json([
+            'models' => $models->map(fn (CamModel $m) => [
+                'id' => $m->id,
+                'username' => $m->username,
+                'age' => $m->age,
+                'country' => $m->country,
+                'viewers_count' => $m->viewers_count,
+                'stream_url' => $m->best_stream_url,
+                'image_url' => $m->best_image_url,
+                'affiliate_url' => $m->affiliate_url,
+                'platform' => $m->source_platform,
+                'url' => $m->url,
+                'flag' => $m->country ? country_flag($m->country) : null,
+                'stream_title' => $m->stream_title,
+                'is_hd' => $m->is_hd,
+                'rating' => $m->rating,
+            ]),
+            'hasMore' => $models->count() === $limit,
+        ]);
+    }
+
+    /**
      * Build hreflang URLs for a model page across all priority locales.
      * Model usernames are not translated, only the URL prefix changes.
      */

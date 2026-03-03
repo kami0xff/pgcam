@@ -41,10 +41,14 @@ Route::middleware('detect.locale')->group(function () {
     // Country pages
     Route::get('/countries', [CountryController::class, 'index'])->name('countries.index');
     Route::get('/country/{slug}', [CountryController::class, 'show'])->name('countries.show');
+
+    // Explore (TikTok-style swipe feed)
+    Route::get('/explore', [CamModelController::class, 'explore'])->name('explore');
 });
 
 // API endpoint (no locale detection needed)
 Route::get('/api/models', [CamModelController::class, 'loadMore'])->name('api.models.load');
+Route::get('/api/explore', [CamModelController::class, 'exploreApi'])->name('api.explore');
 
 // Sitemap Index
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
@@ -114,6 +118,9 @@ Route::prefix('{locale}')
         // Localized country pages
         Route::get('/countries', [CountryController::class, 'index'])->name('countries.index.localized');
         Route::get('/country/{slug}', [CountryController::class, 'show'])->name('countries.show.localized');
+
+        // Localized explore
+        Route::get('/explore', [CamModelController::class, 'explore'])->name('explore.localized');
 
         // Redirects for broken URL patterns
         Route::get('/country', fn(string $locale) => redirect("/{$locale}/countries", 301));

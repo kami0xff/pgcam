@@ -24,7 +24,6 @@ function initInfiniteScroll() {
     let hasMore = config.hasMore;
     let isLoading = false;
 
-    // Create Intersection Observer
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting && hasMore && !isLoading) {
@@ -32,21 +31,22 @@ function initInfiniteScroll() {
             }
         });
     }, {
-        rootMargin: '200px', // Start loading before user reaches the end
+        rootMargin: '400px',
         threshold: 0
     });
 
-    // Observe the trigger element
     observer.observe(trigger);
 
     async function loadMoreModels() {
         if (isLoading || !hasMore) return;
         
         isLoading = true;
-        if (loader) loader.style.display = 'flex';
+        if (loader) {
+            loader.style.display = 'flex';
+            loader.innerHTML = '<div class="loader-spinner"></div><span>Loading more models...</span>';
+        }
 
         try {
-            // Build URL with filters
             const params = new URLSearchParams(config.filters);
             params.set('page', currentPage + 1);
             
@@ -61,27 +61,30 @@ function initInfiniteScroll() {
 
             const data = await response.json();
 
-            // Append new models to grid
             if (data.html) {
                 grid.insertAdjacentHTML('beforeend', data.html);
             }
 
-            // Update state
             currentPage = data.nextPage - 1;
             hasMore = data.hasMore;
 
-            // Hide loader if no more pages
-            if (!hasMore && loader) {
-                loader.style.display = 'none';
-            }
-
         } catch (error) {
             console.error('Error loading models:', error);
+            hasMore = false;
             if (loader) {
                 loader.innerHTML = '<span class="loader-error">Failed to load. <button onclick="location.reload()">Retry</button></span>';
+                return;
             }
         } finally {
             isLoading = false;
+            if (loader) loader.style.display = 'none';
+
+            if (hasMore) {
+                observer.unobserve(trigger);
+                observer.observe(trigger);
+            } else {
+                observer.disconnect();
+            }
         }
     }
 }
