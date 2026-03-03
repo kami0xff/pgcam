@@ -454,6 +454,8 @@ class CamModelController extends Controller
                 'tags' => array_slice($m->tags ?? [], 0, 8),
                 'description' => $m->description ? \Illuminate\Support\Str::limit($m->description, 200) : null,
                 'languages' => $m->languages,
+                'goal_message' => $m->goal_message,
+                'goal_progress' => $m->goal_progress,
             ]),
             'hasMore' => $models->count() === $limit,
         ]);
