@@ -46,13 +46,13 @@
     @endphp
     </script>
     <style>
-        .page-wrapper:has(.xpl) { overflow: hidden; height: 100dvh; }
+        .page-wrapper:has(.xpl) { overflow: hidden; height: 100svh; }
         .site-header, .niche-bar { position: relative; z-index: 100; }
         .site-footer { display: none; }
 
         .xpl {
             display: flex;
-            height: calc(100dvh - 110px);
+            height: calc(100svh - 110px);
             background: var(--bg-primary);
             overflow: hidden;
         }
@@ -456,7 +456,7 @@
 
         /* ── Mobile ── */
         @media (max-width: 991px) {
-            .xpl { flex-direction: column; height: calc(100dvh - 50px); }
+            .xpl { flex-direction: column; height: calc(100svh - 50px); }
             .xpl-center { padding: 0; }
             .xpl-phone {
                 max-width: 100%; max-height: 100%;
@@ -464,7 +464,7 @@
             }
             .xpl-panel {
                 position: fixed; bottom: 0; left: 0; right: 0;
-                width: 100%; height: 70vh;
+                width: 100%; height: 70svh;
                 border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
                 border-left: none;
                 border-top: 1px solid var(--border);
@@ -475,13 +475,25 @@
             .xpl-panel.open { transform: translateY(0); }
             .xpl-panel-handle {
                 display: flex; justify-content: center;
-                padding: 10px 0 4px;
+                padding: 12px 0 6px;
+                cursor: grab;
             }
             .xpl-panel-handle span {
                 width: 36px; height: 4px;
-                background: rgba(255,255,255,.2);
+                background: rgba(255,255,255,.25);
                 border-radius: 2px;
             }
+            .xpl-panel-close {
+                position: absolute; top: 10px; right: 16px;
+                width: 32px; height: 32px;
+                border-radius: 50%;
+                background: rgba(255,255,255,.08);
+                border: none; color: var(--text-secondary);
+                font-size: 18px; cursor: pointer;
+                display: flex; align-items: center; justify-content: center;
+                z-index: 2;
+            }
+            .xpl-panel-close:hover { background: rgba(255,255,255,.15); color: var(--text-primary); }
             .xpl-overlay {
                 position: fixed; inset: 0;
                 background: rgba(0,0,0,.5);
@@ -493,6 +505,7 @@
         }
         @media (min-width: 992px) {
             .xpl-panel-handle { display: none; }
+            .xpl-panel-close { display: none !important; }
             .xpl-overlay { display: none; }
         }
     </style>
@@ -620,7 +633,8 @@
 
     <div class="xpl-overlay" id="xpl-overlay"></div>
     <aside class="xpl-panel" id="xpl-panel">
-        <div class="xpl-panel-handle"><span></span></div>
+        <div class="xpl-panel-handle" id="xpl-panel-handle"><span></span></div>
+        <button class="xpl-panel-close" id="xpl-panel-close" aria-label="Close">&times;</button>
         <div class="xpl-panel-scroll" id="xpl-panel-body">
             <div style="text-align:center; color:var(--text-muted); padding:60px 20px;">{{ __('Select a model to see details') }}</div>
         </div>
@@ -697,6 +711,17 @@
         overlay.classList.toggle('active', show);
     }
     overlay.addEventListener('click', () => togglePanel(false));
+    document.getElementById('xpl-panel-close').addEventListener('click', () => togglePanel(false));
+    document.getElementById('xpl-panel-handle').addEventListener('click', () => togglePanel(false));
+
+    // Swipe-down on panel handle to close
+    let panelTouchY = 0;
+    const panelHandle = document.getElementById('xpl-panel-handle');
+    panelHandle.addEventListener('touchstart', e => { panelTouchY = e.touches[0].clientY; }, { passive: true });
+    panelHandle.addEventListener('touchend', e => {
+        const dy = e.changedTouches[0].clientY - panelTouchY;
+        if (dy > 50) togglePanel(false);
+    }, { passive: true });
 
     function populatePanel(index) {
         const slide = slides[index];
@@ -999,10 +1024,12 @@
     const _esc = document.createElement('div');
     function esc(s) { _esc.textContent = s || ''; return _esc.innerHTML; }
 
-    let tx0 = 0;
-    feed.addEventListener('touchstart', e => { tx0 = e.changedTouches[0].screenX; }, { passive: true });
+    // Swipe-up on feed to open panel on mobile
+    let feedTouchY = 0;
+    feed.addEventListener('touchstart', e => { feedTouchY = e.touches[0].clientY; }, { passive: true });
     feed.addEventListener('touchend', e => {
-        if (tx0 - e.changedTouches[0].screenX > 70 && window.innerWidth < 992) togglePanel(true);
+        const dy = feedTouchY - e.changedTouches[0].clientY;
+        if (dy > 100 && window.innerWidth < 992) togglePanel(true);
     }, { passive: true });
 
     let scrollTimer;
