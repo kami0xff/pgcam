@@ -53,26 +53,28 @@
         .xpl {
             display: flex;
             height: calc(100dvh - 110px);
-            background: #000;
+            background: var(--bg-primary);
             overflow: hidden;
         }
+
+        /* ── Video column ── */
         .xpl-center {
             flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 12px;
+            padding: 16px;
+            min-width: 0;
         }
         .xpl-phone {
             width: 100%;
-            max-width: 400px;
+            max-width: 480px;
             height: 100%;
-            max-height: 800px;
-            border-radius: 24px;
+            border-radius: var(--radius-2xl);
             overflow: hidden;
             position: relative;
             background: #111;
-            box-shadow: 0 0 60px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06);
+            box-shadow: 0 0 80px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.05);
         }
         .xpl-feed {
             height: 100%;
@@ -111,8 +113,8 @@
         }
         .xpl-spinner {
             width: 36px; height: 36px;
-            border: 3px solid rgba(255,255,255,.2);
-            border-top-color: #fff;
+            border: 3px solid rgba(255,255,255,.15);
+            border-top-color: var(--accent);
             border-radius: 50%;
             animation: xpl-spin .8s linear infinite;
         }
@@ -123,22 +125,22 @@
         .xpl-slide::after {
             content: '';
             position: absolute; inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.3) 25%, transparent 55%);
+            background: linear-gradient(to top, rgba(0,0,0,.8) 0%, rgba(0,0,0,.25) 22%, transparent 50%);
             z-index: 4;
             pointer-events: none;
         }
 
         /* ── Bottom info ── */
         .xpl-info {
-            position: absolute; bottom: 16px; left: 16px; right: 70px;
-            z-index: 10; color: #fff;
+            position: absolute; bottom: 16px; left: 16px; right: 68px;
+            z-index: 10; color: var(--text-primary);
         }
         .xpl-name {
             font-size: 18px; font-weight: 700;
             margin-bottom: 4px;
             text-shadow: 0 1px 4px rgba(0,0,0,.6);
         }
-        .xpl-name a { color: #fff; text-decoration: none; }
+        .xpl-name a { color: var(--text-primary); text-decoration: none; }
         .xpl-title {
             font-size: 13px; opacity: .85;
             line-height: 1.4;
@@ -147,75 +149,88 @@
             text-shadow: 0 1px 3px rgba(0,0,0,.5);
             margin-bottom: 8px;
         }
-        .xpl-goal {
-            background: rgba(255,255,255,.12);
-            backdrop-filter: blur(6px);
-            border-radius: 20px;
-            padding: 6px 12px;
-            font-size: 12px; font-weight: 600;
-            display: flex; align-items: center; gap: 8px;
-            max-width: 280px;
+
+        /* Goal bar in video overlay — matches model page design */
+        .xpl-goal-inline {
+            position: relative;
+            width: 100%;
+            height: 36px;
+            background: #2C2C2C;
+            border-radius: 18px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,.3);
+            margin-bottom: 6px;
         }
-        .xpl-goal-bar {
-            flex: 1; height: 4px;
-            background: rgba(255,255,255,.2);
-            border-radius: 2px; overflow: hidden;
-        }
-        .xpl-goal-fill {
+        .xpl-goal-inline-fill {
+            position: absolute; top: 0; left: 0;
             height: 100%;
-            background: linear-gradient(90deg, #22c55e, #a3e635);
-            border-radius: 2px;
-            transition: width .4s ease;
+            background: linear-gradient(90deg, #22c55e 0%, #a3e635 100%);
+            transition: width .5s ease;
         }
-        .xpl-goal-pct { color: #a3e635; font-weight: 700; }
+        .xpl-goal-inline-content {
+            position: relative; z-index: 1;
+            width: 100%; display: flex;
+            align-items: center; justify-content: space-between;
+            padding: 0 10px;
+        }
+        .xpl-goal-inline-left {
+            display: flex; align-items: center; gap: 6px;
+            min-width: 0; flex: 1;
+        }
+        .xpl-goal-inline-icon {
+            width: 24px; height: 24px; min-width: 24px;
+            border-radius: 50%;
+            background: rgba(34,197,94,.3);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .xpl-goal-inline-icon svg { width: 14px; height: 14px; color: #fff; }
+        .xpl-goal-inline-text {
+            font-size: 11px; font-weight: 600; color: #fff;
+            overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+        }
+        .xpl-goal-inline-tokens { color: #fbbf24; font-weight: 700; }
+        .xpl-goal-inline-pct {
+            font-size: 12px; font-weight: 700; color: #fff;
+            padding-left: 8px; white-space: nowrap;
+        }
+
         .xpl-tags-row {
             display: flex; flex-wrap: wrap; gap: 4px;
             margin-top: 6px;
         }
         .xpl-tag {
             font-size: 11px;
-            background: rgba(255,255,255,.15);
+            background: rgba(255,255,255,.12);
             padding: 2px 8px;
-            border-radius: 4px;
+            border-radius: var(--radius-sm);
             backdrop-filter: blur(4px);
         }
 
-        /* ── Right actions (TikTok style) ── */
+        /* ── Right actions ── */
         .xpl-actions {
             position: absolute; right: 10px; bottom: 20px;
             display: flex; flex-direction: column;
-            align-items: center; gap: 18px;
+            align-items: center; gap: 20px;
             z-index: 10;
         }
         .xpl-avatar {
-            width: 50px; height: 50px;
+            width: 48px; height: 48px;
             border-radius: 50%;
-            border: 3px solid #ef4444;
+            border: 2.5px solid #ef4444;
             overflow: hidden;
-            position: relative;
             display: block;
             animation: xpl-live-ring 2s ease-in-out infinite;
-            box-shadow: 0 0 12px rgba(239,68,68,.5);
+            box-shadow: 0 0 10px rgba(239,68,68,.4);
         }
         @keyframes xpl-live-ring {
-            0%, 100% { box-shadow: 0 0 8px rgba(239,68,68,.4); }
-            50% { box-shadow: 0 0 18px rgba(239,68,68,.7); }
+            0%, 100% { box-shadow: 0 0 6px rgba(239,68,68,.3); }
+            50% { box-shadow: 0 0 16px rgba(239,68,68,.6); }
         }
         .xpl-avatar img {
             width: 100%; height: 100%;
             object-fit: cover; display: block;
-        }
-        .xpl-avatar-live {
-            position: absolute; bottom: -4px; left: 50%;
-            transform: translateX(-50%);
-            background: #ef4444;
-            color: #fff;
-            font-size: 8px; font-weight: 800;
-            letter-spacing: .5px;
-            padding: 1px 5px;
-            border-radius: 3px;
-            line-height: 1.3;
-            text-transform: uppercase;
         }
         .xpl-btn {
             width: 44px; height: 44px;
@@ -223,7 +238,7 @@
             background: rgba(255,255,255,.1);
             backdrop-filter: blur(8px);
             display: flex; align-items: center; justify-content: center;
-            color: #fff; border: none; cursor: pointer;
+            color: var(--text-primary); border: none; cursor: pointer;
             transition: transform .15s, background .15s;
             text-decoration: none;
         }
@@ -233,53 +248,55 @@
         .xpl-btn.is-fav { color: #ef4444; }
         .xpl-btn.is-fav svg { fill: #ef4444; }
         .xpl-btn-label {
-            font-size: 11px; font-weight: 600;
+            font-size: 10px; font-weight: 600;
             margin-top: 2px; text-align: center;
             text-shadow: 0 1px 2px rgba(0,0,0,.8);
-            color: #fff;
+            color: var(--text-primary);
         }
 
-        /* ── Sidepanel (desktop: always shown, mobile: bottom sheet) ── */
+        /* ══════════════════════════════════════════════
+           SIDEPANEL — rich model details
+           ══════════════════════════════════════════════ */
         .xpl-panel {
-            width: 360px;
-            background: #0a0a0a;
-            border-left: 1px solid rgba(255,255,255,.06);
+            width: 420px;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border);
             display: flex; flex-direction: column;
             overflow: hidden;
         }
         .xpl-panel-scroll {
             flex: 1; overflow-y: auto;
             scrollbar-width: thin;
-            scrollbar-color: rgba(255,255,255,.1) transparent;
+            scrollbar-color: rgba(255,255,255,.08) transparent;
         }
 
-        /* Panel: Model header */
+        /* Panel header */
         .xpl-ph {
             padding: 20px;
             display: flex; align-items: center; gap: 14px;
-            border-bottom: 1px solid rgba(255,255,255,.06);
+            border-bottom: 1px solid var(--border);
         }
         .xpl-ph-avatar {
-            width: 56px; height: 56px;
+            width: 56px; height: 56px; min-width: 56px;
             border-radius: 50%; overflow: hidden;
-            border: 2px solid #ef4444; flex-shrink: 0;
+            border: 2px solid #ef4444;
         }
-        .xpl-ph-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .xpl-ph-info { min-width: 0; }
+        .xpl-ph-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .xpl-ph-info { min-width: 0; flex: 1; }
         .xpl-ph-name {
-            font-size: 16px; font-weight: 700; color: #fff;
+            font-size: 17px; font-weight: 700; color: var(--text-primary);
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .xpl-ph-meta {
-            font-size: 13px; color: #a1a1aa;
-            display: flex; align-items: center; gap: 8px;
-            margin-top: 2px;
+            font-size: 13px; color: var(--text-secondary);
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+            margin-top: 3px;
         }
         .xpl-ph-platform {
             font-size: 11px; font-weight: 600;
-            background: rgba(255,255,255,.08);
-            padding: 2px 8px; border-radius: 4px;
-            color: #d4d4d8;
+            background: rgba(255,255,255,.06);
+            padding: 2px 8px; border-radius: var(--radius-sm);
+            color: var(--text-secondary);
         }
         .xpl-ph-live {
             display: inline-flex; align-items: center; gap: 4px;
@@ -294,123 +311,196 @@
             0%, 100% { opacity: 1; } 50% { opacity: .3; }
         }
 
-        /* Panel: Stats grid */
+        /* Panel action buttons row */
+        .xpl-pactions {
+            display: flex; gap: 8px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .xpl-paction {
+            flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+            padding: 10px 12px;
+            border-radius: var(--radius-md);
+            font-size: 13px; font-weight: 600;
+            text-decoration: none;
+            transition: opacity .15s;
+            border: none; cursor: pointer;
+        }
+        .xpl-paction svg { width: 16px; height: 16px; flex-shrink: 0; }
+        .xpl-paction-chat {
+            background: var(--gradient-fire);
+            color: #fff;
+        }
+        .xpl-paction-chat:hover { opacity: .9; }
+        .xpl-paction-tip {
+            background: rgba(255,255,255,.06);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        .xpl-paction-tip:hover { background: rgba(255,255,255,.1); }
+        .xpl-paction-profile {
+            background: rgba(255,255,255,.06);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        .xpl-paction-profile:hover { background: rgba(255,255,255,.1); }
+
+        /* Panel stats */
         .xpl-stats {
-            display: grid; grid-template-columns: 1fr 1fr;
-            gap: 1px; background: rgba(255,255,255,.04);
-            border-bottom: 1px solid rgba(255,255,255,.06);
+            display: grid; grid-template-columns: 1fr 1fr 1fr;
+            gap: 1px; background: var(--border);
+            border-bottom: 1px solid var(--border);
         }
         .xpl-stat {
-            padding: 14px 16px;
-            background: #0a0a0a;
+            padding: 14px 12px;
+            background: var(--bg-secondary);
+            text-align: center;
+        }
+        .xpl-stat-val {
+            font-size: 16px; font-weight: 700;
+            color: var(--text-primary);
         }
         .xpl-stat-label {
             font-size: 11px; text-transform: uppercase;
             letter-spacing: .5px;
-            color: #71717a; font-weight: 600;
-        }
-        .xpl-stat-val {
-            font-size: 15px; font-weight: 700;
-            color: #fff; margin-top: 2px;
+            color: var(--text-muted); font-weight: 500;
+            margin-top: 2px;
         }
 
-        /* Panel: Goal */
+        /* Panel goal bar — same design as model page */
         .xpl-pgoal {
             padding: 16px 20px;
-            border-bottom: 1px solid rgba(255,255,255,.06);
+            border-bottom: 1px solid var(--border);
         }
-        .xpl-pgoal-label {
-            font-size: 12px; font-weight: 600;
-            color: #a1a1aa; margin-bottom: 8px;
-            display: flex; align-items: center; gap: 6px;
+        .xpl-pgoal .goal-bar {
+            position: relative;
+            width: 100%; height: 48px;
+            background: #2C2C2C;
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex; align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,.3);
         }
-        .xpl-pgoal-msg {
-            font-size: 14px; color: #d4d4d8;
-            margin-bottom: 8px;
-            line-height: 1.4;
-        }
-        .xpl-pgoal-track {
-            height: 8px; background: #27272a;
-            border-radius: 4px; overflow: hidden;
-        }
-        .xpl-pgoal-fill {
+        .xpl-pgoal .goal-bar-fill {
+            position: absolute; top: 0; left: 0;
             height: 100%;
-            background: linear-gradient(90deg, #22c55e, #a3e635);
-            border-radius: 4px;
-            transition: width .4s;
+            background: linear-gradient(90deg, #22c55e 0%, #a3e635 100%);
+            transition: width .5s ease;
         }
-        .xpl-pgoal-pct {
-            font-size: 13px; font-weight: 700;
-            color: #a3e635; margin-top: 6px;
-            text-align: right;
+        .xpl-pgoal .goal-bar-content {
+            position: relative; z-index: 1;
+            width: 100%; display: flex;
+            align-items: center; justify-content: space-between;
+            padding: 0 12px;
+        }
+        .xpl-pgoal .goal-bar-left {
+            display: flex; align-items: center; gap: 8px;
+            min-width: 0; flex: 1;
+        }
+        .xpl-pgoal .goal-bar-icon {
+            width: 32px; height: 32px; min-width: 32px;
+            border-radius: 50%;
+            background: rgba(34,197,94,.3);
+            backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .xpl-pgoal .goal-bar-icon svg { width: 18px; height: 18px; color: #fff; }
+        .xpl-pgoal .goal-bar-text {
+            display: flex; align-items: center; gap: 5px;
+            font-weight: 600; font-size: 13px; color: #fff;
+            overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+        }
+        .xpl-pgoal .goal-bar-tokens { color: #fbbf24; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,.5); }
+        .xpl-pgoal .goal-bar-msg { opacity: .9; overflow: hidden; text-overflow: ellipsis; }
+        .xpl-pgoal .goal-bar-pct {
+            font-weight: 700; font-size: 15px; color: #fff;
+            padding-left: 8px; white-space: nowrap;
         }
 
-        /* Panel: Tags */
-        .xpl-ptags {
-            padding: 16px 20px;
-            border-bottom: 1px solid rgba(255,255,255,.06);
+        /* Panel stream title */
+        .xpl-pstream {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: flex-start; gap: 8px;
+            color: var(--text-secondary);
+            font-size: 13px; line-height: 1.5;
         }
-        .xpl-ptags-label {
+        .xpl-pstream svg { flex-shrink: 0; margin-top: 2px; color: var(--text-muted); }
+
+        /* Panel section */
+        .xpl-psection {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .xpl-psection-title {
             font-size: 12px; font-weight: 600;
-            color: #a1a1aa; margin-bottom: 10px;
+            color: var(--text-muted); margin-bottom: 10px;
             text-transform: uppercase; letter-spacing: .5px;
         }
+
+        /* Tags */
         .xpl-ptags-list {
             display: flex; flex-wrap: wrap; gap: 6px;
         }
         .xpl-ptag {
-            font-size: 13px; color: #d4d4d8;
-            background: #1a1a1a;
-            padding: 5px 12px; border-radius: 16px;
-            border: 1px solid rgba(255,255,255,.06);
-            transition: background .15s;
+            font-size: 13px; color: var(--text-secondary);
+            background: var(--bg-card);
+            padding: 5px 12px; border-radius: var(--radius-full);
+            border: 1px solid var(--border);
+            transition: all .15s;
+            text-decoration: none;
         }
         .xpl-ptag:hover {
-            background: #27272a;
-            color: #fff;
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+            border-color: var(--border-light);
         }
 
-        /* Panel: Description */
-        .xpl-pdesc {
-            padding: 16px 20px;
-            border-bottom: 1px solid rgba(255,255,255,.06);
-        }
-        .xpl-pdesc-label {
-            font-size: 12px; font-weight: 600;
-            color: #a1a1aa; margin-bottom: 8px;
-            text-transform: uppercase; letter-spacing: .5px;
-        }
+        /* Description */
         .xpl-pdesc-text {
-            font-size: 14px; color: #d4d4d8;
+            font-size: 14px; color: var(--text-secondary);
             line-height: 1.6;
         }
 
-        /* Panel: CTA buttons */
+        /* Languages */
+        .xpl-plangs {
+            display: flex; flex-wrap: wrap; gap: 6px;
+        }
+        .xpl-plang {
+            font-size: 12px; color: var(--text-secondary);
+            background: var(--bg-card);
+            padding: 4px 10px; border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        /* Panel CTA (bottom fixed) */
         .xpl-pcta {
             padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-secondary);
         }
         .xpl-pcta-main {
             display: block; width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #ef4444, #f97316);
+            background: var(--gradient-fire);
             color: #fff; text-align: center;
-            border-radius: 12px; font-weight: 700;
+            border-radius: var(--radius-lg); font-weight: 700;
             font-size: 15px; text-decoration: none;
             transition: opacity .15s;
-            box-shadow: 0 4px 16px rgba(239,68,68,.3);
+            box-shadow: 0 4px 16px rgba(239,68,68,.25);
         }
         .xpl-pcta-main:hover { opacity: .9; }
         .xpl-pcta-secondary {
             display: block; width: 100%;
             padding: 12px; margin-top: 10px;
-            background: #1a1a1a;
-            border: 1px solid rgba(255,255,255,.08);
-            color: #d4d4d8; text-align: center;
-            border-radius: 12px; font-weight: 600;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary); text-align: center;
+            border-radius: var(--radius-lg); font-weight: 600;
             font-size: 14px; text-decoration: none;
-            transition: background .15s;
+            transition: all .15s;
         }
-        .xpl-pcta-secondary:hover { background: #27272a; color: #fff; }
+        .xpl-pcta-secondary:hover { background: var(--bg-card-hover); color: var(--text-primary); }
 
         /* ── Mobile overrides ── */
         @media (max-width: 991px) {
@@ -423,10 +513,10 @@
             }
             .xpl-panel {
                 position: fixed; bottom: 0; left: 0; right: 0;
-                width: 100%; height: 65vh;
-                border-radius: 16px 16px 0 0;
+                width: 100%; height: 70vh;
+                border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
                 border-left: none;
-                border-top: 1px solid rgba(255,255,255,.1);
+                border-top: 1px solid var(--border);
                 transform: translateY(100%);
                 transition: transform .35s cubic-bezier(.4,0,.2,1);
                 z-index: 60;
@@ -438,7 +528,7 @@
             }
             .xpl-panel-handle span {
                 width: 36px; height: 4px;
-                background: rgba(255,255,255,.25);
+                background: rgba(255,255,255,.2);
                 border-radius: 2px;
             }
             .xpl-overlay {
@@ -466,6 +556,12 @@
                 @php
                     $mTags = is_array($model->tags) ? array_slice($model->tags, 0, 5) : [];
                     $goalPct = $model->goal_progress ?? 0;
+                    $goalTokens = $model->goal_needed;
+                    $goalMsg = $model->goal_message;
+                    if (!$goalTokens && $goalMsg && preg_match('/^(\d+)\s*/', $goalMsg, $gm)) {
+                        $goalTokens = (int) $gm[1];
+                        $goalMsg = trim(preg_replace('/^\d+\s*/', '', $goalMsg));
+                    }
                 @endphp
                 <article class="xpl-slide"
                     data-model-id="{{ $model->id }}"
@@ -479,7 +575,7 @@
                         'country' => $model->country,
                         'flag' => country_flag($model->country),
                         'viewers' => number_format($model->viewers_count),
-                        'languages' => implode(', ', array_slice($model->languages ?? [], 0, 3)),
+                        'languages' => $model->languages ?? [],
                         'description' => $model->description,
                         'url' => $model->url,
                         'affiliate_url' => $model->affiliate_url,
@@ -487,8 +583,10 @@
                         'image_url' => $model->best_image_url,
                         'rating' => $model->rating,
                         'is_hd' => $model->is_hd,
-                        'goal_message' => $model->goal_message,
+                        'goal_message' => $goalMsg,
+                        'goal_tokens' => $goalTokens,
                         'goal_progress' => $goalPct,
+                        'stream_title' => $model->stream_title,
                         'tags' => $mTags,
                     ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) @endphp
                     </script>
@@ -508,10 +606,20 @@
                         <div class="xpl-title">{{ $model->stream_title }}</div>
                         @endif
                         @if($model->goal_message)
-                        <div class="xpl-goal">
-                            <span>🎯</span>
-                            <div class="xpl-goal-bar"><div class="xpl-goal-fill" style="width:{{ $goalPct }}%"></div></div>
-                            <span class="xpl-goal-pct">{{ $goalPct }}%</span>
+                        <div class="xpl-goal-inline">
+                            <div class="xpl-goal-inline-fill" style="width:{{ $goalPct }}%"></div>
+                            <div class="xpl-goal-inline-content">
+                                <div class="xpl-goal-inline-left">
+                                    <div class="xpl-goal-inline-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                                    </div>
+                                    <span class="xpl-goal-inline-text">
+                                        @if($goalTokens)<span class="xpl-goal-inline-tokens">{{ number_format($goalTokens) }}</span>@endif
+                                        {{ $goalMsg }}
+                                    </span>
+                                </div>
+                                <span class="xpl-goal-inline-pct">{{ $goalPct }}%</span>
+                            </div>
                         </div>
                         @endif
                         @if(!empty($mTags))
@@ -525,10 +633,9 @@
 
                     {{-- Right actions --}}
                     <div class="xpl-actions">
-                        <div style="position:relative">
-                            <a href="{{ $model->affiliate_url }}" target="_blank" rel="nofollow noopener" class="xpl-avatar" title="{{ __('Watch') }} {{ $model->username }} {{ __('live') }}">
-                                <img src="{{ $model->best_image_url }}" alt="{{ $model->username }}" width="50" height="50">
-                                <span class="xpl-avatar-live">LIVE</span>
+                        <div>
+                            <a href="{{ $model->affiliate_url }}" target="_blank" rel="nofollow noopener" class="xpl-avatar" title="{{ $model->username }}">
+                                <img src="{{ $model->best_image_url }}" alt="{{ $model->username }}" width="48" height="48">
                             </a>
                         </div>
 
@@ -544,13 +651,6 @@
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
                             </a>
                             <div class="xpl-btn-label">{{ __('Chat') }}</div>
-                        </div>
-
-                        <div>
-                            <button class="xpl-btn xpl-detail-btn" aria-label="{{ __('Details') }}">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-                            </button>
-                            <div class="xpl-btn-label">{{ __('More') }}</div>
                         </div>
                     </div>
 
@@ -571,12 +671,13 @@
     <aside class="xpl-panel" id="xpl-panel">
         <div class="xpl-panel-handle"><span></span></div>
         <div class="xpl-panel-scroll" id="xpl-panel-body">
-            <div style="text-align:center; color:#555; padding:40px 20px;">{{ __('Select a model to see details') }}</div>
+            <div style="text-align:center; color:var(--text-muted); padding:60px 20px;">{{ __('Select a model to see details') }}</div>
         </div>
+        <div class="xpl-pcta" id="xpl-panel-cta" style="display:none"></div>
     </aside>
 </div>
 
-{{-- SEO Pagination (visually hidden but crawlable) --}}
+{{-- SEO Pagination --}}
 <nav class="explore-seo-pagination" aria-label="Pagination">
     <h2>{{ $pageTitle }}</h2>
     @if($models->currentPage() > 1)
@@ -595,6 +696,7 @@
     const feed = document.getElementById('xpl-feed');
     const panel = document.getElementById('xpl-panel');
     const panelBody = document.getElementById('xpl-panel-body');
+    const panelCta = document.getElementById('xpl-panel-cta');
     const overlay = document.getElementById('xpl-overlay');
     const slides = [];
     const hlsInstances = new Map();
@@ -626,14 +728,9 @@
         if (favBtn) {
             favBtn.addEventListener('click', () => {
                 const id = slide.dataset.modelId;
-                if (favorites.has(id)) { favorites.delete(id); } else { favorites.add(id); }
-                saveFavs();
-                updateFavButtons();
+                if (favorites.has(id)) favorites.delete(id); else favorites.add(id);
+                saveFavs(); updateFavButtons();
             });
-        }
-        const detailBtn = slide.querySelector('.xpl-detail-btn');
-        if (detailBtn) {
-            detailBtn.addEventListener('click', () => togglePanel(true));
         }
     }
 
@@ -651,6 +748,25 @@
     }
     overlay.addEventListener('click', () => togglePanel(false));
 
+    function buildGoalBarHtml(msg, tokens, pct) {
+        return `<div class="goal-bar">
+            <div class="goal-bar-fill" style="width:${pct}%"></div>
+            <div class="goal-bar-content">
+                <div class="goal-bar-left">
+                    <div class="goal-bar-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                    </div>
+                    <div class="goal-bar-text">
+                        <span class="goal-bar-label">Goal:</span>
+                        ${tokens ? `<span class="goal-bar-tokens">${Number(tokens).toLocaleString()}</span>` : ''}
+                        <span class="goal-bar-msg">${esc(msg)}</span>
+                    </div>
+                </div>
+                <div class="goal-bar-pct">${pct}%</div>
+            </div>
+        </div>`;
+    }
+
     function populatePanel(index) {
         const slide = slides[index];
         if (!slide) return;
@@ -660,6 +776,7 @@
             const d = JSON.parse(script.textContent);
             let html = '';
 
+            // Header
             html += `<div class="xpl-ph">
                 <div class="xpl-ph-avatar"><img src="${d.image_url}" alt="${esc(d.username)}"></div>
                 <div class="xpl-ph-info">
@@ -667,50 +784,82 @@
                     <div class="xpl-ph-meta">
                         <span class="xpl-ph-live"><span class="xpl-ph-live-dot"></span> LIVE</span>
                         <span class="xpl-ph-platform">${esc(d.platform)}</span>
+                        ${d.is_hd ? '<span class="xpl-ph-platform" style="color:var(--accent)">HD</span>' : ''}
                     </div>
                 </div>
             </div>`;
 
+            // Action buttons row
+            html += `<div class="xpl-pactions">
+                <a href="${d.affiliate_url}" target="_blank" rel="nofollow noopener" class="xpl-paction xpl-paction-chat">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                    Chat
+                </a>
+                <a href="${d.affiliate_url}" target="_blank" rel="nofollow noopener" class="xpl-paction xpl-paction-tip">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/></svg>
+                    Tip
+                </a>
+                <a href="${d.url}" class="xpl-paction xpl-paction-profile">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Profile
+                </a>
+            </div>`;
+
+            // Stats row
             html += `<div class="xpl-stats">`;
-            if (d.age) html += `<div class="xpl-stat"><div class="xpl-stat-label">Age</div><div class="xpl-stat-val">${esc(d.age)}</div></div>`;
-            if (d.country) html += `<div class="xpl-stat"><div class="xpl-stat-label">Country</div><div class="xpl-stat-val">${d.flag ? d.flag + ' ' : ''}${esc(d.country)}</div></div>`;
-            if (d.viewers) html += `<div class="xpl-stat"><div class="xpl-stat-label">Viewers</div><div class="xpl-stat-val">${esc(d.viewers)}</div></div>`;
-            if (d.rating) html += `<div class="xpl-stat"><div class="xpl-stat-label">Rating</div><div class="xpl-stat-val">⭐ ${Number(d.rating).toFixed(1)}</div></div>`;
-            if (d.languages) html += `<div class="xpl-stat"><div class="xpl-stat-label">Languages</div><div class="xpl-stat-val">${esc(d.languages)}</div></div>`;
-            if (d.is_hd) html += `<div class="xpl-stat"><div class="xpl-stat-label">Quality</div><div class="xpl-stat-val">HD</div></div>`;
+            if (d.age) html += `<div class="xpl-stat"><div class="xpl-stat-val">${esc(d.age)}</div><div class="xpl-stat-label">Age</div></div>`;
+            if (d.country) html += `<div class="xpl-stat"><div class="xpl-stat-val">${d.flag || ''} ${esc(d.country)}</div><div class="xpl-stat-label">Country</div></div>`;
+            if (d.viewers) html += `<div class="xpl-stat"><div class="xpl-stat-val">${esc(d.viewers)}</div><div class="xpl-stat-label">Viewers</div></div>`;
+            if (d.rating) html += `<div class="xpl-stat"><div class="xpl-stat-val">⭐ ${Number(d.rating).toFixed(1)}</div><div class="xpl-stat-label">Rating</div></div>`;
             html += `</div>`;
 
+            // Goal bar (model page style)
             if (d.goal_message) {
                 const pct = d.goal_progress || 0;
-                html += `<div class="xpl-pgoal">
-                    <div class="xpl-pgoal-label">🎯 Current Goal</div>
-                    <div class="xpl-pgoal-msg">${esc(d.goal_message)}</div>
-                    <div class="xpl-pgoal-track"><div class="xpl-pgoal-fill" style="width:${pct}%"></div></div>
-                    <div class="xpl-pgoal-pct">${pct}%</div>
+                html += `<div class="xpl-pgoal">${buildGoalBarHtml(d.goal_message, d.goal_tokens, pct)}</div>`;
+            }
+
+            // Stream title
+            if (d.stream_title) {
+                html += `<div class="xpl-pstream">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                    <span>${esc(d.stream_title)}</span>
                 </div>`;
             }
 
+            // Tags
             if (d.tags && d.tags.length) {
-                html += `<div class="xpl-ptags">
-                    <div class="xpl-ptags-label">Tags</div>
+                html += `<div class="xpl-psection">
+                    <div class="xpl-psection-title">Tags</div>
                     <div class="xpl-ptags-list">${d.tags.map(t => `<span class="xpl-ptag">#${esc(t)}</span>`).join('')}</div>
                 </div>`;
             }
 
+            // Description
             if (d.description) {
-                html += `<div class="xpl-pdesc">
-                    <div class="xpl-pdesc-label">About</div>
+                html += `<div class="xpl-psection">
+                    <div class="xpl-psection-title">About ${esc(d.username)}</div>
                     <div class="xpl-pdesc-text">${esc(d.description)}</div>
                 </div>`;
             }
 
-            html += `<div class="xpl-pcta">
-                <a href="${d.affiliate_url}" target="_blank" rel="nofollow noopener" class="xpl-pcta-main">Join ${esc(d.username)}'s Live Chat</a>
-                <a href="${d.url}" class="xpl-pcta-secondary">View Full Profile</a>
-            </div>`;
+            // Languages
+            if (d.languages && d.languages.length) {
+                html += `<div class="xpl-psection">
+                    <div class="xpl-psection-title">Languages</div>
+                    <div class="xpl-plangs">${d.languages.map(l => `<span class="xpl-plang">${esc(l)}</span>`).join('')}</div>
+                </div>`;
+            }
 
             panelBody.innerHTML = html;
-        } catch (e) { console.error('Panel data error', e); }
+
+            // Bottom CTA
+            panelCta.style.display = '';
+            panelCta.innerHTML = `
+                <a href="${d.affiliate_url}" target="_blank" rel="nofollow noopener" class="xpl-pcta-main">Join ${esc(d.username)}'s Live Show</a>
+                <a href="${d.url}" class="xpl-pcta-secondary">View Full Profile</a>
+            `;
+        } catch (e) { console.error('Panel error', e); }
     }
 
     function onSnap() {
@@ -730,13 +879,9 @@
             const dist = Math.abs(i - currentIndex);
             const slide = slides[i];
             const url = slide.dataset.streamUrl;
-            if (i === currentIndex) {
-                startStream(slide, url);
-            } else if ((dist <= PRELOAD_AHEAD && i > currentIndex) || (dist <= PRELOAD_BEHIND && i < currentIndex)) {
-                preloadStream(slide, url);
-            } else if (dist > PRELOAD_AHEAD + 1) {
-                destroyStream(slide);
-            }
+            if (i === currentIndex) startStream(slide, url);
+            else if ((dist <= PRELOAD_AHEAD && i > currentIndex) || (dist <= PRELOAD_BEHIND && i < currentIndex)) preloadStream(slide, url);
+            else if (dist > PRELOAD_AHEAD + 1) destroyStream(slide);
         }
         pauseNonCurrent();
         if (hlsInstances.size > MAX_ACTIVE_HLS) pruneDistant();
@@ -749,10 +894,7 @@
         const entry = hlsInstances.get(slide);
         if (entry && entry.state === 'playing') return;
         if (entry && entry.hls) {
-            video.play().then(() => {
-                slide.classList.add('stream-active');
-                entry.state = 'playing';
-            }).catch(() => {});
+            video.play().then(() => { slide.classList.add('stream-active'); entry.state = 'playing'; }).catch(() => {});
             return;
         }
         if (typeof Hls !== 'undefined' && Hls.isSupported()) {
@@ -761,10 +903,7 @@
             hls.attachMedia(video);
             hls.on(Hls.Events.MANIFEST_PARSED, () => {
                 if (slides[currentIndex] === slide) {
-                    video.play().then(() => {
-                        slide.classList.add('stream-active');
-                        hlsInstances.set(slide, { hls, state: 'playing' });
-                    }).catch(() => {});
+                    video.play().then(() => { slide.classList.add('stream-active'); hlsInstances.set(slide, { hls, state: 'playing' }); }).catch(() => {});
                 } else {
                     hlsInstances.set(slide, { hls, state: 'preloaded' });
                 }
@@ -774,9 +913,7 @@
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
             video.src = url;
             video.addEventListener('loadedmetadata', () => {
-                if (slides[currentIndex] === slide) {
-                    video.play().then(() => slide.classList.add('stream-active')).catch(() => {});
-                }
+                if (slides[currentIndex] === slide) video.play().then(() => slide.classList.add('stream-active')).catch(() => {});
             }, { once: true });
             hlsInstances.set(slide, { hls: null, state: 'playing' });
         }
@@ -852,20 +989,41 @@
         div.dataset.streamUrl = m.stream_url || '';
         div.dataset.index = index;
 
+        let goalMsg = m.goal_message || '';
+        let goalTokens = m.goal_needed || 0;
+        if (!goalTokens && goalMsg) {
+            const gm = goalMsg.match(/^(\d+)\s*/);
+            if (gm) { goalTokens = parseInt(gm[1]); goalMsg = goalMsg.replace(/^\d+\s*/, ''); }
+        }
+
         const jsonData = {
             username: m.username, age: m.age || '', country: m.country || '',
             flag: m.flag || '', viewers: m.viewers_count ? Number(m.viewers_count).toLocaleString() : '',
-            languages: (m.languages || []).slice(0, 3).join(', '),
+            languages: m.languages || [],
             description: m.description || '', url: m.url, affiliate_url: m.affiliate_url,
             platform: m.platform ? m.platform.charAt(0).toUpperCase() + m.platform.slice(1) : '',
             image_url: m.image_url, rating: m.rating, is_hd: m.is_hd,
-            goal_message: m.goal_message || '', goal_progress: m.goal_progress || 0,
+            goal_message: goalMsg, goal_tokens: goalTokens,
+            goal_progress: m.goal_progress || 0,
+            stream_title: m.stream_title || '',
             tags: m.tags || [],
         };
 
         const tags = (m.tags || []).slice(0, 3).map(t => `<span class="xpl-tag">#${esc(t)}</span>`).join('');
         const goalPct = m.goal_progress || 0;
-        const goalHtml = m.goal_message ? `<div class="xpl-goal"><span>🎯</span><div class="xpl-goal-bar"><div class="xpl-goal-fill" style="width:${goalPct}%"></div></div><span class="xpl-goal-pct">${goalPct}%</span></div>` : '';
+        let goalHtml = '';
+        if (m.goal_message) {
+            goalHtml = `<div class="xpl-goal-inline">
+                <div class="xpl-goal-inline-fill" style="width:${goalPct}%"></div>
+                <div class="xpl-goal-inline-content">
+                    <div class="xpl-goal-inline-left">
+                        <div class="xpl-goal-inline-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+                        <span class="xpl-goal-inline-text">${goalTokens ? `<span class="xpl-goal-inline-tokens">${Number(goalTokens).toLocaleString()}</span> ` : ''}${esc(goalMsg)}</span>
+                    </div>
+                    <span class="xpl-goal-inline-pct">${goalPct}%</span>
+                </div>
+            </div>`;
+        }
 
         div.innerHTML = `
             <script type="application/json" class="slide-data">${JSON.stringify(jsonData)}<\/script>
@@ -879,10 +1037,9 @@
                 ${tags ? `<div class="xpl-tags-row">${tags}</div>` : ''}
             </div>
             <div class="xpl-actions">
-                <div style="position:relative">
+                <div>
                     <a href="${m.affiliate_url}" target="_blank" rel="nofollow noopener" class="xpl-avatar">
-                        <img src="${m.image_url}" alt="${esc(m.username)}" width="50" height="50">
-                        <span class="xpl-avatar-live">LIVE</span>
+                        <img src="${m.image_url}" alt="${esc(m.username)}" width="48" height="48">
                     </a>
                 </div>
                 <div>
@@ -897,12 +1054,6 @@
                     </a>
                     <div class="xpl-btn-label">Chat</div>
                 </div>
-                <div>
-                    <button class="xpl-btn xpl-detail-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-                    </button>
-                    <div class="xpl-btn-label">More</div>
-                </div>
             </div>
         `;
         return div;
@@ -911,7 +1062,6 @@
     const _esc = document.createElement('div');
     function esc(s) { _esc.textContent = s || ''; return _esc.innerHTML; }
 
-    // Touch: swipe left opens panel on mobile
     let tx0 = 0;
     feed.addEventListener('touchstart', e => { tx0 = e.changedTouches[0].screenX; }, { passive: true });
     feed.addEventListener('touchend', e => {

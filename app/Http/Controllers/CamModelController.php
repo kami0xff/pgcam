@@ -455,6 +455,8 @@ class CamModelController extends Controller
                 'description' => $m->description ? \Illuminate\Support\Str::limit($m->description, 200) : null,
                 'languages' => $m->languages,
                 'goal_message' => $m->goal_message,
+                'goal_needed' => $m->goal_needed,
+                'goal_earned' => $m->goal_earned,
                 'goal_progress' => $m->goal_progress,
             ]),
             'hasMore' => $models->count() === $limit,
