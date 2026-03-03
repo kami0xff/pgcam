@@ -137,13 +137,6 @@ class SeoService
                     'query-input' => 'required name=search_term_string',
                 ],
             ],
-            [
-                '@context' => 'https://schema.org',
-                '@type' => 'ItemList',
-                'name' => 'Live Cam Models',
-                'numberOfItems' => $onlineModels,
-                'itemListElement' => [], // Populated dynamically
-            ],
         ];
     }
 

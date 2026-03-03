@@ -2142,6 +2142,64 @@ button {
   }
 }
 
+/* Advocacy badges strip */
+.footer-advocacy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--border);
+  margin-top: 0.5rem;
+}
+
+.advocacy-badge {
+  display: inline-flex;
+  opacity: 0.65;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.advocacy-badge:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.advocacy-svg {
+  height: 34px;
+  width: auto;
+}
+
+.advocacy-learn-more {
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.advocacy-learn-more:hover {
+  color: var(--text-muted);
+}
+
+@media (max-width: 600px) {
+  .footer-advocacy {
+    gap: 0.75rem;
+  }
+
+  .advocacy-svg {
+    height: 28px;
+  }
+
+  .advocacy-learn-more {
+    width: 100%;
+    text-align: center;
+    font-size: 0.65rem;
+  }
+}
+
 .footer-bottom {
   display: flex;
   flex-direction: row;
@@ -6535,5 +6593,197 @@ input[type="checkbox"] {
   .breadcrumb a,
   .breadcrumb span {
     font-size: 0.8rem;
+  }
+}
+
+/* ============================
+   Country Suggestion Section
+   ============================ */
+
+.country-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+@media (min-width: 768px) {
+  .country-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+  }
+}
+
+.country-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .country-section-header {
+    margin-bottom: 1rem;
+  }
+}
+
+.country-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .country-section-title {
+    font-size: 1.25rem;
+  }
+}
+
+.country-section-flag {
+  font-size: 1.25em;
+}
+
+.country-section-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: gap 0.2s;
+}
+
+.country-section-link:hover {
+  gap: 0.65rem;
+}
+
+/* ============================
+   Legal / Static Pages
+   ============================ */
+
+.legal-page {
+  padding: 2rem 0 4rem;
+  min-height: 60vh;
+}
+
+.legal-page h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.legal-page .legal-updated {
+  color: #888;
+  font-size: 0.875rem;
+  margin-bottom: 2rem;
+}
+
+.legal-page section {
+  margin-bottom: 2rem;
+}
+
+.legal-page h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #e0e0e0;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.legal-page h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #ccc;
+  margin: 1rem 0 0.5rem;
+}
+
+.legal-page p {
+  color: #aaa;
+  line-height: 1.7;
+  margin-bottom: 0.75rem;
+}
+
+.legal-page ul,
+.legal-page ol {
+  color: #aaa;
+  line-height: 1.7;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.legal-page li {
+  margin-bottom: 0.35rem;
+}
+
+.legal-page a {
+  color: #f06292;
+  text-decoration: none;
+}
+
+.legal-page a:hover {
+  text-decoration: underline;
+}
+
+.legal-page address {
+  font-style: normal;
+  color: #aaa;
+  line-height: 1.7;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.legal-page address strong {
+  color: #e0e0e0;
+}
+
+.advocacy-highlight {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.advocacy-highlight-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+}
+
+.advocacy-highlight-icon svg {
+  width: 48px;
+  height: 48px;
+}
+
+.advocacy-highlight h2 {
+  margin-bottom: 0.15rem;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.advocacy-highlight p {
+  margin-bottom: 0;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+  .legal-page {
+    padding: 1.5rem 0 3rem;
+  }
+
+  .legal-page h1 {
+    font-size: 1.5rem;
+  }
+
+  .legal-page h2 {
+    font-size: 1.1rem;
   }
 }

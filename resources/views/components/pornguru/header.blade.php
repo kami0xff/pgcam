@@ -31,15 +31,18 @@
                 <div class="lang-selector-dropdown">
                     @foreach($priorityLocales as $loc)
                     @php
-                        // Build URL for this locale by manipulating the current path
-                        $path = request()->path();
-                        // Strip any existing locale prefix and leading/trailing slashes
-                        $cleanPath = preg_replace('#^[a-z]{2}(-[A-Z]{2})?(/|$)#', '', $path);
-                        $cleanPath = trim($cleanPath, '/');
-                        if ($loc === 'en') {
-                            $langUrl = url('/' . $cleanPath);
+                        // Use translated URLs when available (tag/country pages with translated slugs)
+                        if (isset($langSwitchUrls[$loc])) {
+                            $langUrl = $langSwitchUrls[$loc];
                         } else {
-                            $langUrl = url('/' . $loc . ($cleanPath ? '/' . $cleanPath : ''));
+                            $path = request()->path();
+                            $cleanPath = preg_replace('#^[a-z]{2}(-[A-Z]{2})?(/|$)#', '', $path);
+                            $cleanPath = trim($cleanPath, '/');
+                            if ($loc === 'en') {
+                                $langUrl = url('/' . $cleanPath);
+                            } else {
+                                $langUrl = url('/' . $loc . ($cleanPath ? '/' . $cleanPath : ''));
+                            }
                         }
                     @endphp
                         <a href="{{ $langUrl }}" class="lang-option {{ $currentLocale === $loc ? 'active' : '' }}">
@@ -103,13 +106,17 @@
         <div class="mobile-lang-grid">
             @foreach(array_slice($priorityLocales, 0, 8) as $loc)
                 @php
-                    $path = request()->path();
-                    $cleanPath = preg_replace('#^[a-z]{2}(-[A-Z]{2})?(/|$)#', '', $path);
-                    $cleanPath = trim($cleanPath, '/');
-                    if ($loc === 'en') {
-                        $mLangUrl = url('/' . $cleanPath);
+                    if (isset($langSwitchUrls[$loc])) {
+                        $mLangUrl = $langSwitchUrls[$loc];
                     } else {
-                        $mLangUrl = url('/' . $loc . ($cleanPath ? '/' . $cleanPath : ''));
+                        $path = request()->path();
+                        $cleanPath = preg_replace('#^[a-z]{2}(-[A-Z]{2})?(/|$)#', '', $path);
+                        $cleanPath = trim($cleanPath, '/');
+                        if ($loc === 'en') {
+                            $mLangUrl = url('/' . $cleanPath);
+                        } else {
+                            $mLangUrl = url('/' . $loc . ($cleanPath ? '/' . $cleanPath : ''));
+                        }
                     }
                 @endphp
                 <a href="{{ $mLangUrl }}" class="mobile-lang-item {{ $currentLocale === $loc ? 'active' : '' }}">

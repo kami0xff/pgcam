@@ -137,6 +137,13 @@ class CamModelController extends Controller
             $onlineFavorites = auth()->user()->onlineFavorites()->limit(8)->get();
         }
 
+        // Country-based suggestion section (first page, no filters)
+        $countryModels = collect();
+        $visitorCountry = null;
+        if ($request->input('page', 1) == 1 && !$request->hasAny(['search', 'tags', 'gender', 'platform', 'country'])) {
+            [$countryModels, $visitorCountry] = $this->getCountryModels($request);
+        }
+
         return view('cam-models.index', [
             'models' => $models,
             'platforms' => $platforms,
@@ -146,6 +153,8 @@ class CamModelController extends Controller
             'filters' => $request->only(['online', 'platform', 'gender', 'age_min', 'age_max', 'hd', 'search', 'tags', 'sort', 'direction']),
             'seoSections' => $seoSections,
             'onlineFavorites' => $onlineFavorites,
+            'countryModels' => $countryModels,
+            'visitorCountry' => $visitorCountry,
         ]);
     }
 
@@ -298,6 +307,46 @@ class CamModelController extends Controller
             'metaDescription' => $metaDescription,
             'hreflangUrls' => $hreflangUrls,
         ]);
+    }
+
+    /**
+     * Get online models from the visitor's country (via Cloudflare CF-IPCountry header).
+     *
+     * @return array{0: \Illuminate\Support\Collection, 1: array|null}
+     */
+    private function getCountryModels(Request $request): array
+    {
+        $countryCode = strtoupper((string) $request->header('CF-IPCountry', ''));
+
+        if (!$countryCode || $countryCode === 'XX' || $countryCode === 'T1') {
+            return [collect(), null];
+        }
+
+        $country = \App\Models\Country::where('code', $countryCode)->first();
+
+        if (!$country) {
+            return [collect(), null];
+        }
+
+        $models = CamModel::where('is_online', true)
+            ->where(function ($q) use ($country) {
+                $q->where('country', $country->name)
+                  ->orWhere('country', $country->code);
+            })
+            ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
+            ->orderBy('viewers_count', 'desc')
+            ->limit(8)
+            ->get();
+
+        if ($models->count() < 3) {
+            return [collect(), null];
+        }
+
+        return [$models, [
+            'name' => $country->localized_name ?? $country->name,
+            'slug' => $country->slug,
+            'flag' => country_flag($country->code),
+        ]];
     }
 
     /**

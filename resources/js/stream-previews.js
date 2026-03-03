@@ -200,11 +200,14 @@ window.StreamPreviewManager = (function() {
             hls.loadSource(streamUrl);
             hls.attachMedia(video);
             
+            video.addEventListener('playing', () => {
+                card.classList.add('stream-playing');
+            }, { once: true });
+
             hls.on(Hls.Events.MANIFEST_PARSED, () => {
                 clearTimeout(loadTimeout);
                 card.dataset.retryCount = '0';
                 video.play().catch(() => handleStreamError(card, streamUrl));
-                card.classList.add('stream-playing');
             });
 
             hls.on(Hls.Events.ERROR, (event, data) => {
@@ -279,7 +282,10 @@ window.StreamPreviewManager = (function() {
         document.addEventListener('mouseenter', (e) => {
             if (!(e.target instanceof Element)) return;
             const card = e.target.closest('.model-card');
-            if (!card || allPreviewsPlaying) return;
+            if (!card) return;
+
+            // Skip if autoplay is running or this card already has an active stream
+            if (allPreviewsPlaying || activeStreams.has(card)) return;
             
             const streamUrl = card.dataset.streamUrl;
             if (!streamUrl) return;
@@ -290,9 +296,12 @@ window.StreamPreviewManager = (function() {
         document.addEventListener('mouseleave', (e) => {
             if (!(e.target instanceof Element)) return;
             const card = e.target.closest('.model-card');
-            if (!card || allPreviewsPlaying) return;
+            if (!card) return;
             
-            if (hoverTimeout) clearTimeout(hoverTimeout);
+            if (hoverTimeout) { clearTimeout(hoverTimeout); hoverTimeout = null; }
+
+            // Don't stop streams that were started by autoplay
+            if (allPreviewsPlaying) return;
             stopStream(card);
         }, true);
     }

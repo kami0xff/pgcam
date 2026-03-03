@@ -173,14 +173,20 @@ class CountryController extends Controller
             ];
         }
 
+        $hreflangUrls = method_exists($country, 'getHreflangUrls') 
+            ? $country->getHreflangUrls() 
+            : [];
+
+        if (!empty($hreflangUrls)) {
+            \Illuminate\Support\Facades\View::share('langSwitchUrls', $hreflangUrls);
+        }
+
         return view('countries.show', [
             'country' => $country,
             'models' => $models,
             'translation' => $translation,
             'seoSchemas' => $seoSchemas,
-            'hreflangUrls' => method_exists($country, 'getHreflangUrls') 
-                ? $country->getHreflangUrls() 
-                : [],
+            'hreflangUrls' => $hreflangUrls,
         ]);
     }
 

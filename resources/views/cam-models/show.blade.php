@@ -478,7 +478,6 @@
     @endif
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <script>
     function showChatOverlay() {
         document.getElementById('chat-overlay').style.display = 'flex';

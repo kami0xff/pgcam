@@ -66,4 +66,7 @@
     {{-- Bottom SEO text for category page --}}
     <x-seo.content-block pageKey="tag_{{ $tag->slug }}" position="bottom" class="seo-text-bottom" />
 </div>
+
+{{-- Stream Preview Manager --}}
+<script src="{{ asset('js/stream-previews.js') }}"></script>
 @endsection

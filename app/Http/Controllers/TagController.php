@@ -179,6 +179,8 @@ class TagController extends Controller
         $models = $query->paginate(48)->withQueryString();
         $translation = $tag->translation($locale);
 
+        \Illuminate\Support\Facades\View::share('langSwitchUrls', $tag->getHreflangUrls());
+
         return view('tags.show', [
             'tag' => $tag,
             'models' => $models,

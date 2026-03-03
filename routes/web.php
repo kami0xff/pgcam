@@ -114,7 +114,32 @@ Route::prefix('{locale}')
         // Localized country pages
         Route::get('/countries', [CountryController::class, 'index'])->name('countries.index.localized');
         Route::get('/country/{slug}', [CountryController::class, 'show'])->name('countries.show.localized');
+
+        // Redirects for broken URL patterns
+        Route::get('/country', fn(string $locale) => redirect("/{$locale}/countries", 301));
+        Route::get('/guys/{tagSlug?}', fn(string $locale, ?string $tagSlug = null) =>
+            redirect($tagSlug ? "/{$locale}/men/{$tagSlug}" : "/{$locale}/men", 301));
     });
+
+// ==============================================
+// Redirects (fix old/broken URLs found by crawlers)
+// ==============================================
+
+Route::get('/country', fn() => redirect('/countries', 301));
+Route::get('/guys/{tagSlug?}', fn(?string $tagSlug = null) =>
+    redirect($tagSlug ? "/men/{$tagSlug}" : '/men', 301));
+
+// ==============================================
+// Legal & Static Pages
+// ==============================================
+
+Route::get('/about', fn() => view('legal.about'))->name('about');
+Route::get('/contact', fn() => view('legal.contact'))->name('contact');
+Route::get('/privacy', fn() => view('legal.privacy'))->name('privacy');
+Route::get('/terms', fn() => view('legal.terms'))->name('terms');
+Route::get('/dmca', fn() => view('legal.dmca'))->name('dmca');
+Route::get('/2257', fn() => view('legal.2257'))->name('2257');
+Route::get('/good-causes', fn() => view('legal.support'))->name('good-causes');
 
 // ==============================================
 // Authentication

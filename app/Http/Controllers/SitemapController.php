@@ -129,8 +129,13 @@ class SitemapController extends Controller
         $urls[] = $this->buildUrl(url('/'), '1.0', 'always', $this->buildLocaleAlternates('/'));
 
         // Niche landing pages - very high priority (live content)
-        foreach (['girls', 'guys', 'couples', 'trans'] as $niche) {
+        foreach (['girls', 'men', 'couples', 'trans'] as $niche) {
             $urls[] = $this->buildUrl(url("/{$niche}"), '0.95', 'always', $this->buildLocaleAlternates("/{$niche}"));
+        }
+
+        // Static pages (legal, about, contact)
+        foreach (['about', 'contact', 'good-causes', 'privacy', 'terms', 'dmca', '2257'] as $page) {
+            $urls[] = $this->buildUrl(url("/{$page}"), '0.3', 'monthly');
         }
 
         // Tags index
@@ -301,7 +306,7 @@ class SitemapController extends Controller
                 }
 
                 $loc = $locale && $locale !== 'en'
-                    ? url("/{$locale}/tags/{$slug}")
+                    ? url("/{$locale}/tag/{$slug}")
                     : route('tags.show', $tag->slug);
 
                 // Calculate priority based on popularity
@@ -358,7 +363,7 @@ class SitemapController extends Controller
                 }
 
                 $loc = $locale && $locale !== 'en'
-                    ? url("/{$locale}/countries/{$slug}")
+                    ? url("/{$locale}/country/{$slug}")
                     : route('countries.show', $country->slug);
 
                 // Priority based on number of models
@@ -400,7 +405,7 @@ class SitemapController extends Controller
         $cacheKey = "sitemap:niches:{$locale}";
 
         $urls = Cache::remember($cacheKey, self::CACHE_TTL, function () use ($locale) {
-            $niches = ['girls', 'guys', 'couples', 'trans'];
+            $niches = ['girls', 'men', 'couples', 'trans'];
             $urls = [];
 
             foreach ($niches as $niche) {
@@ -520,7 +525,7 @@ class SitemapController extends Controller
             } else {
                 $translation = $tag->translations->where('locale', $locale)->first();
                 $slug = $translation?->slug ?? $tag->slug;
-                $alternates[$locale] = url("/{$locale}/tags/{$slug}");
+                $alternates[$locale] = url("/{$locale}/tag/{$slug}");
             }
         }
 
@@ -543,7 +548,7 @@ class SitemapController extends Controller
             } else {
                 $translation = $country->translations->where('locale', $locale)->first();
                 $slug = $translation?->slug ?? $country->slug;
-                $alternates[$locale] = url("/{$locale}/countries/{$slug}");
+                $alternates[$locale] = url("/{$locale}/country/{$slug}");
             }
         }
 

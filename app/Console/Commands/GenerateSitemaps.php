@@ -161,6 +161,11 @@ class GenerateSitemaps extends Command
         // Homepage
         $this->writeUrl($handle, url('/'), '1.0', 'daily');
 
+        // Static pages (legal, about, contact)
+        foreach (['about', 'contact', 'good-causes', 'privacy', 'terms', 'dmca', '2257'] as $page) {
+            $this->writeUrl($handle, url("/{$page}"), '0.3', 'monthly');
+        }
+
         // Tags index
         $this->writeUrl($handle, url('/tags'), '0.8', 'daily');
 
@@ -168,7 +173,7 @@ class GenerateSitemaps extends Command
         $this->writeUrl($handle, url('/countries'), '0.7', 'weekly');
 
         // Niches
-        foreach (['girls', 'guys', 'couples', 'trans'] as $niche) {
+        foreach (['girls', 'men', 'couples', 'trans'] as $niche) {
             $this->writeUrl($handle, url("/{$niche}"), '0.9', 'hourly');
         }
 
@@ -285,8 +290,8 @@ class GenerateSitemaps extends Command
                 }
 
                 $loc = $locale
-                    ? url("/{$locale}/tags/{$slug}")
-                    : url("/tags/{$tag->slug}");
+                    ? url("/{$locale}/tag/{$slug}")
+                    : url("/tag/{$tag->slug}");
 
                 $this->writeUrl($handle, $loc, '0.7', 'daily');
             }
@@ -359,7 +364,7 @@ class GenerateSitemaps extends Command
 
         $this->writeUrlsetHeader($handle);
 
-        $niches = ['girls', 'guys', 'couples', 'trans'];
+        $niches = ['girls', 'men', 'couples', 'trans'];
         $topTags = Tag::orderByDesc('models_count')->limit(30)->pluck('slug');
 
         foreach ($niches as $niche) {

@@ -108,8 +108,7 @@
         <x-seo.content-block pageKey="niche_{{ $niche }}" position="bottom" />
     </div>
 
-    {{-- HLS.js and Stream Preview Manager --}}
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    {{-- Stream Preview Manager --}}
     <script src="{{ asset('js/stream-previews.js') }}"></script>
     <script>
         window.infiniteScrollConfig = {

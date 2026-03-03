@@ -78,6 +78,29 @@
             @endif
         @endauth
 
+        {{-- Models from your country --}}
+        @if($countryModels->isNotEmpty() && $visitorCountry)
+            <section class="country-section" data-section="country">
+                <div class="country-section-header">
+                    <h2 class="country-section-title">
+                        @if($visitorCountry['flag'])<span class="country-section-flag">{{ $visitorCountry['flag'] }}</span>@endif
+                        {{ __('Models from :country', ['country' => $visitorCountry['name']]) }}
+                    </h2>
+                    <a href="{{ localized_route('countries.show', $visitorCountry['slug']) }}" class="country-section-link">
+                        {{ __('View all') }}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                            <path d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+                <div class="seo-section-grid">
+                    @foreach($countryModels as $model)
+                        <x-pornguru.model-card :model="$model" />
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
         {{-- SEO Featured Sections (server-rendered for SEO) --}}
         @if(!empty($seoSections))
             @foreach($seoSections as $section)
@@ -157,12 +180,8 @@
         <x-seo.content-block pageKey="home" position="bottom" class="seo-text-bottom" />
     </div>
 
-    {{-- HLS.js for stream previews --}}
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    
-    {{-- Pass data to JavaScript --}}
+    {{-- Favorite toggle --}}
     <script>
-        // Favorite toggle
         async function toggleFavorite(modelUsername, button) {
             try {
                 const response = await fetch(`/api/favorite/${modelUsername}`, {
@@ -226,6 +245,8 @@
             if (popup) popup.remove();
         }
     </script>
+
+    {{-- Infinite scroll config --}}
     <script>
         window.infiniteScrollConfig = {
             apiUrl: '{{ route('api.models.load') }}',
@@ -233,261 +254,8 @@
             hasMore: {{ $models->hasMorePages() ? 'true' : 'false' }},
             filters: @json($filters)
         };
-
-        // Stream preview management
-        let allPreviewsPlaying = false;
-        let autoplayEnabled = false;
-        let hoverTimeout = null;
-        const activeStreams = new Map();
-        const failedStreams = new Set();
-
-        function isSlowConnection() {
-            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-            if (!connection) return false;
-            if (connection.saveData) return true;
-            const slowTypes = ['slow-2g', '2g', '3g'];
-            if (slowTypes.includes(connection.effectiveType)) return true;
-            if (connection.downlink && connection.downlink < 1.5) return true;
-            return false;
-        }
-
-        function initAutoplay() {
-            const savedPref = localStorage.getItem('autoplayPreviews');
-            const checkbox = document.getElementById('autoplay-checkbox');
-
-            if (savedPref !== null) {
-                if (savedPref === 'true') {
-                    if (checkbox) checkbox.checked = true;
-                    toggleAutoplay(true, false);
-                }
-                return;
-            }
-
-            if (isSlowConnection()) return;
-
-            if (checkbox) checkbox.checked = true;
-            toggleAutoplay(true, true);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            initAutoplay();
-            window.addEventListener('load', () => {
-                if (allPreviewsPlaying) {
-                    setTimeout(playAllVisibleStreams, 500);
-                }
-            });
-        });
-
-        function updateToggleUI(playing) {
-            const toggle = document.getElementById('preview-toggle');
-            const label = document.getElementById('preview-label');
-            if (!toggle || !label) return;
-            const offIcon = toggle.querySelector('.preview-off');
-            const onIcon = toggle.querySelector('.preview-on');
-            if (playing) {
-                label.textContent = @json(__('Stop All'));
-                if (offIcon) offIcon.style.display = 'none';
-                if (onIcon) onIcon.style.display = 'block';
-                toggle.classList.add('active');
-            } else {
-                label.textContent = @json(__('Play All'));
-                if (offIcon) offIcon.style.display = 'block';
-                if (onIcon) onIcon.style.display = 'none';
-                toggle.classList.remove('active');
-            }
-        }
-
-        function toggleAutoplay(enabled, save = true) {
-            autoplayEnabled = enabled;
-            if (save) localStorage.setItem('autoplayPreviews', enabled);
-
-            if (enabled) {
-                allPreviewsPlaying = true;
-                updateToggleUI(true);
-                playAllVisibleStreams();
-            } else {
-                allPreviewsPlaying = false;
-                updateToggleUI(false);
-                stopAllStreams();
-            }
-        }
-
-        function toggleAllPreviews() {
-            allPreviewsPlaying = !allPreviewsPlaying;
-            autoplayEnabled = allPreviewsPlaying;
-
-            const checkbox = document.getElementById('autoplay-checkbox');
-            if (checkbox) checkbox.checked = allPreviewsPlaying;
-            localStorage.setItem('autoplayPreviews', allPreviewsPlaying);
-            updateToggleUI(allPreviewsPlaying);
-
-            if (allPreviewsPlaying) {
-                failedStreams.clear();
-                document.querySelectorAll('.stream-failed').forEach(el => {
-                    el.classList.remove('stream-failed');
-                    el.dataset.retryCount = '0';
-                });
-                playAllVisibleStreams();
-            } else {
-                stopAllStreams();
-            }
-        }
-
-        function playAllVisibleStreams() {
-            const cards = document.querySelectorAll('.model-card[data-stream-url]');
-            let delay = 0;
-            cards.forEach(card => {
-                const streamUrl = card.dataset.streamUrl;
-                if (streamUrl && isElementInViewport(card) && !activeStreams.has(card)) {
-                    if (delay === 0) {
-                        startStream(card, streamUrl);
-                    } else {
-                        setTimeout(() => {
-                            if (allPreviewsPlaying && isElementInViewport(card)) {
-                                startStream(card, streamUrl);
-                            }
-                        }, delay);
-                    }
-                    delay += 300;
-                }
-            });
-        }
-
-        function stopAllStreams() {
-            activeStreams.forEach((data, card) => {
-                stopStream(card);
-            });
-        }
-
-        function startStream(card, streamUrl) {
-            if (!streamUrl || activeStreams.has(card) || failedStreams.has(streamUrl)) return;
-
-            const video = card.querySelector('.model-card-video');
-            if (!video) return;
-
-            video.addEventListener('playing', () => {
-                card.classList.add('stream-playing');
-            }, { once: true });
-
-            const loadTimeout = setTimeout(() => {
-                if (!card.classList.contains('stream-playing')) {
-                    handleStreamError(card, streamUrl);
-                }
-            }, 15000);
-
-            if (Hls.isSupported()) {
-                const hls = new Hls({
-                    maxBufferLength: 10,
-                    maxMaxBufferLength: 20,
-                    startLevel: 0,
-                    capLevelToPlayerSize: true,
-                    manifestLoadingTimeOut: 12000,
-                    manifestLoadingMaxRetry: 2,
-                    levelLoadingTimeOut: 12000,
-                    fragLoadingTimeOut: 15000
-                });
-
-                hls.loadSource(streamUrl);
-                hls.attachMedia(video);
-
-                hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                    clearTimeout(loadTimeout);
-                    card.dataset.retryCount = '0';
-                    video.play().catch(() => handleStreamError(card, streamUrl));
-                });
-
-                hls.on(Hls.Events.ERROR, (event, data) => {
-                    if (data.fatal) {
-                        clearTimeout(loadTimeout);
-                        handleStreamError(card, streamUrl);
-                    }
-                });
-
-                activeStreams.set(card, { hls, timeout: loadTimeout });
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = streamUrl;
-                video.addEventListener('error', () => {
-                    clearTimeout(loadTimeout);
-                    handleStreamError(card, streamUrl);
-                }, { once: true });
-                video.play().catch(() => {
-                    clearTimeout(loadTimeout);
-                    handleStreamError(card, streamUrl);
-                });
-                activeStreams.set(card, { hls: null, timeout: loadTimeout });
-            }
-        }
-
-        function handleStreamError(card, streamUrl) {
-            stopStream(card);
-            const retryCount = parseInt(card.dataset.retryCount || '0', 10);
-            if (retryCount < 1) {
-                card.dataset.retryCount = String(retryCount + 1);
-                setTimeout(() => {
-                    if (allPreviewsPlaying && isElementInViewport(card)) {
-                        startStream(card, streamUrl);
-                    }
-                }, 2000);
-            } else {
-                failedStreams.add(streamUrl);
-                card.classList.add('stream-failed');
-            }
-        }
-
-        function stopStream(card) {
-            const streamData = activeStreams.get(card);
-            if (streamData) {
-                if (streamData.hls) streamData.hls.destroy();
-                if (streamData.timeout) clearTimeout(streamData.timeout);
-            }
-            const video = card.querySelector('.model-card-video');
-            if (video) {
-                video.pause();
-                video.src = '';
-                video.load();
-            }
-            card.classList.remove('stream-playing');
-            activeStreams.delete(card);
-        }
-
-        function isElementInViewport(el) {
-            const rect = el.getBoundingClientRect();
-            return (
-                rect.top < (window.innerHeight || document.documentElement.clientHeight) &&
-                rect.bottom > 0 &&
-                rect.left < (window.innerWidth || document.documentElement.clientWidth) &&
-                rect.right > 0
-            );
-        }
-
-        document.addEventListener('mouseenter', (e) => {
-            if (!(e.target instanceof Element)) return;
-            const card = e.target.closest('.model-card');
-            if (!card || allPreviewsPlaying) return;
-            if (activeStreams.has(card)) return;
-            const streamUrl = card.dataset.streamUrl;
-            if (!streamUrl) return;
-            hoverTimeout = setTimeout(() => startStream(card, streamUrl), 500);
-        }, true);
-
-        document.addEventListener('mouseleave', (e) => {
-            if (!(e.target instanceof Element)) return;
-            const card = e.target.closest('.model-card');
-            if (!card || allPreviewsPlaying) return;
-            if (hoverTimeout) { clearTimeout(hoverTimeout); hoverTimeout = null; }
-            if (!autoplayEnabled) stopStream(card);
-        }, true);
-
-        let scrollTimeout;
-        window.addEventListener('scroll', () => {
-            if (!allPreviewsPlaying) return;
-            clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => {
-                activeStreams.forEach((data, card) => {
-                    if (!isElementInViewport(card)) stopStream(card);
-                });
-                playAllVisibleStreams();
-            }, 200);
-        });
     </script>
+
+    {{-- Stream Preview Manager (shared across all listing pages) --}}
+    <script src="{{ asset('js/stream-previews.js') }}"></script>
 @endsection
