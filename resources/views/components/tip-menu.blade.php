@@ -92,7 +92,7 @@
         </div>
         
         @if ($affiliateUrl)
-            <a href="{{ $affiliateUrl }}" target="_blank" rel="noopener" class="tip-menu-cta-btn">
+            <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow noopener" class="tip-menu-cta-btn">
                 {{ __('Get Tokens') }}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M17 8l4 4m0 0l-4 4m4-4H3"/>

@@ -12,11 +12,11 @@
 
 @section('meta_description'){{ $translation?->meta_description ?? "Watch live cam models from {$countryName}. Browse {$modelsCount} models." }}@endsection
 
-@section('canonical'){{ $countryUrl }}@endsection
+@section('canonical'){{ $models->currentPage() > 1 ? $models->url($models->currentPage()) : $countryUrl }}@endsection
 
 @push('seo-pagination')
 <x-seo.schema :schemas="$seoSchemas" />
-@if(!empty($hreflangUrls))
+@if(!empty($hreflangUrls) && $models->currentPage() === 1)
 <x-seo.hreflang :urls="$hreflangUrls" />
 @endif
 @if($models->currentPage() > 1)

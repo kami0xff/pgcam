@@ -1,13 +1,13 @@
 @extends('layouts.pornguru')
 
-@section('title', $model->username . ' - Live Cam')
+@section('title'){{ $model->username }}@if($model->age) ({{ $model->age }})@endif - {{ $model->is_online ? __('Live Cam Now') : __('Cam Model Profile') }}@if($model->country) | {{ $model->country }}@endif | PornGuru @endsection
 
 @section('meta_description'){{ $metaDescription }}@endsection
 
 @section('canonical'){{ $model->url }}@endsection
 
 @section('og_type', 'profile')
-@section('og_title', $model->username . ' - ' . ($model->is_online ? 'Live Now' : 'Cam Model') . ' | PornGuru.cam')
+@section('og_title'){{ $model->username }}@if($model->age) ({{ $model->age }})@endif - {{ $model->is_online ? 'Live Now' : 'Cam Model' }}@if($model->country) | {{ $model->country }}@endif | PornGuru @endsection
 @section('og_description'){{ $metaDescription }}@endsection
 @section('og_image', $model->best_image_url)
 
@@ -78,7 +78,7 @@
                 @if($model->is_online && $model->best_stream_url)
                     {{-- Loading Skeleton --}}
                     <div class="stream-loading-skeleton" id="stream-skeleton">
-                        <img src="{{ $model->best_image_url }}" alt="{{ $model->username }}" class="stream-skeleton-bg">
+                        <img src="{{ $model->best_image_url }}" alt="{{ $model->username }} live stream" class="stream-skeleton-bg" width="640" height="480">
                         <div class="stream-skeleton-overlay">
                             <div class="stream-skeleton-spinner"></div>
                             <span>{{ __('Loading stream...') }}</span>
@@ -116,9 +116,9 @@
                 @elseif($model->is_online)
                     {{-- Online but no embed - show preview with link --}}
                     <div class="model-stream-preview">
-                        <img src="{{ $model->best_image_url }}" alt="{{ $model->username }}">
+                        <img src="{{ $model->best_image_url }}" alt="{{ $model->username }} live cam preview" width="640" height="480">
                         <div class="model-stream-preview-overlay">
-                            <a href="{{ $model->affiliate_url }}" target="_blank" rel="nofollow" class="model-stream-play-btn" data-affiliate="{{ $model->source_platform }}" data-model-name="{{ $model->username }}">
+                            <a href="{{ $model->affiliate_url }}" target="_blank" rel="nofollow noopener" class="model-stream-play-btn" data-affiliate="{{ $model->source_platform }}" data-model-name="{{ $model->username }}">
                                 <svg viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M8 5v14l11-7z"/>
                                 </svg>
@@ -130,12 +130,12 @@
                 @else
                     {{-- Offline - show preview --}}
                     <div class="model-stream-preview">
-                        <img src="{{ $model->best_image_url }}" alt="{{ $model->username }}">
+                        <img src="{{ $model->best_image_url }}" alt="{{ $model->username }} cam model" width="640" height="480">
                         <div class="model-stream-preview-overlay model-stream-preview-offline">
                             <div class="model-stream-offline-badge">{{ __('OFFLINE') }}</div>
-                            <h2>{{ $model->username }} {{ __('is Offline') }}</h2>
+                            <p class="model-stream-offline-name">{{ $model->username }} {{ __('is Offline') }}</p>
                             <p>{{ __('Check back later or browse other live models') }}</p>
-                            <a href="{{ $model->affiliate_url }}" target="_blank" rel="nofollow" class="btn btn-primary" data-affiliate="{{ $model->source_platform }}">
+                            <a href="{{ $model->affiliate_url }}" target="_blank" rel="nofollow noopener" class="btn btn-primary" data-affiliate="{{ $model->source_platform }}">
                                 {{ __('Visit Profile') }}
                             </a>
                         </div>
@@ -160,7 +160,7 @@
                 {{-- Top row: avatar + details + stats + favorite --}}
                 <div class="model-info-bar-top">
                     <div class="model-info-avatar">
-                        <img src="{{ $model->avatar_url }}" alt="{{ $model->username }}">
+                        <img src="{{ $model->avatar_url }}" alt="{{ $model->username }} avatar" width="48" height="48">
                         @if($model->is_online)
                             <span class="model-info-online-dot"></span>
                         @endif
@@ -214,26 +214,26 @@
                         : $model->affiliate_url;
                 @endphp
                 <div class="model-info-bar-actions">
-                    <a href="{{ $chatUrl }}" target="_blank" rel="nofollow" class="model-btn-private" data-affiliate="{{ $model->source_platform }}">
+                    <a href="{{ $chatUrl }}" target="_blank" rel="nofollow noopener" class="model-btn-private" data-affiliate="{{ $model->source_platform }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                             <path d="M7 11V7a5 5 0 0110 0v4"/>
                         </svg>
                         <span>{{ __('Private') }}</span>
                     </a>
-                    <a href="{{ $chatUrl }}" target="_blank" rel="nofollow" class="model-btn-tip" data-affiliate="{{ $model->source_platform }}">
+                    <a href="{{ $chatUrl }}" target="_blank" rel="nofollow noopener" class="model-btn-tip" data-affiliate="{{ $model->source_platform }}">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/>
                         </svg>
                         <span>{{ __('Tip') }}</span>
                     </a>
-                    <a href="{{ $chatUrl }}" target="_blank" rel="nofollow" class="model-btn-chat" data-affiliate="{{ $model->source_platform }}">
+                    <a href="{{ $chatUrl }}" target="_blank" rel="nofollow noopener" class="model-btn-chat" data-affiliate="{{ $model->source_platform }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
                         </svg>
                         <span>{{ __('Chat') }}</span>
                     </a>
-                    <a href="{{ $model->source_platform === 'stripchat' ? $model->affiliate_signup_url : $profileUrl }}" target="_blank" rel="nofollow" class="model-btn-profile" data-affiliate="{{ $model->source_platform }}">
+                    <a href="{{ $model->source_platform === 'stripchat' ? $model->affiliate_signup_url : $profileUrl }}" target="_blank" rel="nofollow noopener" class="model-btn-profile" data-affiliate="{{ $model->source_platform }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
                             <polyline points="15 3 21 3 21 9"/>
@@ -277,9 +277,9 @@
                     <div class="model-chat-overlay" id="chat-overlay" style="display: flex;">
                         <div class="model-chat-overlay-card">
                             <img src="{{ asset('stripchat-logo.svg') }}" alt="Stripchat" class="chat-overlay-platform-logo">
-                            <h3 class="model-chat-overlay-title">{{ __('Chat with') }} {{ $model->username }}</h3>
+                            <p class="model-chat-overlay-title">{{ __('Chat with') }} {{ $model->username }}</p>
                             <p class="model-chat-overlay-text">{{ __('Create a free Stripchat account to join the chat, send tips, and request private shows.') }}</p>
-                            <a href="{{ $model->affiliate_signup_url }}" target="_blank" rel="nofollow" class="btn btn-stripchat" data-affiliate="stripchat" style="width: 100%;">
+                            <a href="{{ $model->affiliate_signup_url }}" target="_blank" rel="nofollow noopener" class="btn btn-stripchat" data-affiliate="stripchat" style="width: 100%;">
                                 {{ __('Sign Up Free on Stripchat') }}
                             </a>
                         </div>
@@ -290,9 +290,9 @@
                     </div>
                     <div class="model-chat-overlay" id="chat-overlay" style="display: none;">
                         <div class="model-chat-overlay-card">
-                            <h3 class="model-chat-overlay-title">{{ __('Join the Chat') }}</h3>
+                            <p class="model-chat-overlay-title">{{ __('Join the Chat') }}</p>
                             <p class="model-chat-overlay-text">{{ __('Create a free account to chat!') }}</p>
-                            <a href="{{ $model->affiliate_signup_url }}" target="_blank" rel="nofollow" class="btn btn-primary" data-affiliate="{{ $model->source_platform }}" style="width: 100%;">
+                            <a href="{{ $model->affiliate_signup_url }}" target="_blank" rel="nofollow noopener" class="btn btn-primary" data-affiliate="{{ $model->source_platform }}" style="width: 100%;">
                                 {{ __('Sign Up Free') }}
                             </a>
                             <button onclick="hideChatOverlay()" class="model-chat-overlay-close">{{ __('Maybe later') }}</button>
@@ -306,10 +306,10 @@
 
     {{-- Stripchat Private CTA Section --}}
     @if($model->source_platform === 'stripchat')
-        <a href="{{ $model->affiliate_signup_url }}" target="_blank" rel="nofollow" class="stripchat-private-cta" data-affiliate="stripchat">
+        <a href="{{ $model->affiliate_signup_url }}" target="_blank" rel="nofollow noopener" class="stripchat-private-cta" data-affiliate="stripchat">
             <img src="{{ asset('stripchat-logo.svg') }}" alt="Stripchat" class="stripchat-private-logo">
             <div class="stripchat-private-text">
-                <h3>{{ __('Talk to') }} {{ $model->username }} {{ __('privately') }}</h3>
+                <p class="stripchat-private-heading">{{ __('Talk to') }} {{ $model->username }} {{ __('privately') }}</p>
                 <p>{{ __('Go 1-on-1 with cam2cam, voice chat, and exclusive private shows on Stripchat.') }}</p>
             </div>
         </a>
@@ -317,7 +317,7 @@
 
     {{-- Description (directly below stream) --}}
     <section class="model-section model-about-section">
-        <h3 class="model-section-title">{{ __('About') }} {{ $model->username }}</h3>
+        <h2 class="model-section-title">{{ __('About') }} {{ $model->username }}</h2>
         @if($modelDescription && !empty($modelDescription['long_description']))
             <div class="model-description-full">
                 @if(!empty($modelDescription['short_description']))
@@ -349,7 +349,7 @@
     {{-- FAQs Section --}}
     @if($modelFaqs->isNotEmpty())
         <section class="model-section model-faqs-section">
-            <h3 class="model-section-title">{{ __('Frequently Asked Questions') }}</h3>
+            <h2 class="model-section-title">{{ __('Frequently Asked Questions') }}</h2>
             <div class="model-faqs">
                 @foreach($modelFaqs as $faq)
                     <details class="model-faq-item">
@@ -416,7 +416,7 @@
     @if(isset($similarModels) && $similarModels->count() > 0)
         <section class="model-section">
             <div class="model-section-header">
-                <h3 class="model-section-title">{{ __('Suggested Models') }}</h3>
+                <h2 class="model-section-title">{{ __('Suggested Models') }}</h2>
                 <div class="similar-nav">
                     <button class="similar-nav-btn" id="similar-prev" onclick="scrollSimilar(-1)">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -437,14 +437,14 @@
                        data-stream-url="{{ $similar->best_stream_url }}"
                        data-preview="{{ $similar->snapshot_url ?? $similar->preview_url }}">
                         <div class="suggested-model-image">
-                            <img src="{{ $similar->best_image_url }}" alt="{{ $similar->username }}" class="suggested-model-thumb" loading="lazy">
+                            <img src="{{ $similar->best_image_url }}" alt="{{ $similar->username }} live cam" class="suggested-model-thumb" width="180" height="135" loading="lazy">
                             
                             @if($similar->is_online && $similar->best_stream_url)
                                 <video class="model-card-video" muted playsinline></video>
                             @endif
 
                             @if($similar->snapshot_url || $similar->preview_url)
-                                <img src="{{ $similar->snapshot_url ?? $similar->preview_url }}" alt="{{ $similar->username }}" class="suggested-model-preview" loading="lazy">
+                                <img src="{{ $similar->snapshot_url ?? $similar->preview_url }}" alt="{{ $similar->username }} preview" class="suggested-model-preview" width="180" height="135" loading="lazy">
                             @endif
                             @php
                                 $flagSource = $similar->country ?: ($similar->languages[0] ?? null);
@@ -468,7 +468,7 @@
     {{-- Tags Section --}}
     @if(!empty($model->tags) && count($model->tags) > 0)
         <section class="model-section">
-            <h3 class="model-section-title">{{ __('Tags') }}</h3>
+            <h2 class="model-section-title">{{ __('Tags') }}</h2>
             <div class="model-tags">
                 @foreach($model->tags as $tag)
                     <x-tag-link :tag="$tag" />

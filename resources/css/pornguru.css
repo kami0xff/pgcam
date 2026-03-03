@@ -3613,7 +3613,7 @@ input[type="checkbox"] {
   padding: 2rem;
 }
 
-.model-stream-preview-offline h2 {
+.model-stream-offline-name {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -4474,7 +4474,7 @@ input[type="checkbox"] {
   flex-shrink: 0;
 }
 
-.stripchat-private-text h3 {
+.stripchat-private-heading {
   font-size: 0.9375rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -4497,7 +4497,7 @@ input[type="checkbox"] {
     height: 32px;
   }
 
-  .stripchat-private-text h3 {
+  .stripchat-private-heading {
     font-size: 0.8125rem;
   }
 

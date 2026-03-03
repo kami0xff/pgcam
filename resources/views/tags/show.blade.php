@@ -4,11 +4,13 @@
 
 @section('meta_description'){{ $translation?->meta_description ?? "Watch live {$tag->localized_name} cam shows. Browse {$tag->models_count} models." }}@endsection
 
-@section('canonical'){{ $tag->url }}@endsection
+@section('canonical'){{ $models->currentPage() > 1 ? $models->url($models->currentPage()) : $tag->url }}@endsection
 
 @push('seo-pagination')
 <x-seo.schema :schemas="$seoSchemas" />
+@if($models->currentPage() === 1)
 <x-seo.hreflang :urls="$hreflangUrls" />
+@endif
 @if($models->currentPage() > 1)
     <link rel="prev" href="{{ $models->previousPageUrl() }}">
 @endif

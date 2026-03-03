@@ -16,7 +16,9 @@
             if ($loc !== 'en') $homeHreflangUrls[$loc] = url("/{$loc}");
         }
     @endphp
+    @if($models->currentPage() === 1)
     <x-seo.hreflang :urls="$homeHreflangUrls" />
+    @endif
     @if($models->currentPage() > 1)
         <link rel="prev" href="{{ $models->previousPageUrl() }}">
     @endif

@@ -16,8 +16,9 @@
         <div class="model-card-image">
             {{-- Static Image --}}
             <img src="{{ $model->best_image_url }}" 
-                 alt="{{ $model->username }}" 
+                 alt="{{ $model->username }} {{ $model->is_online ? __('live cam') : __('cam model') }}" 
                  class="model-card-thumb"
+                 width="320" height="240"
                  loading="lazy">
             
             {{-- Video Preview (hidden by default) --}}
