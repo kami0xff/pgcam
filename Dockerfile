@@ -74,7 +74,7 @@ RUN composer dump-autoload --optimize --no-dev --no-scripts
 
 # ==============================================
 # Stage 4: Build frontend assets (for production)
-# (needs vendor/ for Flux CSS)
+# (needs vendor/ for Blade component resolution)
 # ==============================================
 FROM node:20-alpine AS frontend
 
@@ -91,7 +91,7 @@ COPY resources ./resources
 COPY vite.config.js ./
 COPY public ./public
 
-# Copy vendor directory from composer stage (needed for Flux CSS!)
+# Copy vendor directory from composer stage
 COPY --from=composer /app/vendor ./vendor
 
 # Build production assets
