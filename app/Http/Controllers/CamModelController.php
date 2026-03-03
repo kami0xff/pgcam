@@ -351,23 +351,57 @@ class CamModelController extends Controller
     }
 
     /**
-     * Full-screen TikTok-style explore feed (mobile-first).
+     * Full-screen TikTok-style explore feed (mobile-first, SEO-friendly).
      */
-    public function explore()
+    public function explore(Request $request, ?string $category = null)
     {
-        $models = CamModel::where('is_online', true)
+        $validCategories = ['girls', 'couples', 'men', 'trans'];
+        if ($category && !in_array($category, $validCategories)) {
+            abort(404);
+        }
+
+        $perPage = 12;
+
+        $query = CamModel::where('is_online', true)
             ->where(function ($q) {
                 $q->whereNotNull('stream_url')->where('stream_url', '!=', '')
                   ->orWhereNotNull('stream_urls');
-            })
-            ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
-            ->orderBy('viewers_count', 'desc')
-            ->limit(10)
-            ->get()
-            ->filter(fn ($m) => $m->best_stream_url !== null);
+            });
+
+        if ($category) {
+            $query->inNiche($category);
+        }
+
+        $query->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
+            ->orderBy('viewers_count', 'desc');
+
+        $models = $query->paginate($perPage)->withQueryString();
+
+        $categoryLabels = [
+            null => __('All Live Cams'),
+            'girls' => __('Live Girls'),
+            'couples' => __('Live Couples'),
+            'men' => __('Live Men'),
+            'trans' => __('Live Trans'),
+        ];
+
+        $pageTitle = ($categoryLabels[$category] ?? $categoryLabels[null])
+            . ($models->currentPage() > 1 ? ' - ' . __('Page') . ' ' . $models->currentPage() : '');
+
+        $categoryUrls = [];
+        foreach ([null, ...$validCategories] as $cat) {
+            $categoryUrls[$cat ?? 'all'] = localized_route('explore', $cat ? ['category' => $cat] : []);
+        }
+
+        $hreflangUrls = $this->buildExploreHreflangUrls($category);
 
         return view('cam-models.explore', [
             'models' => $models,
+            'category' => $category,
+            'categoryLabels' => $categoryLabels,
+            'categoryUrls' => $categoryUrls,
+            'pageTitle' => $pageTitle,
+            'hreflangUrls' => $hreflangUrls,
         ]);
     }
 
@@ -379,13 +413,19 @@ class CamModelController extends Controller
         $offset = (int) $request->input('offset', 0);
         $limit = min((int) $request->input('limit', 6), 20);
         $exclude = $request->input('exclude', []);
+        $category = $request->input('category');
 
         $query = CamModel::where('is_online', true)
             ->where(function ($q) {
                 $q->whereNotNull('stream_url')->where('stream_url', '!=', '')
                   ->orWhereNotNull('stream_urls');
-            })
-            ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
+            });
+
+        if ($category && in_array($category, ['girls', 'couples', 'men', 'trans'])) {
+            $query->inNiche($category);
+        }
+
+        $query->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
             ->orderBy('viewers_count', 'desc');
 
         if (!empty($exclude)) {
@@ -400,6 +440,7 @@ class CamModelController extends Controller
                 'username' => $m->username,
                 'age' => $m->age,
                 'country' => $m->country,
+                'gender' => $m->gender,
                 'viewers_count' => $m->viewers_count,
                 'stream_url' => $m->best_stream_url,
                 'image_url' => $m->best_image_url,
@@ -410,9 +451,31 @@ class CamModelController extends Controller
                 'stream_title' => $m->stream_title,
                 'is_hd' => $m->is_hd,
                 'rating' => $m->rating,
+                'tags' => array_slice($m->tags ?? [], 0, 8),
+                'description' => $m->description ? \Illuminate\Support\Str::limit($m->description, 200) : null,
+                'languages' => $m->languages,
             ]),
             'hasMore' => $models->count() === $limit,
         ]);
+    }
+
+    private function buildExploreHreflangUrls(?string $category): array
+    {
+        $urls = [];
+        $priorityLocales = config('locales.priority', ['en', 'es', 'fr', 'de', 'pt']);
+        $params = $category ? ['category' => $category] : [];
+
+        foreach ($priorityLocales as $locale) {
+            if ($locale === 'en') {
+                $urls['en'] = route('explore', $params);
+            } else {
+                $path = "/{$locale}/explore" . ($category ? "/{$category}" : '');
+                $urls[$locale] = url($path);
+            }
+        }
+
+        $urls['x-default'] = route('explore', $params);
+        return $urls;
     }
 
     /**
