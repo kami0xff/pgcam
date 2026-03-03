@@ -80,6 +80,8 @@
             <a href="{{ localized_route('niche.show', 'men') }}" class="niche-bar-link {{ request()->segment(1) === 'men' || (request()->segment(2) === 'men') ? 'active' : '' }}">{{ __('Men') }}</a>
             <a href="{{ localized_route('niche.show', 'trans') }}" class="niche-bar-link {{ request()->segment(1) === 'trans' || (request()->segment(2) === 'trans') ? 'active' : '' }}">{{ __('Trans') }}</a>
             <span class="niche-bar-separator"></span>
+            <a href="{{ localized_route('explore') }}" class="niche-bar-link {{ request()->routeIs('explore*') ? 'active' : '' }}">{{ __('Explore') }}</a>
+            <span class="niche-bar-separator"></span>
             <a href="{{ localized_route('tags.index') }}" class="niche-bar-link {{ request()->routeIs('tags.index*') ? 'active' : '' }}">{{ __('Tags') }}</a>
             <a href="{{ localized_route('countries.index') }}" class="niche-bar-link {{ request()->routeIs('countries.index*') ? 'active' : '' }}">{{ __('Countries') }}</a>
         </div>
