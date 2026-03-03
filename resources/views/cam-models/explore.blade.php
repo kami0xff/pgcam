@@ -506,8 +506,12 @@
                 transform: translateY(100%);
                 transition: transform .35s cubic-bezier(.4,0,.2,1);
                 z-index: 60;
+                will-change: transform;
+                touch-action: none;
             }
             .xpl-panel.open { transform: translateY(0); }
+            .xpl-panel.dragging { transition: none; }
+            .xpl-actions { bottom: 40px; }
             .xpl-panel-handle {
                 display: flex; justify-content: center;
                 padding: 12px 0 6px;
@@ -743,13 +747,46 @@
     document.getElementById('xpl-panel-close').addEventListener('click', () => togglePanel(false));
     document.getElementById('xpl-panel-handle').addEventListener('click', () => togglePanel(false));
 
-    // Swipe-down on panel handle to close
-    let panelTouchY = 0;
-    const panelHandle = document.getElementById('xpl-panel-handle');
-    panelHandle.addEventListener('touchstart', e => { panelTouchY = e.touches[0].clientY; }, { passive: true });
-    panelHandle.addEventListener('touchend', e => {
-        const dy = e.changedTouches[0].clientY - panelTouchY;
-        if (dy > 50) togglePanel(false);
+    // Drag-to-dismiss on entire panel (mobile)
+    let dragStartY = 0, dragCurrentY = 0, isDragging = false;
+    const panelScroll = document.getElementById('xpl-panel-body');
+
+    panel.addEventListener('touchstart', e => {
+        if (window.innerWidth >= 992) return;
+        const scrollTop = panelScroll.scrollTop;
+        const target = e.target.closest('.xpl-panel-scroll');
+        if (target && scrollTop > 5) return;
+        dragStartY = e.touches[0].clientY;
+        dragCurrentY = dragStartY;
+        isDragging = false;
+    }, { passive: true });
+
+    panel.addEventListener('touchmove', e => {
+        if (window.innerWidth >= 992) return;
+        const y = e.touches[0].clientY;
+        const dy = y - dragStartY;
+        if (dy < 0) return;
+        if (!isDragging && dy > 8) {
+            isDragging = true;
+            panel.classList.add('dragging');
+        }
+        if (isDragging) {
+            dragCurrentY = y;
+            panel.style.transform = `translateY(${dy}px)`;
+        }
+    }, { passive: true });
+
+    panel.addEventListener('touchend', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        panel.classList.remove('dragging');
+        const dy = dragCurrentY - dragStartY;
+        panel.style.transform = '';
+        if (dy > 80) {
+            togglePanel(false);
+        } else {
+            togglePanel(true);
+        }
     }, { passive: true });
 
     function populatePanel(index) {
