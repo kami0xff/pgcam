@@ -458,6 +458,13 @@ class CamModelController extends Controller
                 'goal_needed' => $m->goal_needed,
                 'goal_earned' => $m->goal_earned,
                 'goal_progress' => $m->goal_progress,
+                'tip_menu' => \App\Models\ModelTipMenuItem::getForModel($m->username)
+                    ->take(6)
+                    ->map(fn ($item) => [
+                        'emoji' => $item->emoji,
+                        'name' => $item->translated_name,
+                        'price' => $item->token_price,
+                    ])->values(),
             ]),
             'hasMore' => $models->count() === $limit,
         ]);

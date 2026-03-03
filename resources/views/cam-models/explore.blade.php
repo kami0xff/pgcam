@@ -121,7 +121,6 @@
         @keyframes xpl-spin { to { transform: rotate(360deg); } }
         .xpl-slide.stream-active .xpl-spinner-wrap { display: none; }
 
-        /* ── Gradient overlay ── */
         .xpl-slide::after {
             content: '';
             position: absolute; inset: 0;
@@ -149,17 +148,13 @@
             text-shadow: 0 1px 3px rgba(0,0,0,.5);
             margin-bottom: 8px;
         }
-
-        /* Goal bar in video overlay — matches model page design */
         .xpl-goal-inline {
             position: relative;
-            width: 100%;
-            height: 36px;
+            width: 100%; height: 36px;
             background: #2C2C2C;
             border-radius: 18px;
             overflow: hidden;
-            display: flex;
-            align-items: center;
+            display: flex; align-items: center;
             box-shadow: 0 2px 6px rgba(0,0,0,.3);
             margin-bottom: 6px;
         }
@@ -195,7 +190,6 @@
             font-size: 12px; font-weight: 700; color: #fff;
             padding-left: 8px; white-space: nowrap;
         }
-
         .xpl-tags-row {
             display: flex; flex-wrap: wrap; gap: 4px;
             margin-top: 6px;
@@ -218,16 +212,13 @@
         .xpl-avatar {
             width: 48px; height: 48px;
             border-radius: 50%;
-            border: 2.5px solid #ef4444;
+            border: 2.5px solid var(--accent);
             overflow: hidden;
             display: block;
-            animation: xpl-live-ring 2s ease-in-out infinite;
-            box-shadow: 0 0 10px rgba(239,68,68,.4);
+            box-shadow: 0 0 10px var(--accent-glow);
+            transition: box-shadow .3s;
         }
-        @keyframes xpl-live-ring {
-            0%, 100% { box-shadow: 0 0 6px rgba(239,68,68,.3); }
-            50% { box-shadow: 0 0 16px rgba(239,68,68,.6); }
-        }
+        .xpl-avatar:hover { box-shadow: 0 0 18px var(--accent-glow); }
         .xpl-avatar img {
             width: 100%; height: 100%;
             object-fit: cover; display: block;
@@ -255,7 +246,7 @@
         }
 
         /* ══════════════════════════════════════════════
-           SIDEPANEL — rich model details
+           SIDEPANEL
            ══════════════════════════════════════════════ */
         .xpl-panel {
             width: 420px;
@@ -270,7 +261,6 @@
             scrollbar-color: rgba(255,255,255,.08) transparent;
         }
 
-        /* Panel header */
         .xpl-ph {
             padding: 20px;
             display: flex; align-items: center; gap: 14px;
@@ -279,7 +269,7 @@
         .xpl-ph-avatar {
             width: 56px; height: 56px; min-width: 56px;
             border-radius: 50%; overflow: hidden;
-            border: 2px solid #ef4444;
+            border: 2px solid var(--accent);
         }
         .xpl-ph-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .xpl-ph-info { min-width: 0; flex: 1; }
@@ -300,18 +290,18 @@
         }
         .xpl-ph-live {
             display: inline-flex; align-items: center; gap: 4px;
-            font-size: 12px; font-weight: 700; color: #ef4444;
+            font-size: 12px; font-weight: 700; color: var(--accent);
         }
         .xpl-ph-live-dot {
             width: 6px; height: 6px; border-radius: 50%;
-            background: #ef4444;
+            background: var(--accent);
             animation: xpl-dot-pulse 1.5s ease-in-out infinite;
         }
         @keyframes xpl-dot-pulse {
             0%, 100% { opacity: 1; } 50% { opacity: .3; }
         }
 
-        /* Panel action buttons row */
+        /* Panel action buttons */
         .xpl-pactions {
             display: flex; gap: 8px;
             padding: 16px 20px;
@@ -327,17 +317,11 @@
             border: none; cursor: pointer;
         }
         .xpl-paction svg { width: 16px; height: 16px; flex-shrink: 0; }
-        .xpl-paction-chat {
-            background: var(--gradient-fire);
+        .xpl-paction-tip {
+            background: var(--gradient-accent);
             color: #fff;
         }
-        .xpl-paction-chat:hover { opacity: .9; }
-        .xpl-paction-tip {
-            background: rgba(255,255,255,.06);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-        .xpl-paction-tip:hover { background: rgba(255,255,255,.1); }
+        .xpl-paction-tip:hover { opacity: .9; }
         .xpl-paction-profile {
             background: rgba(255,255,255,.06);
             color: var(--text-primary);
@@ -345,7 +329,7 @@
         }
         .xpl-paction-profile:hover { background: rgba(255,255,255,.1); }
 
-        /* Panel stats */
+        /* Stats grid */
         .xpl-stats {
             display: grid; grid-template-columns: 1fr 1fr 1fr;
             gap: 1px; background: var(--border);
@@ -367,57 +351,7 @@
             margin-top: 2px;
         }
 
-        /* Panel goal bar — same design as model page */
-        .xpl-pgoal {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-        }
-        .xpl-pgoal .goal-bar {
-            position: relative;
-            width: 100%; height: 48px;
-            background: #2C2C2C;
-            border-radius: 24px;
-            overflow: hidden;
-            display: flex; align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,.3);
-        }
-        .xpl-pgoal .goal-bar-fill {
-            position: absolute; top: 0; left: 0;
-            height: 100%;
-            background: linear-gradient(90deg, #22c55e 0%, #a3e635 100%);
-            transition: width .5s ease;
-        }
-        .xpl-pgoal .goal-bar-content {
-            position: relative; z-index: 1;
-            width: 100%; display: flex;
-            align-items: center; justify-content: space-between;
-            padding: 0 12px;
-        }
-        .xpl-pgoal .goal-bar-left {
-            display: flex; align-items: center; gap: 8px;
-            min-width: 0; flex: 1;
-        }
-        .xpl-pgoal .goal-bar-icon {
-            width: 32px; height: 32px; min-width: 32px;
-            border-radius: 50%;
-            background: rgba(34,197,94,.3);
-            backdrop-filter: blur(4px);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .xpl-pgoal .goal-bar-icon svg { width: 18px; height: 18px; color: #fff; }
-        .xpl-pgoal .goal-bar-text {
-            display: flex; align-items: center; gap: 5px;
-            font-weight: 600; font-size: 13px; color: #fff;
-            overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
-        }
-        .xpl-pgoal .goal-bar-tokens { color: #fbbf24; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,.5); }
-        .xpl-pgoal .goal-bar-msg { opacity: .9; overflow: hidden; text-overflow: ellipsis; }
-        .xpl-pgoal .goal-bar-pct {
-            font-weight: 700; font-size: 15px; color: #fff;
-            padding-left: 8px; white-space: nowrap;
-        }
-
-        /* Panel stream title */
+        /* Stream title */
         .xpl-pstream {
             padding: 12px 20px;
             border-bottom: 1px solid var(--border);
@@ -438,10 +372,30 @@
             text-transform: uppercase; letter-spacing: .5px;
         }
 
-        /* Tags */
-        .xpl-ptags-list {
-            display: flex; flex-wrap: wrap; gap: 6px;
+        /* Tip menu */
+        .xpl-tip-list { display: flex; flex-direction: column; gap: 0; }
+        .xpl-tip-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,.03);
         }
+        .xpl-tip-item:last-child { border-bottom: none; }
+        .xpl-tip-emoji {
+            font-size: 18px; width: 28px; text-align: center;
+            flex-shrink: 0;
+        }
+        .xpl-tip-name {
+            flex: 1; font-size: 14px; color: var(--text-secondary);
+            min-width: 0; overflow: hidden; text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .xpl-tip-price {
+            font-size: 13px; font-weight: 700; color: #fbbf24;
+            white-space: nowrap;
+        }
+
+        /* Tags */
+        .xpl-ptags-list { display: flex; flex-wrap: wrap; gap: 6px; }
         .xpl-ptag {
             font-size: 13px; color: var(--text-secondary);
             background: var(--bg-card);
@@ -463,9 +417,7 @@
         }
 
         /* Languages */
-        .xpl-plangs {
-            display: flex; flex-wrap: wrap; gap: 6px;
-        }
+        .xpl-plangs { display: flex; flex-wrap: wrap; gap: 6px; }
         .xpl-plang {
             font-size: 12px; color: var(--text-secondary);
             background: var(--bg-card);
@@ -473,7 +425,7 @@
             border: 1px solid var(--border);
         }
 
-        /* Panel CTA (bottom fixed) */
+        /* Panel CTA */
         .xpl-pcta {
             padding: 16px 20px;
             border-top: 1px solid var(--border);
@@ -482,12 +434,12 @@
         .xpl-pcta-main {
             display: block; width: 100%;
             padding: 14px;
-            background: var(--gradient-fire);
+            background: var(--gradient-accent);
             color: #fff; text-align: center;
             border-radius: var(--radius-lg); font-weight: 700;
             font-size: 15px; text-decoration: none;
             transition: opacity .15s;
-            box-shadow: 0 4px 16px rgba(239,68,68,.25);
+            box-shadow: 0 4px 16px var(--accent-glow);
         }
         .xpl-pcta-main:hover { opacity: .9; }
         .xpl-pcta-secondary {
@@ -502,14 +454,13 @@
         }
         .xpl-pcta-secondary:hover { background: var(--bg-card-hover); color: var(--text-primary); }
 
-        /* ── Mobile overrides ── */
+        /* ── Mobile ── */
         @media (max-width: 991px) {
             .xpl { flex-direction: column; height: calc(100dvh - 50px); }
             .xpl-center { padding: 0; }
             .xpl-phone {
                 max-width: 100%; max-height: 100%;
-                border-radius: 0;
-                box-shadow: none;
+                border-radius: 0; box-shadow: none;
             }
             .xpl-panel {
                 position: fixed; bottom: 0; left: 0; right: 0;
@@ -562,6 +513,7 @@
                         $goalTokens = (int) $gm[1];
                         $goalMsg = trim(preg_replace('/^\d+\s*/', '', $goalMsg));
                     }
+                    $tipItems = \App\Models\ModelTipMenuItem::getForModel($model->username)->take(6);
                 @endphp
                 <article class="xpl-slide"
                     data-model-id="{{ $model->id }}"
@@ -588,6 +540,11 @@
                         'goal_progress' => $goalPct,
                         'stream_title' => $model->stream_title,
                         'tags' => $mTags,
+                        'tip_menu' => $tipItems->map(fn($item) => [
+                            'emoji' => $item->emoji,
+                            'name' => $item->translated_name,
+                            'price' => $item->token_price,
+                        ])->values(),
                     ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) @endphp
                     </script>
 
@@ -599,7 +556,6 @@
                     <video muted playsinline preload="none"></video>
                     <div class="xpl-spinner-wrap"><div class="xpl-spinner"></div></div>
 
-                    {{-- Bottom info --}}
                     <div class="xpl-info">
                         <div class="xpl-name"><a href="{{ $model->url }}">{{ $model->username }}</a></div>
                         @if($model->stream_title)
@@ -631,21 +587,18 @@
                         @endif
                     </div>
 
-                    {{-- Right actions --}}
                     <div class="xpl-actions">
                         <div>
                             <a href="{{ $model->affiliate_url }}" target="_blank" rel="nofollow noopener" class="xpl-avatar" title="{{ $model->username }}">
                                 <img src="{{ $model->best_image_url }}" alt="{{ $model->username }}" width="48" height="48">
                             </a>
                         </div>
-
                         <div>
                             <button class="xpl-btn xpl-fav-btn" data-model-id="{{ $model->id }}" aria-label="{{ __('Favorite') }}">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
                             </button>
                             <div class="xpl-btn-label">{{ __('Fav') }}</div>
                         </div>
-
                         <div>
                             <a href="{{ $model->affiliate_url }}" target="_blank" rel="nofollow noopener" class="xpl-btn" title="{{ __('Chat') }}">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
@@ -654,7 +607,6 @@
                         </div>
                     </div>
 
-                    {{-- Crawlable model details --}}
                     <div class="explore-seo-pagination">
                         <p>{{ $model->username }}@if($model->age), {{ $model->age }} {{ __('years old') }}@endif @if($model->country) {{ __('from') }} {{ $model->country }}@endif.</p>
                         @if($model->description)<p>{{ \Illuminate\Support\Str::limit($model->description, 200) }}</p>@endif
@@ -666,7 +618,6 @@
         </div>
     </div>
 
-    {{-- Sidepanel --}}
     <div class="xpl-overlay" id="xpl-overlay"></div>
     <aside class="xpl-panel" id="xpl-panel">
         <div class="xpl-panel-handle"><span></span></div>
@@ -677,7 +628,6 @@
     </aside>
 </div>
 
-{{-- SEO Pagination --}}
 <nav class="explore-seo-pagination" aria-label="Pagination">
     <h2>{{ $pageTitle }}</h2>
     @if($models->currentPage() > 1)
@@ -748,25 +698,6 @@
     }
     overlay.addEventListener('click', () => togglePanel(false));
 
-    function buildGoalBarHtml(msg, tokens, pct) {
-        return `<div class="goal-bar">
-            <div class="goal-bar-fill" style="width:${pct}%"></div>
-            <div class="goal-bar-content">
-                <div class="goal-bar-left">
-                    <div class="goal-bar-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-                    </div>
-                    <div class="goal-bar-text">
-                        <span class="goal-bar-label">Goal:</span>
-                        ${tokens ? `<span class="goal-bar-tokens">${Number(tokens).toLocaleString()}</span>` : ''}
-                        <span class="goal-bar-msg">${esc(msg)}</span>
-                    </div>
-                </div>
-                <div class="goal-bar-pct">${pct}%</div>
-            </div>
-        </div>`;
-    }
-
     function populatePanel(index) {
         const slide = slides[index];
         if (!slide) return;
@@ -789,35 +720,26 @@
                 </div>
             </div>`;
 
-            // Action buttons row
+            // Actions: Tip + Profile only
             html += `<div class="xpl-pactions">
-                <a href="${d.affiliate_url}" target="_blank" rel="nofollow noopener" class="xpl-paction xpl-paction-chat">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-                    Chat
-                </a>
                 <a href="${d.affiliate_url}" target="_blank" rel="nofollow noopener" class="xpl-paction xpl-paction-tip">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/></svg>
-                    Tip
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/></svg>
+                    Send Tip
                 </a>
                 <a href="${d.url}" class="xpl-paction xpl-paction-profile">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     Profile
                 </a>
             </div>`;
 
-            // Stats row
-            html += `<div class="xpl-stats">`;
-            if (d.age) html += `<div class="xpl-stat"><div class="xpl-stat-val">${esc(d.age)}</div><div class="xpl-stat-label">Age</div></div>`;
-            if (d.country) html += `<div class="xpl-stat"><div class="xpl-stat-val">${d.flag || ''} ${esc(d.country)}</div><div class="xpl-stat-label">Country</div></div>`;
-            if (d.viewers) html += `<div class="xpl-stat"><div class="xpl-stat-val">${esc(d.viewers)}</div><div class="xpl-stat-label">Viewers</div></div>`;
-            if (d.rating) html += `<div class="xpl-stat"><div class="xpl-stat-val">⭐ ${Number(d.rating).toFixed(1)}</div><div class="xpl-stat-label">Rating</div></div>`;
-            html += `</div>`;
-
-            // Goal bar (model page style)
-            if (d.goal_message) {
-                const pct = d.goal_progress || 0;
-                html += `<div class="xpl-pgoal">${buildGoalBarHtml(d.goal_message, d.goal_tokens, pct)}</div>`;
-            }
+            // Stats
+            let statCount = 0;
+            let statsHtml = '';
+            if (d.age) { statsHtml += `<div class="xpl-stat"><div class="xpl-stat-val">${esc(d.age)}</div><div class="xpl-stat-label">Age</div></div>`; statCount++; }
+            if (d.country) { statsHtml += `<div class="xpl-stat"><div class="xpl-stat-val">${d.flag || ''} ${esc(d.country)}</div><div class="xpl-stat-label">Country</div></div>`; statCount++; }
+            if (d.viewers) { statsHtml += `<div class="xpl-stat"><div class="xpl-stat-val">${esc(d.viewers)}</div><div class="xpl-stat-label">Viewers</div></div>`; statCount++; }
+            if (d.rating) { statsHtml += `<div class="xpl-stat"><div class="xpl-stat-val">⭐ ${Number(d.rating).toFixed(1)}</div><div class="xpl-stat-label">Rating</div></div>`; statCount++; }
+            if (statCount) html += `<div class="xpl-stats" style="grid-template-columns:repeat(${Math.min(statCount,4)},1fr)">${statsHtml}</div>`;
 
             // Stream title
             if (d.stream_title) {
@@ -827,19 +749,33 @@
                 </div>`;
             }
 
-            // Tags
-            if (d.tags && d.tags.length) {
-                html += `<div class="xpl-psection">
-                    <div class="xpl-psection-title">Tags</div>
-                    <div class="xpl-ptags-list">${d.tags.map(t => `<span class="xpl-ptag">#${esc(t)}</span>`).join('')}</div>
-                </div>`;
-            }
-
             // Description
             if (d.description) {
                 html += `<div class="xpl-psection">
                     <div class="xpl-psection-title">About ${esc(d.username)}</div>
                     <div class="xpl-pdesc-text">${esc(d.description)}</div>
+                </div>`;
+            }
+
+            // Tip menu
+            if (d.tip_menu && d.tip_menu.length) {
+                html += `<div class="xpl-psection">
+                    <div class="xpl-psection-title">🎁 Tip Menu</div>
+                    <div class="xpl-tip-list">
+                        ${d.tip_menu.map(t => `<div class="xpl-tip-item">
+                            <span class="xpl-tip-emoji">${t.emoji || '🎁'}</span>
+                            <span class="xpl-tip-name">${esc(t.name)}</span>
+                            <span class="xpl-tip-price">${Number(t.price).toLocaleString()} tk</span>
+                        </div>`).join('')}
+                    </div>
+                </div>`;
+            }
+
+            // Tags
+            if (d.tags && d.tags.length) {
+                html += `<div class="xpl-psection">
+                    <div class="xpl-psection-title">Tags</div>
+                    <div class="xpl-ptags-list">${d.tags.map(t => `<span class="xpl-ptag">#${esc(t)}</span>`).join('')}</div>
                 </div>`;
             }
 
@@ -856,7 +792,7 @@
             // Bottom CTA
             panelCta.style.display = '';
             panelCta.innerHTML = `
-                <a href="${d.affiliate_url}" target="_blank" rel="nofollow noopener" class="xpl-pcta-main">Join ${esc(d.username)}'s Live Show</a>
+                <a href="${d.affiliate_url}" target="_blank" rel="nofollow noopener" class="xpl-pcta-main">Watch ${esc(d.username)} Live</a>
                 <a href="${d.url}" class="xpl-pcta-secondary">View Full Profile</a>
             `;
         } catch (e) { console.error('Panel error', e); }
@@ -1007,6 +943,7 @@
             goal_progress: m.goal_progress || 0,
             stream_title: m.stream_title || '',
             tags: m.tags || [],
+            tip_menu: m.tip_menu || [],
         };
 
         const tags = (m.tags || []).slice(0, 3).map(t => `<span class="xpl-tag">#${esc(t)}</span>`).join('');
