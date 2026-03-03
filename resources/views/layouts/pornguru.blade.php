@@ -13,7 +13,7 @@
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
 
     <!-- RTA Label (Restricted to Adults - parental filtering) -->
-    <meta name="rating" content="RTA-5042-1996-1400-1577-RTA" />
+    <meta name="RATING" content="RTA-5042-1996-1400-1577-RTA" />
 
     <!-- Canonical URL -->
     <link rel="canonical" href="@yield('canonical', url()->current())">

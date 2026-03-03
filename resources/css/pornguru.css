@@ -2165,9 +2165,10 @@ button {
   transform: translateY(-1px);
 }
 
-.advocacy-svg {
+.advocacy-badge img {
   height: 34px;
   width: auto;
+  display: block;
 }
 
 .advocacy-learn-more {
@@ -2189,7 +2190,7 @@ button {
     gap: 0.75rem;
   }
 
-  .advocacy-svg {
+  .advocacy-badge img {
     height: 28px;
   }
 

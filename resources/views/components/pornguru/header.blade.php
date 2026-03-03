@@ -7,9 +7,9 @@
 
         <!-- Desktop Nav -->
         <nav class="nav-center">
-            <a href="https://pornguru.com" class="nav-link">{{ __('Best Porn Sites') }}</a>
+            <a href="https://pornguru.com" class="nav-link" rel="nofollow noopener" target="_blank">{{ __('Best Porn Sites') }}</a>
             <a href="{{ localized_route('home') }}" class="nav-link {{ request()->routeIs('home*') ? 'active' : '' }}">{{ __('Live Cams') }}</a>
-            <a href="#" class="nav-link">{{ __('Blog') }}</a>
+            <a href="https://pornguru.com/blog" class="nav-link" rel="nofollow noopener" target="_blank">{{ __('Blog') }}</a>
         </nav>
 
         <!-- Right Side -->
@@ -90,7 +90,8 @@
         <a href="{{ localized_route('home') }}" class="mobile-menu-link {{ request()->routeIs('home*') ? 'active' : '' }}">{{ __('Live Cams') }}</a>
         <a href="{{ localized_route('tags.index') }}" class="mobile-menu-link">{{ __('Tags') }}</a>
         <a href="{{ localized_route('countries.index') }}" class="mobile-menu-link">{{ __('Countries') }}</a>
-        <a href="https://pornguru.com" class="mobile-menu-link">{{ __('Best Porn Sites') }}</a>
+        <a href="https://pornguru.com" class="mobile-menu-link" rel="nofollow noopener">{{ __('Best Porn Sites') }}</a>
+        <a href="https://pornguru.com/blog" class="mobile-menu-link" rel="nofollow noopener">{{ __('Blog') }}</a>
         <div class="mobile-menu-divider"></div>
         @auth
             <a href="{{ route('dashboard') }}" class="mobile-menu-link">{{ __('Dashboard') }}</a>
