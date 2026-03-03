@@ -131,32 +131,32 @@
 
         /* ── Bottom info ── */
         .xpl-info {
-            position: absolute; bottom: 16px; left: 16px; right: 68px;
+            position: absolute; bottom: 12px; left: 12px; right: 62px;
             z-index: 10; color: var(--text-primary);
         }
         .xpl-name {
-            font-size: 18px; font-weight: 700;
-            margin-bottom: 4px;
-            text-shadow: 0 1px 4px rgba(0,0,0,.6);
+            font-size: 15px; font-weight: 700;
+            margin-bottom: 2px;
+            text-shadow: 0 1px 3px rgba(0,0,0,.6);
         }
         .xpl-name a { color: var(--text-primary); text-decoration: none; }
         .xpl-title {
-            font-size: 13px; opacity: .85;
-            line-height: 1.4;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+            font-size: 12px; opacity: .85;
+            line-height: 1.3;
+            display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;
             overflow: hidden;
             text-shadow: 0 1px 3px rgba(0,0,0,.5);
-            margin-bottom: 8px;
+            margin-bottom: 5px;
         }
         .xpl-goal-inline {
             position: relative;
-            width: 100%; height: 36px;
+            width: 100%; height: 28px;
             background: #2C2C2C;
-            border-radius: 18px;
+            border-radius: 14px;
             overflow: hidden;
             display: flex; align-items: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,.3);
-            margin-bottom: 6px;
+            box-shadow: 0 1px 4px rgba(0,0,0,.3);
+            margin-bottom: 4px;
         }
         .xpl-goal-inline-fill {
             position: absolute; top: 0; left: 0;
@@ -168,38 +168,61 @@
             position: relative; z-index: 1;
             width: 100%; display: flex;
             align-items: center; justify-content: space-between;
-            padding: 0 10px;
+            padding: 0 8px;
         }
         .xpl-goal-inline-left {
-            display: flex; align-items: center; gap: 6px;
+            display: flex; align-items: center; gap: 5px;
             min-width: 0; flex: 1;
         }
         .xpl-goal-inline-icon {
-            width: 24px; height: 24px; min-width: 24px;
+            width: 20px; height: 20px; min-width: 20px;
             border-radius: 50%;
             background: rgba(34,197,94,.3);
             display: flex; align-items: center; justify-content: center;
         }
-        .xpl-goal-inline-icon svg { width: 14px; height: 14px; color: #fff; }
+        .xpl-goal-inline-icon svg { width: 12px; height: 12px; color: #fff; }
         .xpl-goal-inline-text {
-            font-size: 11px; font-weight: 600; color: #fff;
+            font-size: 10px; font-weight: 600; color: #fff;
             overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
         }
         .xpl-goal-inline-tokens { color: #fbbf24; font-weight: 700; }
         .xpl-goal-inline-pct {
-            font-size: 12px; font-weight: 700; color: #fff;
-            padding-left: 8px; white-space: nowrap;
+            font-size: 10px; font-weight: 700; color: #fff;
+            padding-left: 6px; white-space: nowrap;
         }
         .xpl-tags-row {
-            display: flex; flex-wrap: wrap; gap: 4px;
-            margin-top: 6px;
+            display: flex; flex-wrap: wrap; gap: 3px;
+            margin-top: 4px;
         }
         .xpl-tag {
-            font-size: 11px;
+            font-size: 10px;
             background: rgba(255,255,255,.12);
-            padding: 2px 8px;
+            padding: 1px 6px;
             border-radius: var(--radius-sm);
             backdrop-filter: blur(4px);
+        }
+        /* Tap hint for mobile */
+        .xpl-info-tap {
+            display: none;
+            font-size: 10px;
+            color: rgba(255,255,255,.4);
+            margin-top: 4px;
+        }
+        @media (max-width: 991px) {
+            .xpl-info { cursor: pointer; }
+            .xpl-info-tap { display: block; }
+        }
+        @media (min-width: 992px) {
+            .xpl-name { font-size: 18px; margin-bottom: 4px; }
+            .xpl-title { font-size: 13px; -webkit-line-clamp: 2; margin-bottom: 8px; }
+            .xpl-goal-inline { height: 36px; border-radius: 18px; margin-bottom: 6px; }
+            .xpl-goal-inline-content { padding: 0 10px; }
+            .xpl-goal-inline-icon { width: 24px; height: 24px; min-width: 24px; }
+            .xpl-goal-inline-icon svg { width: 14px; height: 14px; }
+            .xpl-goal-inline-text { font-size: 11px; }
+            .xpl-goal-inline-pct { font-size: 12px; padding-left: 8px; }
+            .xpl-tag { font-size: 11px; padding: 2px 8px; }
+            .xpl-info { bottom: 16px; left: 16px; right: 68px; }
         }
 
         /* ── Right actions ── */
@@ -569,7 +592,7 @@
                     <video muted playsinline preload="none"></video>
                     <div class="xpl-spinner-wrap"><div class="xpl-spinner"></div></div>
 
-                    <div class="xpl-info">
+                    <div class="xpl-info" onclick="if(window.innerWidth<992){event.preventDefault();togglePanel(true)}">
                         <div class="xpl-name"><a href="{{ $model->url }}">{{ $model->username }}</a></div>
                         @if($model->stream_title)
                         <div class="xpl-title">{{ $model->stream_title }}</div>
@@ -598,6 +621,7 @@
                             @endforeach
                         </div>
                         @endif
+                        <div class="xpl-info-tap">{{ __('Tap for details') }} ↑</div>
                     </div>
 
                     <div class="xpl-actions">
@@ -705,11 +729,11 @@
         });
     }
 
-    function togglePanel(show) {
+    window.togglePanel = function(show) {
         if (show === undefined) show = !panel.classList.contains('open');
         panel.classList.toggle('open', show);
         overlay.classList.toggle('active', show);
-    }
+    };
     overlay.addEventListener('click', () => togglePanel(false));
     document.getElementById('xpl-panel-close').addEventListener('click', () => togglePanel(false));
     document.getElementById('xpl-panel-handle').addEventListener('click', () => togglePanel(false));
@@ -992,11 +1016,12 @@
             <img class="xpl-poster" src="${m.image_url}" alt="${esc(m.username)}" loading="lazy" width="640" height="480">
             <video muted playsinline preload="none"></video>
             <div class="xpl-spinner-wrap"><div class="xpl-spinner"></div></div>
-            <div class="xpl-info">
+            <div class="xpl-info" onclick="if(window.innerWidth<992){event.preventDefault();togglePanel(true)}">
                 <div class="xpl-name"><a href="${m.url}">${esc(m.username)}</a></div>
                 ${m.stream_title ? `<div class="xpl-title">${esc(m.stream_title)}</div>` : ''}
                 ${goalHtml}
                 ${tags ? `<div class="xpl-tags-row">${tags}</div>` : ''}
+                <div class="xpl-info-tap">Tap for details ↑</div>
             </div>
             <div class="xpl-actions">
                 <div>
@@ -1024,13 +1049,6 @@
     const _esc = document.createElement('div');
     function esc(s) { _esc.textContent = s || ''; return _esc.innerHTML; }
 
-    // Swipe-up on feed to open panel on mobile
-    let feedTouchY = 0;
-    feed.addEventListener('touchstart', e => { feedTouchY = e.touches[0].clientY; }, { passive: true });
-    feed.addEventListener('touchend', e => {
-        const dy = feedTouchY - e.changedTouches[0].clientY;
-        if (dy > 100 && window.innerWidth < 992) togglePanel(true);
-    }, { passive: true });
 
     let scrollTimer;
     feed.addEventListener('scroll', () => {
