@@ -329,6 +329,7 @@ class CamModelController extends Controller
         }
 
         $models = CamModel::where('is_online', true)
+            ->where('gender', 'female')
             ->where(function ($q) use ($country) {
                 $q->where('country', $country->name)
                   ->orWhere('country', $country->code);
