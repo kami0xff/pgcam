@@ -131,7 +131,7 @@
 
         /* ── Bottom info ── */
         .xpl-info {
-            position: absolute; bottom: 12px; left: 12px; right: 62px;
+            position: absolute; bottom: 24px; left: 12px; right: 62px;
             z-index: 10; color: var(--text-primary);
         }
         .xpl-name {
@@ -139,6 +139,17 @@
             margin-bottom: 2px;
             text-shadow: 0 1px 3px rgba(0,0,0,.6);
         }
+        .xpl-join-cta {
+            display: block;
+            font-size: 11px; font-weight: 500;
+            color: rgba(255,255,255,.7);
+            text-decoration: none;
+            margin-bottom: 4px;
+            text-shadow: 0 1px 3px rgba(0,0,0,.5);
+            overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+        }
+        .xpl-join-cta:hover { color: #fff; }
+        .xpl-join-cta span { color: var(--accent); font-weight: 600; }
         .xpl-name a { color: var(--text-primary); text-decoration: none; }
         .xpl-title {
             font-size: 12px; opacity: .85;
@@ -223,11 +234,12 @@
             .xpl-goal-inline-pct { font-size: 12px; padding-left: 8px; }
             .xpl-tag { font-size: 11px; padding: 2px 8px; }
             .xpl-info { bottom: 16px; left: 16px; right: 68px; }
+            .xpl-join-cta { font-size: 12px; margin-bottom: 6px; }
         }
 
         /* ── Right actions ── */
         .xpl-actions {
-            position: absolute; right: 10px; bottom: 20px;
+            position: absolute; right: 10px; bottom: 30px;
             display: flex; flex-direction: column;
             align-items: center; gap: 20px;
             z-index: 10;
@@ -597,6 +609,7 @@
                         @if($model->stream_title)
                         <div class="xpl-title">{{ $model->stream_title }}</div>
                         @endif
+                        <a class="xpl-join-cta" href="{{ $model->affiliate_url }}" target="_blank" rel="nofollow noopener" onclick="event.stopPropagation()">{{ __('Tap to join') }} <span>{{ $model->username }}</span> {{ __('on') }} {{ ucfirst($model->source_platform) }} →</a>
                         @if($model->goal_message)
                         <div class="xpl-goal-inline">
                             <div class="xpl-goal-inline-fill" style="width:{{ $goalPct }}%"></div>
@@ -698,9 +711,8 @@
     const MAX_ACTIVE_HLS = 8;
     const API_URL = '{{ route("api.explore") }}';
     const CATEGORY = @json($category);
-
-    const favorites = new Set(JSON.parse(localStorage.getItem('xpl_favs') || '[]'));
-    function saveFavs() { localStorage.setItem('xpl_favs', JSON.stringify([...favorites])); }
+    const IS_AUTHED = {{ auth()->check() ? 'true' : 'false' }};
+    const REGISTER_URL = '{{ route("register") }}';
 
     function initSlides() {
         slides.length = 0;
@@ -708,25 +720,18 @@
             slides.push(s);
             bindSlideEvents(s);
         });
-        updateFavButtons();
     }
 
     function bindSlideEvents(slide) {
         const favBtn = slide.querySelector('.xpl-fav-btn');
         if (favBtn) {
             favBtn.addEventListener('click', () => {
-                const id = slide.dataset.modelId;
-                if (favorites.has(id)) favorites.delete(id); else favorites.add(id);
-                saveFavs(); updateFavButtons();
+                if (!IS_AUTHED) {
+                    window.location.href = REGISTER_URL;
+                    return;
+                }
             });
         }
-    }
-
-    function updateFavButtons() {
-        document.querySelectorAll('.xpl-fav-btn').forEach(btn => {
-            const id = btn.closest('.xpl-slide')?.dataset.modelId;
-            btn.classList.toggle('is-fav', favorites.has(id));
-        });
     }
 
     window.togglePanel = function(show) {
@@ -962,7 +967,6 @@
                 slides.push(slide);
                 bindSlideEvents(slide);
             });
-            updateFavButtons();
         } catch (e) { console.error('Load error:', e); }
         finally { isLoadingMore = false; }
     }
@@ -1019,6 +1023,7 @@
             <div class="xpl-info" onclick="if(window.innerWidth<992){event.preventDefault();togglePanel(true)}">
                 <div class="xpl-name"><a href="${m.url}">${esc(m.username)}</a></div>
                 ${m.stream_title ? `<div class="xpl-title">${esc(m.stream_title)}</div>` : ''}
+                <a class="xpl-join-cta" href="${m.affiliate_url}" target="_blank" rel="nofollow noopener" onclick="event.stopPropagation()">Tap to join <span>${esc(m.username)}</span> on ${esc(m.platform || '')} →</a>
                 ${goalHtml}
                 ${tags ? `<div class="xpl-tags-row">${tags}</div>` : ''}
                 <div class="xpl-info-tap">Tap for details ↑</div>
