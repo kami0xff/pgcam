@@ -355,12 +355,15 @@ class CamModelController extends Controller
     public function explore()
     {
         $models = CamModel::where('is_online', true)
-            ->whereNotNull('best_stream_url')
-            ->where('best_stream_url', '!=', '')
+            ->where(function ($q) {
+                $q->whereNotNull('stream_url')->where('stream_url', '!=', '')
+                  ->orWhereNotNull('stream_urls');
+            })
             ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
             ->orderBy('viewers_count', 'desc')
             ->limit(10)
-            ->get();
+            ->get()
+            ->filter(fn ($m) => $m->best_stream_url !== null);
 
         return view('cam-models.explore', [
             'models' => $models,
@@ -377,8 +380,10 @@ class CamModelController extends Controller
         $exclude = $request->input('exclude', []);
 
         $query = CamModel::where('is_online', true)
-            ->whereNotNull('best_stream_url')
-            ->where('best_stream_url', '!=', '')
+            ->where(function ($q) {
+                $q->whereNotNull('stream_url')->where('stream_url', '!=', '')
+                  ->orWhereNotNull('stream_urls');
+            })
             ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
             ->orderBy('viewers_count', 'desc');
 
