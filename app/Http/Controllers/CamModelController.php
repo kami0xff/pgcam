@@ -257,30 +257,48 @@ class CamModelController extends Controller
             ->limit(12)
             ->get();
 
-        // Get next/previous online models for navigation
+        // Get next/previous online models sorted by viewers (same order as homepage)
+        // "Next" = the model with fewer viewers (lower in the list)
         $nextModel = CamModel::where('is_online', true)
-            ->where('id', '>', $model->id)
-            ->orderBy('id', 'asc')
+            ->where('id', '!=', $model->id)
+            ->where(function ($q) use ($model) {
+                $q->where('viewers_count', '<', $model->viewers_count)
+                    ->orWhere(function ($q2) use ($model) {
+                        $q2->where('viewers_count', $model->viewers_count)
+                            ->where('id', '<', $model->id);
+                    });
+            })
+            ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
+            ->orderBy('viewers_count', 'desc')
             ->first();
 
+        // "Prev" = the model with more viewers (higher in the list)
         $prevModel = CamModel::where('is_online', true)
-            ->where('id', '<', $model->id)
-            ->orderBy('id', 'desc')
+            ->where('id', '!=', $model->id)
+            ->where(function ($q) use ($model) {
+                $q->where('viewers_count', '>', $model->viewers_count)
+                    ->orWhere(function ($q2) use ($model) {
+                        $q2->where('viewers_count', $model->viewers_count)
+                            ->where('id', '>', $model->id);
+                    });
+            })
+            ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
+            ->orderBy('viewers_count', 'asc')
             ->first();
 
-        // If no next, wrap to first online model
-        if (!$nextModel) {
+        // Wrap around if at either end of the list
+        if (! $nextModel) {
             $nextModel = CamModel::where('is_online', true)
                 ->where('id', '!=', $model->id)
-                ->orderBy('id', 'asc')
+                ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
+                ->orderBy('viewers_count', 'desc')
                 ->first();
         }
-
-        // If no prev, wrap to last online model
-        if (!$prevModel) {
+        if (! $prevModel) {
             $prevModel = CamModel::where('is_online', true)
                 ->where('id', '!=', $model->id)
-                ->orderBy('id', 'desc')
+                ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
+                ->orderBy('viewers_count', 'asc')
                 ->first();
         }
 

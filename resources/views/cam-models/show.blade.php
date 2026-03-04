@@ -612,13 +612,27 @@
     }
 
     function toggleFullscreen() {
+        const video = document.getElementById('stream-player');
         const player = document.querySelector('.model-stream-player-wide');
-        if (!player) return;
-        
-        if (document.fullscreenElement) {
-            document.exitFullscreen();
-        } else {
-            player.requestFullscreen().catch(() => {});
+        const fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
+
+        if (fsEl) {
+            if (document.exitFullscreen) document.exitFullscreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+            return;
+        }
+
+        if (player && player.requestFullscreen) {
+            player.requestFullscreen().catch(function() {
+                if (video && video.webkitEnterFullscreen) video.webkitEnterFullscreen();
+            });
+        } else if (player && player.webkitRequestFullscreen) {
+            player.webkitRequestFullscreen();
+        } else if (player && player.mozRequestFullScreen) {
+            player.mozRequestFullScreen();
+        } else if (video && video.webkitEnterFullscreen) {
+            video.webkitEnterFullscreen();
         }
     }
 
@@ -737,8 +751,8 @@
                 toggleFullscreen();
                 break;
             case 'Escape':
-                if (document.fullscreenElement) {
-                    document.exitFullscreen();
+                if (document.fullscreenElement || document.webkitFullscreenElement) {
+                    toggleFullscreen();
                 }
                 break;
         }
