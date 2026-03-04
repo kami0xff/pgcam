@@ -273,6 +273,12 @@
         .xpl-btn svg { width: 22px; height: 22px; }
         .xpl-btn.is-fav { color: #ef4444; }
         .xpl-btn.is-fav svg { fill: #ef4444; }
+        .xpl-btn.is-unmuted { color: var(--accent); background: rgba(var(--accent-rgb, 59,130,246), .25); }
+        .xpl-sound-off, .xpl-sound-on { display: none; }
+        .xpl-mute-btn .xpl-sound-off { display: block; }
+        .xpl-mute-btn .xpl-sound-on { display: none; }
+        .xpl-mute-btn.is-unmuted .xpl-sound-off { display: none; }
+        .xpl-mute-btn.is-unmuted .xpl-sound-on { display: block; }
         .xpl-btn-label {
             font-size: 10px; font-weight: 600;
             margin-top: 2px; text-align: center;
@@ -648,6 +654,13 @@
                             </a>
                         </div>
                         <div>
+                            <button class="xpl-btn xpl-mute-btn" aria-label="{{ __('Toggle sound') }}">
+                                <svg class="xpl-sound-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+                                <svg class="xpl-sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/><path d="M15.54 8.46a5 5 0 010 7.07"/></svg>
+                            </button>
+                            <div class="xpl-btn-label">{{ __('Sound') }}</div>
+                        </div>
+                        <div>
                             <button class="xpl-btn xpl-fav-btn" data-model-id="{{ $model->id }}" aria-label="{{ __('Favorite') }}">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
                             </button>
@@ -717,6 +730,7 @@
     const CATEGORY = @json($category);
     const IS_AUTHED = {{ auth()->check() ? 'true' : 'false' }};
     const REGISTER_URL = '{{ route("register") }}';
+    let isMuted = true;
 
     function initSlides() {
         slides.length = 0;
@@ -724,6 +738,19 @@
             slides.push(s);
             bindSlideEvents(s);
         });
+    }
+
+    function syncMuteUI() {
+        document.querySelectorAll('.xpl-mute-btn').forEach(btn => {
+            btn.classList.toggle('is-unmuted', !isMuted);
+        });
+    }
+
+    function applyMuteState() {
+        const slide = slides[currentIndex];
+        if (!slide) return;
+        const video = slide.querySelector('video');
+        if (video) video.muted = isMuted;
     }
 
     function bindSlideEvents(slide) {
@@ -734,6 +761,14 @@
                     window.location.href = REGISTER_URL;
                     return;
                 }
+            });
+        }
+        const muteBtn = slide.querySelector('.xpl-mute-btn');
+        if (muteBtn) {
+            muteBtn.addEventListener('click', () => {
+                isMuted = !isMuted;
+                applyMuteState();
+                syncMuteUI();
             });
         }
     }
@@ -911,6 +946,7 @@
             else if (dist > PRELOAD_AHEAD + 1) destroyStream(slide);
         }
         pauseNonCurrent();
+        applyMuteState();
         if (hlsInstances.size > MAX_ACTIVE_HLS) pruneDistant();
     }
 
@@ -930,6 +966,7 @@
             hls.attachMedia(video);
             hls.on(Hls.Events.MANIFEST_PARSED, () => {
                 if (slides[currentIndex] === slide) {
+                    video.muted = isMuted;
                     video.play().then(() => { slide.classList.add('stream-active'); hlsInstances.set(slide, { hls, state: 'playing' }); }).catch(() => {});
                 } else {
                     hlsInstances.set(slide, { hls, state: 'preloaded' });
@@ -1070,6 +1107,13 @@
                     <a href="${m.affiliate_url}" target="_blank" rel="nofollow noopener" class="xpl-avatar">
                         <img src="${m.image_url}" alt="${esc(m.username)}" width="48" height="48">
                     </a>
+                </div>
+                <div>
+                    <button class="xpl-btn xpl-mute-btn" aria-label="Toggle sound">
+                        <svg class="xpl-sound-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+                        <svg class="xpl-sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/><path d="M15.54 8.46a5 5 0 010 7.07"/></svg>
+                    </button>
+                    <div class="xpl-btn-label">Sound</div>
                 </div>
                 <div>
                     <button class="xpl-btn xpl-fav-btn" data-model-id="${m.id}">
