@@ -7,6 +7,9 @@
 @section('canonical'){{ $models->currentPage() > 1 ? $models->url($models->currentPage()) : localized_route('home') }}@endsection
 
 @section('og_title', __('models.live_cam_models') . ' - PornGuru.cam')
+@section('og_image', asset('img/og-home.png'))
+@section('og_image_width', '1200')
+@section('og_image_height', '630')
 
 {{-- SEO Pagination Links (for search engine crawlers) --}}
 @push('seo-pagination')
@@ -18,6 +21,9 @@
     @endphp
     @if($models->currentPage() === 1)
     <x-seo.hreflang :urls="$homeHreflangUrls" />
+    @if(!empty($seoSchemas))
+    <x-seo.schema :schemas="$seoSchemas" />
+    @endif
     @endif
     @if($models->currentPage() > 1)
         <link rel="prev" href="{{ $models->previousPageUrl() }}">

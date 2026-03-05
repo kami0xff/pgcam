@@ -144,6 +144,25 @@ class CamModelController extends Controller
             [$countryModels, $visitorCountry] = $this->getCountryModels($request);
         }
 
+        // SEO schemas (page 1 only, no filters)
+        $seoSchemas = [];
+        if ($request->input('page', 1) == 1 && !$request->hasAny(['search', 'tags', 'gender', 'platform'])) {
+            $seoSchemas = $this->seoService->getHomepageSchema($totalCount, $onlineCount);
+
+            $seoSchemas[] = [
+                '@context' => 'https://schema.org',
+                '@type' => 'ItemList',
+                'name' => 'Live Cam Models',
+                'numberOfItems' => $totalCount,
+                'itemListElement' => $models->map(fn($m, $i) => [
+                    '@type' => 'ListItem',
+                    'position' => $i + 1,
+                    'url' => $m->url,
+                    'name' => $m->username,
+                ])->values()->toArray(),
+            ];
+        }
+
         return view('cam-models.index', [
             'models' => $models,
             'platforms' => $platforms,
@@ -152,6 +171,7 @@ class CamModelController extends Controller
             'onlineCount' => $onlineCount,
             'filters' => $request->only(['online', 'platform', 'gender', 'age_min', 'age_max', 'hd', 'search', 'tags', 'sort', 'direction']),
             'seoSections' => $seoSections,
+            'seoSchemas' => $seoSchemas,
             'onlineFavorites' => $onlineFavorites,
             'countryModels' => $countryModels,
             'visitorCountry' => $visitorCountry,

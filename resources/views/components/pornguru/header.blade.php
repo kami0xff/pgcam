@@ -22,10 +22,7 @@
             @endphp
             <div class="lang-selector" id="lang-selector">
                 <button class="lang-selector-btn" onclick="document.getElementById('lang-selector').classList.toggle('open')" type="button">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                    </svg>
+                    <span class="lang-flag">{{ $allLocales[$currentLocale]['flag'] ?? '' }}</span>
                     <span>{{ strtoupper($currentLocale) }}</span>
                 </button>
                 <div class="lang-selector-dropdown">
@@ -46,6 +43,7 @@
                         }
                     @endphp
                         <a href="{{ $langUrl }}" class="lang-option {{ $currentLocale === $loc ? 'active' : '' }}">
+                            <span class="lang-flag">{{ $allLocales[$loc]['flag'] ?? '' }}</span>
                             <span class="lang-option-code">{{ strtoupper($loc) }}</span>
                             <span class="lang-option-name">{{ $allLocales[$loc]['native'] ?? $loc }}</span>
                         </a>
@@ -123,7 +121,8 @@
                     }
                 @endphp
                 <a href="{{ $mLangUrl }}" class="mobile-lang-item {{ $currentLocale === $loc ? 'active' : '' }}">
-                    {{ strtoupper($loc) }}
+                    <span class="lang-flag">{{ $allLocales[$loc]['flag'] ?? '' }}</span>
+                    <span>{{ strtoupper($loc) }}</span>
                 </a>
             @endforeach
         </div>
