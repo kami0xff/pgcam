@@ -14,14 +14,16 @@
         // Only use niche route if niche is valid
         if (in_array($niche, $validNiches)) {
             $localizedSlug = \App\Models\Tag::localizeSlug($englishSlug);
-            $tagUrl = localized_route('niche.tag', [$niche, $localizedSlug]);
+            if ($localizedSlug) {
+                $tagUrl = localized_route('niche.tag', [$niche, $localizedSlug]);
+            }
         }
     }
     
     // Fallback to simple tag route
     if (!$tagUrl) {
         $englishSlug = \Illuminate\Support\Str::slug($englishSlug);
-        $localizedSlug = \App\Models\Tag::localizeSlug($englishSlug);
+        $localizedSlug = \App\Models\Tag::localizeSlug($englishSlug) ?: $englishSlug;
         $tagUrl = localized_route('tags.show', $localizedSlug);
     }
     

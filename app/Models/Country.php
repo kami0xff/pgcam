@@ -144,6 +144,8 @@ class Country extends Model
             return CountryTranslation::where('country_translations.locale', $locale)
                 ->join('countries', 'countries.id', '=', 'country_translations.country_id')
                 ->select('countries.slug as en_slug', 'country_translations.slug as loc_slug')
+                ->whereNotNull('country_translations.slug')
+                ->where('country_translations.slug', '!=', '')
                 ->get()
                 ->pluck('loc_slug', 'en_slug')
                 ->toArray();
@@ -156,7 +158,7 @@ class Country extends Model
     public static function localizeSlug(string $englishSlug, ?string $locale = null): string
     {
         $map = self::getSlugMap($locale);
-        return $map[$englishSlug] ?? $englishSlug;
+        return $map[$englishSlug] ?: $englishSlug;
     }
 
     /**

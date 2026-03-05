@@ -170,6 +170,8 @@ class Tag extends Model
             return TagTranslation::where('tag_translations.locale', $locale)
                 ->join('tags', 'tags.id', '=', 'tag_translations.tag_id')
                 ->select('tags.slug as en_slug', 'tag_translations.slug as loc_slug')
+                ->whereNotNull('tag_translations.slug')
+                ->where('tag_translations.slug', '!=', '')
                 ->get()
                 ->pluck('loc_slug', 'en_slug')
                 ->toArray();
@@ -183,7 +185,7 @@ class Tag extends Model
     public static function localizeSlug(string $englishSlug, ?string $locale = null): string
     {
         $map = self::getSlugMap($locale);
-        return $map[$englishSlug] ?? $englishSlug;
+        return $map[$englishSlug] ?: $englishSlug;
     }
 
     /**
