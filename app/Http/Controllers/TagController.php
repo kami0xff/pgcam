@@ -163,6 +163,12 @@ class TagController extends Controller
             abort(404);
         }
 
+        // Redirect to the canonical localized URL if the slug doesn't match
+        $correctSlug = Tag::localizeSlug($tag->slug, $locale);
+        if ($slug !== $correctSlug && $slug !== $tag->slug) {
+            return redirect(localized_route('tags.show', $correctSlug), 301);
+        }
+
         $query = CamModel::query();
 
         // Filter by tag using PostgreSQL-compatible text search

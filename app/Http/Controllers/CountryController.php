@@ -133,6 +133,14 @@ class CountryController extends Controller
             abort(404);
         }
 
+        // Redirect to the canonical localized URL if the slug doesn't match
+        if ($country instanceof Country) {
+            $correctSlug = Country::localizeSlug($country->slug, $locale);
+            if ($slug !== $correctSlug && $slug !== $country->slug) {
+                return redirect(localized_route('countries.show', $correctSlug), 301);
+            }
+        }
+
         $countryName = is_object($country) && property_exists($country, 'name') 
             ? $country->name 
             : $country->name;

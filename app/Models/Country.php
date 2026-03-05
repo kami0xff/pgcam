@@ -115,16 +115,29 @@ class Country extends Model
     public static function findBySlug(string $slug, ?string $locale = null): ?self
     {
         $locale = $locale ?? App::getLocale();
-        
+
+        // 1. Try current locale translation
         $translation = CountryTranslation::where('locale', $locale)
             ->where('slug', $slug)
             ->first();
-        
+
         if ($translation) {
             return $translation->country;
         }
-        
-        return self::where('slug', $slug)->first();
+
+        // 2. Try main (English) slug
+        $country = self::where('slug', $slug)->first();
+        if ($country) {
+            return $country;
+        }
+
+        // 3. Try any other locale's translation (handles cross-locale crawler visits)
+        $translation = CountryTranslation::where('slug', $slug)->first();
+        if ($translation) {
+            return $translation->country;
+        }
+
+        return null;
     }
 
     /**

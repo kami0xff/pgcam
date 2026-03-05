@@ -137,18 +137,29 @@ class Tag extends Model
     public static function findBySlug(string $slug, ?string $locale = null): ?self
     {
         $locale = $locale ?? App::getLocale();
-        
-        // First try the translations table
+
+        // 1. Try current locale translation
         $translation = TagTranslation::where('locale', $locale)
             ->where('slug', $slug)
             ->first();
-        
+
         if ($translation) {
             return $translation->tag;
         }
-        
-        // Fall back to main slug
-        return self::where('slug', $slug)->first();
+
+        // 2. Try main (English) slug
+        $tag = self::where('slug', $slug)->first();
+        if ($tag) {
+            return $tag;
+        }
+
+        // 3. Try any other locale's translation (handles cross-locale crawler visits)
+        $translation = TagTranslation::where('slug', $slug)->first();
+        if ($translation) {
+            return $translation->tag;
+        }
+
+        return null;
     }
 
     /**

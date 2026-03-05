@@ -126,6 +126,16 @@ Route::prefix('{locale}')
             ->where('category', 'girls|couples|men|trans')
             ->name('explore.localized');
 
+        // Localized legal/static pages
+        Route::get('/about', fn() => view('legal.about'))->name('about.localized');
+        Route::get('/contact', fn() => view('legal.contact'))->name('contact.localized');
+        Route::get('/privacy', fn() => view('legal.privacy'))->name('privacy.localized');
+        Route::get('/terms', fn() => view('legal.terms'))->name('terms.localized');
+        Route::get('/dmca', fn() => view('legal.dmca'))->name('dmca.localized');
+        Route::get('/2257', fn() => view('legal.2257'))->name('2257.localized');
+        Route::get('/good-causes', fn() => view('legal.support'))->name('good-causes.localized');
+        Route::get('/faq', fn() => view('legal.faq'))->name('faq.localized');
+
         // Redirects for broken URL patterns
         Route::get('/country', fn() => redirect('/' . app()->getLocale() . '/countries', 301));
         Route::get('/guys/{tagSlug?}', fn(?string $tagSlug = null) =>
