@@ -50,11 +50,19 @@ class TagController extends Controller
             $featuredTags = $dbTags->where('is_featured', true)->take(20);
         }
 
+        $hreflangUrls = ['en' => route('tags.index'), 'x-default' => route('tags.index')];
+        foreach (config('locales.priority', []) as $loc) {
+            if ($loc !== 'en') {
+                $hreflangUrls[$loc] = url("/{$loc}/tags");
+            }
+        }
+
         return view('tags.index', [
             'tagsByCategory' => $tagsByCategory,
             'featuredTags' => $featuredTags,
             'niches' => $this->validNiches,
             'useEnum' => $dbTags->isEmpty(),
+            'hreflangUrls' => $hreflangUrls,
             'seoSchemas' => [
                 $this->seoService->getBreadcrumbSchema([
                     ['name' => __('common.home'), 'url' => localized_route('home')],
@@ -216,16 +224,33 @@ class TagController extends Controller
         // Get popular tags for this niche
         $popularTags = $this->getPopularTagsForNiche($niche);
 
+        $hreflangUrls = ['en' => route('niche.show', $niche), 'x-default' => route('niche.show', $niche)];
+        foreach (config('locales.priority', []) as $loc) {
+            if ($loc !== 'en') {
+                $hreflangUrls[$loc] = url("/{$loc}/{$niche}");
+            }
+        }
+
+        $nicheTitle = $this->getNicheTitle($niche);
+
         return view('niches.show', [
             'niche' => $niche,
-            'nicheTitle' => $this->getNicheTitle($niche),
+            'nicheTitle' => $nicheTitle,
             'models' => $models,
             'popularTags' => $popularTags,
             'niches' => $this->validNiches,
+            'hreflangUrls' => $hreflangUrls,
             'seoSchemas' => [
+                [
+                    '@context' => 'https://schema.org',
+                    '@type' => 'CollectionPage',
+                    'name' => $nicheTitle . ' Live Cams',
+                    'url' => localized_route('niche.show', $niche),
+                    'numberOfItems' => $models->total(),
+                ],
                 $this->seoService->getBreadcrumbSchema([
                     ['name' => __('common.home'), 'url' => localized_route('home')],
-                    ['name' => $this->getNicheTitle($niche), 'url' => localized_route('niche.show', $niche)],
+                    ['name' => $nicheTitle, 'url' => localized_route('niche.show', $niche)],
                 ]),
             ],
         ]);
@@ -242,6 +267,7 @@ class TagController extends Controller
 
         $locale = App::getLocale();
         $tag = Tag::findBySlug($tagSlug, $locale);
+        $tag?->load('translations');
 
         // Use the ENGLISH slug for database queries — tags in cam DB are always English
         $englishSlug = $tag?->slug ?? $tagSlug;
@@ -264,9 +290,24 @@ class TagController extends Controller
         // Use localized slug for URLs shown to the user
         $localizedSlug = $tag?->localized_slug ?? $tagSlug;
 
+        $nicheTitle = $this->getNicheTitle($niche);
+
+        $hreflangUrls = ['en' => route('niche.tag', [$niche, $englishSlug]), 'x-default' => route('niche.tag', [$niche, $englishSlug])];
+        $tagTranslations = $tag ? $tag->translations->pluck('slug', 'locale')->toArray() : [];
+        foreach (config('locales.priority', []) as $loc) {
+            if ($loc !== 'en') {
+                $locSlug = $tagTranslations[$loc] ?? $englishSlug;
+                $hreflangUrls[$loc] = url("/{$loc}/{$niche}/{$locSlug}");
+            }
+        }
+
+        if (!empty($hreflangUrls)) {
+            \Illuminate\Support\Facades\View::share('langSwitchUrls', $hreflangUrls);
+        }
+
         return view('niches.tag', [
             'niche' => $niche,
-            'nicheTitle' => $this->getNicheTitle($niche),
+            'nicheTitle' => $nicheTitle,
             'tag' => $tag,
             'tagName' => $tagName,
             'tagSlug' => $localizedSlug,
@@ -274,10 +315,18 @@ class TagController extends Controller
             'fullTag' => $fullTag,
             'models' => $models,
             'niches' => $this->validNiches,
+            'hreflangUrls' => $hreflangUrls,
             'seoSchemas' => [
+                [
+                    '@context' => 'https://schema.org',
+                    '@type' => 'CollectionPage',
+                    'name' => ucfirst($tagName) . ' ' . $nicheTitle . ' Cams',
+                    'url' => localized_route('niche.tag', [$niche, $localizedSlug]),
+                    'numberOfItems' => $models->total(),
+                ],
                 $this->seoService->getBreadcrumbSchema([
                     ['name' => __('common.home'), 'url' => localized_route('home')],
-                    ['name' => $this->getNicheTitle($niche), 'url' => localized_route('niche.show', $niche)],
+                    ['name' => $nicheTitle, 'url' => localized_route('niche.show', $niche)],
                     ['name' => ucfirst($tagName), 'url' => localized_route('niche.tag', [$niche, $localizedSlug])],
                 ]),
             ],

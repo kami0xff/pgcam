@@ -24,7 +24,8 @@ class GeneratePageSeoContent extends Command
                             {--position=bottom : Position of content (top or bottom)}
                             {--tags : Generate content for individual tag pages}
                             {--countries : Generate content for individual country pages}
-                            {--limit=50 : Limit for tag/country pages}
+                            {--niches : Generate content for niche and niche+tag pages}
+                            {--limit=50 : Limit for tag/country/niche-tag pages}
                             {--force : Overwrite existing content}';
 
     /**
@@ -83,6 +84,11 @@ class GeneratePageSeoContent extends Command
             // Generate individual country pages
             if ($this->option('countries')) {
                 $this->generateCountryPageContent($locale, $position, $force, $this->option('limit'));
+            }
+
+            // Generate niche and niche+tag pages
+            if ($this->option('niches')) {
+                $this->generateNichePageContent($locale, $position, $force, $this->option('limit'));
             }
             
             // Small delay between locales to respect rate limits
@@ -294,6 +300,124 @@ class GeneratePageSeoContent extends Command
 
             $bar->advance();
             usleep(500000); // Rate limiting
+        }
+
+        $bar->finish();
+        $this->newLine();
+    }
+
+    /**
+     * Generate content for niche landing pages and top niche+tag combos
+     */
+    protected function generateNichePageContent(string $locale, string $position, bool $force, int $limit): void
+    {
+        $niches = ['girls', 'couples', 'men', 'trans'];
+        $nicheLabels = [
+            'girls' => 'Girls',
+            'couples' => 'Couples',
+            'men' => 'Men',
+            'trans' => 'Trans',
+        ];
+
+        $this->info("📝 Generating niche page content...");
+
+        // 1) Four niche landing pages
+        foreach ($niches as $niche) {
+            $pageKey = "niche_{$niche}";
+
+            $existing = PageSeoContent::where('page_key', $pageKey)
+                ->where('locale', $locale)
+                ->first();
+
+            if ($existing && !$force) {
+                $this->line("⏭️  Skipping {$pageKey} ({$locale}) - already exists");
+                continue;
+            }
+
+            try {
+                $content = $this->translationService->generatePageSeoContent(
+                    $pageKey,
+                    $locale,
+                    ['niche' => $niche, 'niche_label' => $nicheLabels[$niche]]
+                );
+
+                if (!empty($content['content'])) {
+                    PageSeoContent::updateOrCreate(
+                        ['page_key' => $pageKey, 'locale' => $locale],
+                        [
+                            'title' => $content['title'] ?? "{$nicheLabels[$niche]} Live Cams",
+                            'content' => $content['content'],
+                            'keywords' => $content['keywords'],
+                            'position' => $position,
+                            'is_active' => true,
+                        ]
+                    );
+                    $this->info("   ✓ Generated {$pageKey}");
+                }
+            } catch (\Exception $e) {
+                $this->error("   ✗ Error for {$pageKey}: " . $e->getMessage());
+            }
+
+            usleep(500000);
+        }
+
+        // 2) Top niche+tag combos using most popular tags
+        $tags = Tag::where('models_count', '>', 10)
+            ->orderByDesc('models_count')
+            ->limit($limit)
+            ->get();
+
+        if ($tags->isEmpty()) {
+            return;
+        }
+
+        $total = count($niches) * $tags->count();
+        $bar = $this->output->createProgressBar($total);
+        $bar->start();
+
+        foreach ($niches as $niche) {
+            foreach ($tags as $tag) {
+                $pageKey = "niche_{$niche}_{$tag->slug}";
+
+                $existing = PageSeoContent::where('page_key', $pageKey)
+                    ->where('locale', $locale)
+                    ->first();
+
+                if ($existing && !$force) {
+                    $bar->advance();
+                    continue;
+                }
+
+                try {
+                    $content = $this->translationService->generatePageSeoContent(
+                        $pageKey,
+                        $locale,
+                        [
+                            'niche' => $niche,
+                            'niche_label' => $nicheLabels[$niche],
+                            'tag_name' => $tag->name,
+                        ]
+                    );
+
+                    if (!empty($content['content'])) {
+                        PageSeoContent::updateOrCreate(
+                            ['page_key' => $pageKey, 'locale' => $locale],
+                            [
+                                'title' => $content['title'] ?? "{$tag->name} {$nicheLabels[$niche]} Cams",
+                                'content' => $content['content'],
+                                'keywords' => $content['keywords'],
+                                'position' => $position,
+                                'is_active' => true,
+                            ]
+                        );
+                    }
+                } catch (\Exception $e) {
+                    // Continue on error
+                }
+
+                $bar->advance();
+                usleep(500000);
+            }
         }
 
         $bar->finish();

@@ -39,8 +39,16 @@ class CountryController extends Controller
             }
         }
 
+        $hreflangUrls = ['en' => route('countries.index'), 'x-default' => route('countries.index')];
+        foreach (config('locales.priority', []) as $loc) {
+            if ($loc !== 'en') {
+                $hreflangUrls[$loc] = url("/{$loc}/countries");
+            }
+        }
+
         return view('countries.index', [
             'countries' => $countries,
+            'hreflangUrls' => $hreflangUrls,
             'seoSchemas' => [
                 $this->seoService->getBreadcrumbSchema([
                     ['name' => __('common.home'), 'url' => localized_route('home')],

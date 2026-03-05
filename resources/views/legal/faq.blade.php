@@ -4,6 +4,16 @@
 @section('meta_description', __('faq.meta_description'))
 @section('canonical', url('/faq'))
 
+@push('seo-pagination')
+    @php
+        $faqHreflangUrls = ['en' => url('/faq'), 'x-default' => url('/faq')];
+        foreach (config('locales.priority', []) as $loc) {
+            if ($loc !== 'en') $faqHreflangUrls[$loc] = url("/{$loc}/faq");
+        }
+    @endphp
+    <x-seo.hreflang :urls="$faqHreflangUrls" />
+@endpush
+
 @push('head')
     <script type="application/ld+json">
     {!! json_encode([

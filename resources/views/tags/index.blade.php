@@ -4,7 +4,10 @@
 
 @section('meta_description'){{ __('tags.browse_description') }}@endsection
 
+@section('canonical', localized_route('tags.index'))
+
 @push('seo-pagination')
+<x-seo.hreflang :urls="$hreflangUrls" />
 <x-seo.schema :schemas="$seoSchemas" />
 @endpush
 

@@ -7,6 +7,10 @@
 @section('canonical'){{ $models->currentPage() > 1 ? $models->url($models->currentPage()) : localized_route('niche.tag', [$niche, $tagSlug]) }}@endsection
 
 @push('seo-pagination')
+    @if($models->currentPage() === 1)
+    <x-seo.hreflang :urls="$hreflangUrls" />
+    <x-seo.schema :schemas="$seoSchemas" />
+    @endif
     @if($models->currentPage() > 1)
         <link rel="prev" href="{{ $models->previousPageUrl() }}">
     @endif

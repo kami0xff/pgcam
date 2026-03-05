@@ -560,6 +560,40 @@ Focus on:
 INST;
         }
 
+        // Handle niche+tag pages (e.g. niche_girls_young)
+        if (preg_match('/^niche_(\w+)_(.+)$/', $pageKey, $m) && isset($context['tag_name'])) {
+            $nicheLabel = $context['niche_label'] ?? ucfirst($m[1]);
+            $tagName = $context['tag_name'];
+            $instructions = <<<INST
+Generate SEO content for a niche+tag page on an adult cam site.
+Niche: {$nicheLabel} | Tag: {$tagName}
+
+This page shows {$tagName} {$nicheLabel} cam models.
+
+Focus on:
+- What makes {$tagName} {$nicheLabel} cams appealing
+- Types of shows and content users can expect from this combination
+- Why this is a popular category
+- Natural integration of "{$tagName} {$nicheLabel} cams", "live {$tagName} {$nicheLabel} shows", "{$tagName} webcam {$nicheLabel}"
+INST;
+        }
+        // Handle niche landing pages (e.g. niche_girls)
+        elseif (preg_match('/^niche_(\w+)$/', $pageKey) && isset($context['niche_label'])) {
+            $nicheLabel = $context['niche_label'];
+            $instructions = <<<INST
+Generate SEO content for a niche landing page on an adult cam site.
+Niche: {$nicheLabel}
+
+This page shows all live {$nicheLabel} cam models.
+
+Focus on:
+- What makes {$nicheLabel} cams popular
+- The variety within this niche (body types, ages, styles)
+- Why users choose this category
+- Natural integration of "{$nicheLabel} cams", "live {$nicheLabel} webcam", "{$nicheLabel} cam models", "free {$nicheLabel} live shows"
+INST;
+        }
+
         return <<<PROMPT
 You are an SEO content writer for an adult live cam site called "{$siteName}".
 

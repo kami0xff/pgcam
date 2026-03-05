@@ -1,22 +1,25 @@
 @extends('layouts.pornguru')
 
-@section('title', 'Cam Models by Country')
+@section('title', __('countries.cam_models_by_country'))
 
-@section('meta_description')Browse live cam models from around the world. Find models from your favorite country.@endsection
+@section('meta_description'){{ __('countries.browse_country_description') }}@endsection
+
+@section('canonical', localized_route('countries.index'))
 
 @push('seo-pagination')
+<x-seo.hreflang :urls="$hreflangUrls" />
 <x-seo.schema :schemas="$seoSchemas" />
 @endpush
 
 @section('content')
 <div class="container page-section">
     <x-seo.breadcrumbs :items="[
-        ['name' => 'Home', 'url' => localized_route('home')],
-        ['name' => 'Countries', 'url' => localized_route('countries.index')],
+        ['name' => __('common.home'), 'url' => localized_route('home')],
+        ['name' => __('common.countries'), 'url' => localized_route('countries.index')],
     ]" />
 
     <div class="page-title-bar">
-        <h1 class="page-title-text">Browse by Country</h1>
+        <h1 class="page-title-text">{{ __('countries.browse_by_country') }}</h1>
     </div>
 
     {{-- Top SEO Content --}}
