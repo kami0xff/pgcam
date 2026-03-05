@@ -102,75 +102,24 @@
             <p class="faq-intro">{{ __('faq.intro') }}</p>
 
             <div class="faq-list">
-                <details class="faq-item" open>
-                    <summary class="faq-question">{{ __('faq.q_what_is') }}</summary>
-                    <div class="faq-answer">
-                        <p>{{ __('faq.a_what_is') }}</p>
-                    </div>
-                </details>
+                @php
+                    $faqKeys = [
+                        'what_is', 'is_free', 'how_works', 'need_account', 'platforms',
+                        'update_frequency', 'privacy', 'heatmaps', 'explore', 'contact',
+                    ];
+                @endphp
 
-                <details class="faq-item">
-                    <summary class="faq-question">{{ __('faq.q_is_free') }}</summary>
+                @foreach($faqKeys as $i => $key)
+                <details class="faq-item" {{ $i === 0 ? 'open' : '' }}>
+                    <summary class="faq-question">
+                        <span>{{ __("faq.q_{$key}") }}</span>
+                        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </summary>
                     <div class="faq-answer">
-                        <p>{{ __('faq.a_is_free') }}</p>
+                        <p>{{ __("faq.a_{$key}") }}</p>
                     </div>
                 </details>
-
-                <details class="faq-item">
-                    <summary class="faq-question">{{ __('faq.q_how_works') }}</summary>
-                    <div class="faq-answer">
-                        <p>{{ __('faq.a_how_works') }}</p>
-                    </div>
-                </details>
-
-                <details class="faq-item">
-                    <summary class="faq-question">{{ __('faq.q_need_account') }}</summary>
-                    <div class="faq-answer">
-                        <p>{{ __('faq.a_need_account') }}</p>
-                    </div>
-                </details>
-
-                <details class="faq-item">
-                    <summary class="faq-question">{{ __('faq.q_platforms') }}</summary>
-                    <div class="faq-answer">
-                        <p>{{ __('faq.a_platforms') }}</p>
-                    </div>
-                </details>
-
-                <details class="faq-item">
-                    <summary class="faq-question">{{ __('faq.q_update_frequency') }}</summary>
-                    <div class="faq-answer">
-                        <p>{{ __('faq.a_update_frequency') }}</p>
-                    </div>
-                </details>
-
-                <details class="faq-item">
-                    <summary class="faq-question">{{ __('faq.q_privacy') }}</summary>
-                    <div class="faq-answer">
-                        <p>{{ __('faq.a_privacy') }}</p>
-                    </div>
-                </details>
-
-                <details class="faq-item">
-                    <summary class="faq-question">{{ __('faq.q_heatmaps') }}</summary>
-                    <div class="faq-answer">
-                        <p>{{ __('faq.a_heatmaps') }}</p>
-                    </div>
-                </details>
-
-                <details class="faq-item">
-                    <summary class="faq-question">{{ __('faq.q_explore') }}</summary>
-                    <div class="faq-answer">
-                        <p>{{ __('faq.a_explore') }}</p>
-                    </div>
-                </details>
-
-                <details class="faq-item">
-                    <summary class="faq-question">{{ __('faq.q_contact') }}</summary>
-                    <div class="faq-answer">
-                        <p>{{ __('faq.a_contact') }}</p>
-                    </div>
-                </details>
+                @endforeach
             </div>
         </div>
     </div>
