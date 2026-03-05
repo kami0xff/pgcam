@@ -185,7 +185,7 @@ class Tag extends Model
     public static function localizeSlug(string $englishSlug, ?string $locale = null): string
     {
         $map = self::getSlugMap($locale);
-        return $map[$englishSlug] ?: $englishSlug;
+        return ($map[$englishSlug] ?? null) ?: $englishSlug;
     }
 
     /**
@@ -218,7 +218,7 @@ class Tag extends Model
     public static function localizeName(string $englishSlug, ?string $locale = null): string
     {
         $map = self::getNameMap($locale);
-        return $map[$englishSlug] ?? ucwords(str_replace(['-', '_'], ' ', $englishSlug));
+        return ($map[$englishSlug] ?? null) ?: ucwords(str_replace(['-', '_'], ' ', $englishSlug));
     }
 
     /**

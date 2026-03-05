@@ -158,7 +158,7 @@ class Country extends Model
     public static function localizeSlug(string $englishSlug, ?string $locale = null): string
     {
         $map = self::getSlugMap($locale);
-        return $map[$englishSlug] ?: $englishSlug;
+        return ($map[$englishSlug] ?? null) ?: $englishSlug;
     }
 
     /**
