@@ -38,9 +38,15 @@ http://pornguru.cam, http://www.pornguru.cam {
     # Handle Laravel with FrankenPHP (standard request-per-process mode)
     php_server
 
+    # Sitemaps and robots.txt - public cache, refresh hourly
+    @sitemaps {
+        path /sitemap*.xml /robots.txt
+    }
+    header @sitemaps Cache-Control "public, max-age=3600"
+
     # Dynamic pages - NO cache (content updates every 30 seconds)
     @dynamic {
-        not path /build/* *.css *.js *.ico *.gif *.jpg *.jpeg *.png *.svg *.webp *.woff *.woff2 *.ttf *.eot
+        not path /build/* /sitemap*.xml /robots.txt *.css *.js *.ico *.gif *.jpg *.jpeg *.png *.svg *.webp *.woff *.woff2 *.ttf *.eot
     }
     header @dynamic Cache-Control "no-cache, no-store, must-revalidate"
     header @dynamic Pragma "no-cache"

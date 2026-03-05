@@ -234,7 +234,9 @@ class GenerateSitemaps extends Command
 
                     $priority = $model->is_online ? '0.9' : '0.6';
                     $changefreq = $model->is_online ? 'hourly' : 'daily';
-                    $lastmod = $model->updated_at ?? now()->toW3cString();
+                    $lastmod = $model->updated_at
+                        ? \Carbon\Carbon::parse($model->updated_at)->toW3cString()
+                        : now()->toW3cString();
 
                     $this->writeUrl($handle, $loc, $priority, $changefreq, $lastmod);
                 }
