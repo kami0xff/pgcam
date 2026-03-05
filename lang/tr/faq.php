@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'title_short' => 'Sıkça Sorulan Sorular',
+    'meta_description' => 'PornGuru.cam hakkında sık sorulan soruların yanıtlarını bulun — nasıl çalışır, hangi platformları topluyoruz, gizlilik, hesaplar ve daha fazlası.',
+    'intro' => 'Sorularınız mı var? İşte PornGuru.cam ve platformumuzun nasıl çalıştığı hakkında en sık sorulan soruların yanıtları.',
+    'q_what_is' => 'PornGuru.cam nedir?',
+    'a_what_is' => 'PornGuru.cam, canlı kamera toplayıcı ve keşif platformudur. Önde gelen yetişkin platformlarından binlerce kamera modelini, gerçek zamanlı güncellenen kolay gezinilebilir bir dizinde bir araya getiriyoruz. Bunu canlı kamera şovları için bir arama motoru olarak düşünün.',
+    'q_is_free' => 'PornGuru.cam ücretsiz mi?',
+    'a_is_free' => 'Evet, PornGuru.cam tamamen ücretsiz gezinilebilir. Hiçbir ödeme yapmadan kamera modellerini arayabilir, filtreleyebilir ve keşfedebilirsiniz. Bir şov izlemek, bahşiş vermek veya jeton satın almak isterseniz, modelin yayın yaptığı orijinal platforma yönlendirilirsiniz.',
+    'q_how_works' => 'PornGuru.cam nasıl çalışır?',
+    'a_how_works' => 'Size gerçek zamanlı model durumları, izleyici sayıları, yayın önizlemeleri ve akıllı filtreleme sunmak için birden fazla kamera platformundan sürekli veri senkronize ediyoruz. Sistemimiz bilgilerin doğru ve güncel olmasını sağlamak için birkaç dakikada bir yenilenir.',
+    'q_need_account' => 'PornGuru.cam\'i kullanmak için hesaba ihtiyacım var mı?',
+    'a_need_account' => 'Modellere göz atmak ve keşfetmek için hesap gerekmez. Ancak ücretsiz bir hesap oluşturmak favorileri kaydetmenize, değerlendirme bırakmanıza ve canlı topluluk sohbetine katılmanıza olanak tanır.',
+    'q_platforms' => 'PornGuru.cam hangi platformları topluyor?',
+    'a_platforms' => 'Chaturbate, Stripchat, BongaCams ve daha fazlası dahil önde gelen yetişkin kamera platformlarından modelleri topluyoruz. Tüm içerikler ve canlı yayınlar bu platformlar tarafından resmi ortaklık programları aracılığıyla doğrudan sağlanmaktadır.',
+    'q_update_frequency' => 'Model verileri ne sıklıkla güncellenir?',
+    'a_update_frequency' => 'Model verilerimiz birkaç dakikada bir yenilenir. Çevrimiçi durum, izleyici sayıları ve yayın önizlemeleri neredeyse gerçek zamanlı olarak güncellenir, böylece kimin şu anda canlı olduğunu her zaman görebilirsiniz.',
+    'q_privacy' => 'Gizliliğim korunuyor mu?',
+    'a_privacy' => 'Kesinlikle. Tüm sitede SSL şifreleme kullanıyoruz ve gezinme etkinliğinizi takip etmiyoruz. Daha fazla ayrıntı için Gizlilik Politikamızı okuyun.',
+    'q_heatmaps' => 'Yayın ısı haritaları nedir?',
+    'a_heatmaps' => 'Yayın ısı haritaları her model için haftalarca aktivite verilerini analiz eder ve en çok ne zaman çevrimiçi olma olasılıklarının yüksek olduğunu gösterir. Bu, en sevdiğiniz sanatçıyı kaçırmamak için ziyaretlerinizi planlamanıza yardımcı olur.',
+    'q_explore' => 'Keşfet / Kamera Kaydırma özelliği nedir?',
+    'a_explore' => 'Keşfet, canlı kameralar için TikTok tarzı kaydırma akışımızdır. Kaydırarak canlı yayınları hızlıca gezmenizi sağlar ve manuel arama yapmadan yeni modelleri kolayca keşfetmenize olanak tanır.',
+    'q_contact' => 'PornGuru.cam ile nasıl iletişime geçebilirim?',
+    'a_contact' => 'Sorularınız, geri bildirimleriniz veya iş talepleriniz için contact@pornguru.com adresinden bize ulaşabilirsiniz. Daha fazla bilgi için İletişim sayfamızı ziyaret edin.',
+];

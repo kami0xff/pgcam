@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'search' => 'Ara',
+    'username_placeholder' => 'Kullanıcı adı...',
+    'platform' => 'Platform',
+    'all_platforms' => 'Tüm Platformlar',
+    'gender' => 'Cinsiyet',
+    'all_genders' => 'Tüm Cinsiyetler',
+    'age_range' => 'Yaş Aralığı',
+    'min' => 'Min',
+    'max' => 'Maks',
+    'sort_by' => 'Sıralama',
+    'viewers' => 'İzleyiciler',
+    'close_to_goal' => 'Hedefe Yakın',
+    'rating' => 'Puan',
+    'favorites' => 'Favoriler',
+    'last_online' => 'Son Çevrimiçi',
+    'age' => 'Yaş',
+    'options' => 'Seçenekler',
+    'online' => 'Çevrimiçi',
+    'hd' => 'HD',
+    'autoplay_previews' => 'Otomatik Önizleme',
+    'autoplay_description' => 'Canlı önizlemeleri otomatik oynat (daha fazla veri kullanır)',
+    'clear_filters' => 'Filtreleri temizle',
+    'apply_filters' => 'Filtreleri Uygula',
+];

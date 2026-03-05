@@ -396,15 +396,15 @@ class CamModelController extends Controller
         $models = $query->paginate($perPage)->withQueryString();
 
         $categoryLabels = [
-            null => __('All Live Cams'),
-            'girls' => __('Live Girls'),
-            'couples' => __('Live Couples'),
-            'men' => __('Live Men'),
-            'trans' => __('Live Trans'),
+            null => __('models.all_live_cams'),
+            'girls' => __('models.live_girls'),
+            'couples' => __('models.live_couples'),
+            'men' => __('models.live_men'),
+            'trans' => __('models.live_trans'),
         ];
 
         $pageTitle = ($categoryLabels[$category] ?? $categoryLabels[null])
-            . ($models->currentPage() > 1 ? ' - ' . __('Page') . ' ' . $models->currentPage() : '');
+            . ($models->currentPage() > 1 ? ' - ' . __('pagination.page') . ' ' . $models->currentPage() : '');
 
         $categoryUrls = [];
         foreach ([null, ...$validCategories] as $cat) {

@@ -134,7 +134,7 @@ class SitemapController extends Controller
         }
 
         // Static pages (legal, about, contact)
-        foreach (['about', 'contact', 'good-causes', 'privacy', 'terms', 'dmca', '2257'] as $page) {
+        foreach (['about', 'contact', 'faq', 'good-causes', 'privacy', 'terms', 'dmca', '2257'] as $page) {
             $urls[] = $this->buildUrl(url("/{$page}"), '0.3', 'monthly');
         }
 

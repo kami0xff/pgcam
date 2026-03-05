@@ -43,8 +43,8 @@ class CountryController extends Controller
             'countries' => $countries,
             'seoSchemas' => [
                 $this->seoService->getBreadcrumbSchema([
-                    ['name' => __('Home'), 'url' => localized_route('home')],
-                    ['name' => __('Countries'), 'url' => localized_route('countries.index')],
+                    ['name' => __('common.home'), 'url' => localized_route('home')],
+                    ['name' => __('common.countries'), 'url' => localized_route('countries.index')],
                 ]),
             ],
         ]);
@@ -166,8 +166,8 @@ class CountryController extends Controller
                     'numberOfItems' => $models->total(),
                 ],
                 $this->seoService->getBreadcrumbSchema([
-                    ['name' => __('Home'), 'url' => localized_route('home')],
-                    ['name' => __('Countries'), 'url' => localized_route('countries.index')],
+                    ['name' => __('common.home'), 'url' => localized_route('home')],
+                    ['name' => __('common.countries'), 'url' => localized_route('countries.index')],
                     ['name' => $country->name, 'url' => localized_route('countries.show', $country->slug)],
                 ]),
             ];

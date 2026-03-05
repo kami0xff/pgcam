@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'title_short' => 'Veelgestelde Vragen',
+    'meta_description' => 'Vind antwoorden op veelgestelde vragen over PornGuru.cam — hoe het werkt, welke platforms we aggregeren, privacy, accounts en meer.',
+    'intro' => 'Vragen? Hier zijn de antwoorden op de meest gestelde vragen over PornGuru.cam en hoe ons platform werkt.',
+    'q_what_is' => 'Wat is PornGuru.cam?',
+    'a_what_is' => 'PornGuru.cam is een live cam aggregator en ontdekkingsplatform. We brengen duizenden cammodellen van toonaangevende volwassen platforms samen in één overzichtelijke directory, in real-time bijgewerkt. Zie het als een zoekmachine voor live cam shows.',
+    'q_is_free' => 'Is PornGuru.cam gratis?',
+    'a_is_free' => 'Ja, PornGuru.cam is volledig gratis te gebruiken. Je kunt cammodellen zoeken, filteren en ontdekken zonder iets te betalen. Als je een show wilt bekijken, een fooi wilt geven of tokens wilt kopen, word je doorgestuurd naar het originele platform waar het model streamt.',
+    'q_how_works' => 'Hoe werkt PornGuru.cam?',
+    'a_how_works' => 'We synchroniseren continu gegevens van meerdere cam platforms om je real-time modelstatussen, kijkerscijfers, stream previews en slimme filtering te bieden. Ons systeem ververst elke paar minuten om ervoor te zorgen dat de informatie nauwkeurig en actueel is.',
+    'q_need_account' => 'Heb ik een account nodig om PornGuru.cam te gebruiken?',
+    'a_need_account' => 'Er is geen account nodig om te bladeren en modellen te ontdekken. Een gratis account aanmaken stelt je echter in staat om favorieten op te slaan, beoordelingen achter te laten en deel te nemen aan de live community chat.',
+    'q_platforms' => 'Welke platforms aggregeert PornGuru.cam?',
+    'a_platforms' => 'We aggregeren modellen van toonaangevende volwassen cam platforms waaronder Chaturbate, Stripchat, BongaCams en meer. Alle content en live streams worden rechtstreeks door deze platforms aangeleverd via hun officiële partnerprogramma\'s.',
+    'q_update_frequency' => 'Hoe vaak worden de modelgegevens bijgewerkt?',
+    'a_update_frequency' => 'Onze modelgegevens worden elke paar minuten bijgewerkt. Online status, kijkerscijfers en stream previews worden bijna in real-time bijgewerkt zodat je altijd ziet wie er momenteel live is.',
+    'q_privacy' => 'Is mijn privacy beschermd?',
+    'a_privacy' => 'Absoluut. We gebruiken SSL-encryptie over de hele site en volgen je browseactiviteit niet. Lees voor meer details ons Privacybeleid.',
+    'q_heatmaps' => 'Wat zijn uitzending-heatmaps?',
+    'a_heatmaps' => 'Uitzending-heatmaps analyseren weken aan activiteitsgegevens voor elk model en laten je zien wanneer ze het meest waarschijnlijk online zijn. Dit helpt je te plannen wanneer je moet bezoeken zodat je je favoriete performer nooit mist.',
+    'q_explore' => 'Wat is de Ontdek / Cam Scrolling functie?',
+    'a_explore' => 'Ontdek is onze TikTok-achtige veegfeed voor live cams. Het stelt je in staat om snel door live streams te bladeren door te vegen, waardoor het gemakkelijk is om nieuwe modellen te ontdekken zonder handmatig te zoeken.',
+    'q_contact' => 'Hoe kan ik contact opnemen met PornGuru.cam?',
+    'a_contact' => 'Je kunt ons bereiken via contact@pornguru.com voor vragen, feedback of zakelijke verzoeken. Bezoek onze Contactpagina voor meer details.',
+];

@@ -7,9 +7,9 @@
 
         <!-- Desktop Nav -->
         <nav class="nav-center">
-            <a href="https://pornguru.com" class="nav-link" rel="nofollow noopener" target="_blank">{{ __('Best Porn Sites') }}</a>
-            <a href="{{ localized_route('home') }}" class="nav-link {{ request()->routeIs('home*') ? 'active' : '' }}">{{ __('Live Cams') }}</a>
-            <a href="https://pornguru.com/blog" class="nav-link" rel="nofollow noopener" target="_blank">{{ __('Blog') }}</a>
+            <a href="https://pornguru.com" class="nav-link" rel="nofollow noopener" target="_blank">{{ __('common.best_porn_sites') }}</a>
+            <a href="{{ localized_route('home') }}" class="nav-link {{ request()->routeIs('home*') ? 'active' : '' }}">{{ __('common.live_cams') }}</a>
+            <a href="https://pornguru.com/blog" class="nav-link" rel="nofollow noopener" target="_blank">{{ __('common.blog') }}</a>
         </nav>
 
         <!-- Right Side -->
@@ -59,8 +59,8 @@
                     <span class="nav-user-name">{{ auth()->user()->name }}</span>
                 </a>
             @else
-                <a href="{{ route('login') }}" class="nav-link-btn">{{ __('Sign In') }}</a>
-                <a href="{{ route('register') }}" class="nav-link-btn nav-link-btn-primary">{{ __('Sign Up') }}</a>
+                <a href="{{ route('login') }}" class="nav-link-btn">{{ __('nav.sign_in') }}</a>
+                <a href="{{ route('register') }}" class="nav-link-btn nav-link-btn-primary">{{ __('nav.sign_up') }}</a>
             @endauth
             
             <!-- Mobile Menu Button -->
@@ -75,35 +75,35 @@
     <!-- Niche Navigation -->
     <nav class="niche-bar">
         <div class="niche-bar-inner">
-            <a href="{{ localized_route('niche.show', 'girls') }}" class="niche-bar-link {{ request()->segment(1) === 'girls' || (request()->segment(2) === 'girls') ? 'active' : '' }}">{{ __('Girls') }}</a>
-            <a href="{{ localized_route('niche.show', 'couples') }}" class="niche-bar-link {{ request()->segment(1) === 'couples' || (request()->segment(2) === 'couples') ? 'active' : '' }}">{{ __('Couples') }}</a>
-            <a href="{{ localized_route('niche.show', 'men') }}" class="niche-bar-link {{ request()->segment(1) === 'men' || (request()->segment(2) === 'men') ? 'active' : '' }}">{{ __('Men') }}</a>
-            <a href="{{ localized_route('niche.show', 'trans') }}" class="niche-bar-link {{ request()->segment(1) === 'trans' || (request()->segment(2) === 'trans') ? 'active' : '' }}">{{ __('Trans') }}</a>
+            <a href="{{ localized_route('niche.show', 'girls') }}" class="niche-bar-link {{ request()->segment(1) === 'girls' || (request()->segment(2) === 'girls') ? 'active' : '' }}">{{ __('common.girls') }}</a>
+            <a href="{{ localized_route('niche.show', 'couples') }}" class="niche-bar-link {{ request()->segment(1) === 'couples' || (request()->segment(2) === 'couples') ? 'active' : '' }}">{{ __('common.couples') }}</a>
+            <a href="{{ localized_route('niche.show', 'men') }}" class="niche-bar-link {{ request()->segment(1) === 'men' || (request()->segment(2) === 'men') ? 'active' : '' }}">{{ __('common.men') }}</a>
+            <a href="{{ localized_route('niche.show', 'trans') }}" class="niche-bar-link {{ request()->segment(1) === 'trans' || (request()->segment(2) === 'trans') ? 'active' : '' }}">{{ __('common.trans') }}</a>
             <span class="niche-bar-separator"></span>
-            <a href="{{ localized_route('explore') }}" class="niche-bar-link {{ request()->routeIs('explore*') ? 'active' : '' }}">{{ __('Explore') }}</a>
+            <a href="{{ localized_route('explore') }}" class="niche-bar-link {{ request()->routeIs('explore*') ? 'active' : '' }}">{{ __('common.explore') }}</a>
             <span class="niche-bar-separator"></span>
-            <a href="{{ localized_route('tags.index') }}" class="niche-bar-link {{ request()->routeIs('tags.index*') ? 'active' : '' }}">{{ __('Tags') }}</a>
-            <a href="{{ localized_route('countries.index') }}" class="niche-bar-link {{ request()->routeIs('countries.index*') ? 'active' : '' }}">{{ __('Countries') }}</a>
+            <a href="{{ localized_route('tags.index') }}" class="niche-bar-link {{ request()->routeIs('tags.index*') ? 'active' : '' }}">{{ __('common.tags') }}</a>
+            <a href="{{ localized_route('countries.index') }}" class="niche-bar-link {{ request()->routeIs('countries.index*') ? 'active' : '' }}">{{ __('common.countries') }}</a>
         </div>
     </nav>
 
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="mobile-menu">
-        <a href="{{ localized_route('home') }}" class="mobile-menu-link {{ request()->routeIs('home*') ? 'active' : '' }}">{{ __('Live Cams') }}</a>
-        <a href="{{ localized_route('tags.index') }}" class="mobile-menu-link">{{ __('Tags') }}</a>
-        <a href="{{ localized_route('countries.index') }}" class="mobile-menu-link">{{ __('Countries') }}</a>
-        <a href="https://pornguru.com" class="mobile-menu-link" rel="nofollow noopener">{{ __('Best Porn Sites') }}</a>
-        <a href="https://pornguru.com/blog" class="mobile-menu-link" rel="nofollow noopener">{{ __('Blog') }}</a>
+        <a href="{{ localized_route('home') }}" class="mobile-menu-link {{ request()->routeIs('home*') ? 'active' : '' }}">{{ __('common.live_cams') }}</a>
+        <a href="{{ localized_route('tags.index') }}" class="mobile-menu-link">{{ __('common.tags') }}</a>
+        <a href="{{ localized_route('countries.index') }}" class="mobile-menu-link">{{ __('common.countries') }}</a>
+        <a href="https://pornguru.com" class="mobile-menu-link" rel="nofollow noopener">{{ __('common.best_porn_sites') }}</a>
+        <a href="https://pornguru.com/blog" class="mobile-menu-link" rel="nofollow noopener">{{ __('common.blog') }}</a>
         <div class="mobile-menu-divider"></div>
         @auth
-            <a href="{{ route('dashboard') }}" class="mobile-menu-link">{{ __('Dashboard') }}</a>
+            <a href="{{ route('dashboard') }}" class="mobile-menu-link">{{ __('nav.dashboard') }}</a>
             <form method="POST" action="{{ route('logout') }}" class="mobile-menu-logout">
                 @csrf
-                <button type="submit" class="mobile-menu-link">{{ __('Sign Out') }}</button>
+                <button type="submit" class="mobile-menu-link">{{ __('nav.sign_out') }}</button>
             </form>
         @else
-            <a href="{{ route('login') }}" class="mobile-menu-link">{{ __('Sign In') }}</a>
-            <a href="{{ route('register') }}" class="mobile-menu-link mobile-menu-link-primary">{{ __('Sign Up') }}</a>
+            <a href="{{ route('login') }}" class="mobile-menu-link">{{ __('nav.sign_in') }}</a>
+            <a href="{{ route('register') }}" class="mobile-menu-link mobile-menu-link-primary">{{ __('nav.sign_up') }}</a>
         @endauth
         <div class="mobile-menu-divider"></div>
         <div class="mobile-lang-grid">

@@ -16,7 +16,7 @@
         <div class="model-card-image">
             {{-- Static Image --}}
             <img src="{{ $model->best_image_url }}" 
-                 alt="{{ $model->username }} {{ $model->is_online ? __('live cam') : __('cam model') }}" 
+                 alt="{{ $model->username }} {{ $model->is_online ? __('models.live_cam') : __('models.cam_model') }}" 
                  class="model-card-thumb"
                  width="320" height="240"
                  loading="lazy">
@@ -30,14 +30,14 @@
             
             {{-- Online Indicator (subtle green dot) / Offline tag --}}
             @if($model->is_online)
-                <div class="model-card-live-dot" title="{{ __('Live now') }}"></div>
+                <div class="model-card-live-dot" title="{{ __('models.live_now') }}"></div>
             @else
-                <div class="model-card-offline-tag">{{ __('Offline') }}</div>
+                <div class="model-card-offline-tag">{{ __('common.offline') }}</div>
             @endif
             
             {{-- New Badge (if model is new) --}}
             @if($model->is_new ?? false)
-                <div class="model-card-new-badge">{{ __('NEW') }}</div>
+                <div class="model-card-new-badge">{{ __('models.new_badge') }}</div>
             @endif
 
             {{-- Platform Badge (for non-HLS platforms) --}}
@@ -68,7 +68,7 @@
                         <span>{{ $model->age }}yo</span>
                     @endif
                     @if($model->viewers_count)
-                        <span>{{ number_format($model->viewers_count) }} {{ __('viewers') }}</span>
+                        <span>{{ number_format($model->viewers_count) }} {{ __('common.viewers') }}</span>
                     @endif
                 </div>
             </div>
@@ -99,7 +99,7 @@
     {{-- Favorite Button --}}
     <button class="model-card-favorite {{ $isFavorited ? 'is-favorited' : '' }}" 
             onclick="toggleFavorite('{{ $model->username }}', this); event.preventDefault();"
-            title="{{ $isFavorited ? __('Remove from favorites') : __('Add to favorites') }}">
+            title="{{ $isFavorited ? __('common.remove_from_favorites') : __('common.add_to_favorites') }}">
         <svg viewBox="0 0 24 24" fill="{{ $isFavorited ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
         </svg>

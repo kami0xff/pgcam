@@ -57,8 +57,8 @@ class TagController extends Controller
             'useEnum' => $dbTags->isEmpty(),
             'seoSchemas' => [
                 $this->seoService->getBreadcrumbSchema([
-                    ['name' => __('Home'), 'url' => localized_route('home')],
-                    ['name' => __('Tags'), 'url' => localized_route('tags.index')],
+                    ['name' => __('common.home'), 'url' => localized_route('home')],
+                    ['name' => __('common.tags'), 'url' => localized_route('tags.index')],
                 ]),
             ],
         ]);
@@ -224,7 +224,7 @@ class TagController extends Controller
             'niches' => $this->validNiches,
             'seoSchemas' => [
                 $this->seoService->getBreadcrumbSchema([
-                    ['name' => __('Home'), 'url' => localized_route('home')],
+                    ['name' => __('common.home'), 'url' => localized_route('home')],
                     ['name' => $this->getNicheTitle($niche), 'url' => localized_route('niche.show', $niche)],
                 ]),
             ],
@@ -276,7 +276,7 @@ class TagController extends Controller
             'niches' => $this->validNiches,
             'seoSchemas' => [
                 $this->seoService->getBreadcrumbSchema([
-                    ['name' => __('Home'), 'url' => localized_route('home')],
+                    ['name' => __('common.home'), 'url' => localized_route('home')],
                     ['name' => $this->getNicheTitle($niche), 'url' => localized_route('niche.show', $niche)],
                     ['name' => ucfirst($tagName), 'url' => localized_route('niche.tag', [$niche, $localizedSlug])],
                 ]),
@@ -290,10 +290,10 @@ class TagController extends Controller
     protected function getNicheTitle(string $niche): string
     {
         return match ($niche) {
-            'girls' => __('Girls'),
-            'couples' => __('Couples'),
-            'men' => __('Men'),
-            'trans' => __('Trans'),
+            'girls' => __('common.girls'),
+            'couples' => __('common.couples'),
+            'men' => __('common.men'),
+            'trans' => __('common.trans'),
             default => ucfirst($niche),
         };
     }

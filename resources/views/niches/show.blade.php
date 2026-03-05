@@ -40,7 +40,7 @@
         {{-- Popular Tags for this Niche --}}
         @if(!empty($popularTags))
             <div class="niche-tags">
-                <span class="niche-tags-label">{{ __('Popular') }}:</span>
+                <span class="niche-tags-label">{{ __('tags.popular') }}:</span>
                 @foreach($popularTags as $tag)
                     <a href="{{ localized_route('niche.tag', [$niche, \App\Models\Tag::localizeSlug($tag)]) }}" class="niche-tag">
                         {{ \App\Models\Tag::localizeName($tag) }}

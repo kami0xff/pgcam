@@ -151,6 +151,7 @@ Route::get('/terms', fn() => view('legal.terms'))->name('terms');
 Route::get('/dmca', fn() => view('legal.dmca'))->name('dmca');
 Route::get('/2257', fn() => view('legal.2257'))->name('2257');
 Route::get('/good-causes', fn() => view('legal.support'))->name('good-causes');
+Route::get('/faq', fn() => view('legal.faq'))->name('faq');
 
 // ==============================================
 // Authentication

@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'search' => '搜索',
+    'username_placeholder' => '用户名...',
+    'platform' => '平台',
+    'all_platforms' => '所有平台',
+    'gender' => '性别',
+    'all_genders' => '所有性别',
+    'age_range' => '年龄范围',
+    'min' => '最小',
+    'max' => '最大',
+    'sort_by' => '排序',
+    'viewers' => '观众',
+    'close_to_goal' => '接近目标',
+    'rating' => '评分',
+    'favorites' => '收藏',
+    'last_online' => '最后在线',
+    'age' => '年龄',
+    'options' => '选项',
+    'online' => '在线',
+    'hd' => '高清',
+    'autoplay_previews' => '自动播放预览',
+    'autoplay_description' => '自动播放直播预览（使用更多流量）',
+    'clear_filters' => '清除筛选',
+    'apply_filters' => '应用筛选',
+];

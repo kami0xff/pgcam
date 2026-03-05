@@ -1,7 +1,7 @@
 @extends('layouts.pornguru')
 
 @section('title'){{ $pageTitle }} | PornGuru @endsection
-@section('meta_description'){{ __('Explore live cam streams in a full-screen feed.') }} {{ $categoryLabels[$category] ?? $categoryLabels[null] }}. {{ __('Swipe through models, watch previews, and join live shows.') }}@endsection
+@section('meta_description'){{ __('explore.meta_description') }} {{ $categoryLabels[$category] ?? $categoryLabels[null] }}. {{ __('explore.swipe_description') }}@endsection
 @section('canonical'){{ $models->currentPage() > 1 ? $models->url($models->currentPage()) : localized_route('explore', $category ? ['category' => $category] : []) }}@endsection
 
 @push('seo-pagination')
@@ -25,7 +25,7 @@
             '@context' => 'https://schema.org',
             '@type' => 'CollectionPage',
             'name' => $pageTitle,
-            'description' => __('Explore live cam streams in a full-screen feed.'),
+            'description' => __('explore.meta_description'),
             'url' => localized_route('explore', $category ? ['category' => $category] : []),
             'isPartOf' => [
                 '@type' => 'WebSite',
@@ -608,7 +608,7 @@
 
                     <img class="xpl-poster"
                          src="{{ $model->best_image_url }}"
-                         alt="{{ $model->username }} {{ $model->is_online ? __('live cam') : __('cam model') }}"
+                         alt="{{ $model->username }} {{ $model->is_online ? __('models.live_cam') : __('models.cam_model') }}"
                          loading="{{ $i < 2 ? 'eager' : 'lazy' }}"
                          width="640" height="480">
                     <video muted playsinline preload="none"></video>
@@ -619,7 +619,7 @@
                         @if($model->stream_title)
                         <div class="xpl-title">{{ $model->stream_title }}</div>
                         @endif
-                        <a class="xpl-join-cta" href="{{ $model->affiliate_url }}" target="_blank" rel="nofollow noopener" onclick="event.stopPropagation()">{{ __('Tap to join') }} <span>{{ $model->username }}</span> {{ __('on') }} {{ ucfirst($model->source_platform) }} →</a>
+                        <a class="xpl-join-cta" href="{{ $model->affiliate_url }}" target="_blank" rel="nofollow noopener" onclick="event.stopPropagation()">{{ __('explore.tap_to_join') }} <span>{{ $model->username }}</span> {{ __('explore.on_platform') }} {{ ucfirst($model->source_platform) }} →</a>
                         @if($model->goal_message)
                         <div class="xpl-goal-inline">
                             <div class="xpl-goal-inline-fill" style="width:{{ $goalPct }}%"></div>
@@ -644,7 +644,7 @@
                             @endforeach
                         </div>
                         @endif
-                        <div class="xpl-info-tap">{{ __('Tap for details') }} ↑</div>
+                        <div class="xpl-info-tap">{{ __('explore.tap_for_details') }} ↑</div>
                     </div>
 
                     <div class="xpl-actions">
@@ -654,30 +654,30 @@
                             </a>
                         </div>
                         <div>
-                            <button class="xpl-btn xpl-mute-btn" aria-label="{{ __('Toggle sound') }}">
+                            <button class="xpl-btn xpl-mute-btn" aria-label="{{ __('explore.toggle_sound') }}">
                                 <svg class="xpl-sound-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
                                 <svg class="xpl-sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/><path d="M15.54 8.46a5 5 0 010 7.07"/></svg>
                             </button>
-                            <div class="xpl-btn-label">{{ __('Sound') }}</div>
+                            <div class="xpl-btn-label">{{ __('explore.sound') }}</div>
                         </div>
                         <div>
-                            <button class="xpl-btn xpl-fav-btn" data-model-id="{{ $model->id }}" aria-label="{{ __('Favorite') }}">
+                            <button class="xpl-btn xpl-fav-btn" data-model-id="{{ $model->id }}" aria-label="{{ __('explore.favorite') }}">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
                             </button>
-                            <div class="xpl-btn-label">{{ __('Fav') }}</div>
+                            <div class="xpl-btn-label">{{ __('explore.fav') }}</div>
                         </div>
                         <div>
-                            <a href="{{ $model->affiliate_url }}" target="_blank" rel="nofollow noopener" class="xpl-btn" title="{{ __('Chat') }}">
+                            <a href="{{ $model->affiliate_url }}" target="_blank" rel="nofollow noopener" class="xpl-btn" title="{{ __('common.chat') }}">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
                             </a>
-                            <div class="xpl-btn-label">{{ __('Chat') }}</div>
+                            <div class="xpl-btn-label">{{ __('common.chat') }}</div>
                         </div>
                     </div>
 
                     <div class="explore-seo-pagination">
-                        <p>{{ $model->username }}@if($model->age), {{ $model->age }} {{ __('years old') }}@endif @if($model->country) {{ __('from') }} {{ $model->country }}@endif.</p>
+                        <p>{{ $model->username }}@if($model->age), {{ $model->age }} {{ __('explore.years_old') }}@endif @if($model->country) {{ __('explore.from_country') }} {{ $model->country }}@endif.</p>
                         @if($model->description)<p>{{ \Illuminate\Support\Str::limit($model->description, 200) }}</p>@endif
-                        <a href="{{ $model->url }}">{{ __('View') }} {{ $model->username }} {{ __('profile') }}</a>
+                        <a href="{{ $model->url }}">{{ __('explore.view') }} {{ $model->username }} {{ __('explore.profile_link') }}</a>
                     </div>
                 </article>
                 @endforeach
@@ -690,7 +690,7 @@
         <div class="xpl-panel-handle" id="xpl-panel-handle"><span></span></div>
         <button class="xpl-panel-close" id="xpl-panel-close" aria-label="Close">&times;</button>
         <div class="xpl-panel-scroll" id="xpl-panel-body">
-            <div style="text-align:center; color:var(--text-muted); padding:60px 20px;">{{ __('Select a model to see details') }}</div>
+            <div style="text-align:center; color:var(--text-muted); padding:60px 20px;">{{ __('explore.select_model_details') }}</div>
         </div>
         <div class="xpl-pcta" id="xpl-panel-cta" style="display:none"></div>
     </aside>
@@ -699,13 +699,13 @@
 <nav class="explore-seo-pagination" aria-label="Pagination">
     <h2>{{ $pageTitle }}</h2>
     @if($models->currentPage() > 1)
-    <a href="{{ $models->previousPageUrl() }}">{{ __('Previous page') }}</a>
+    <a href="{{ $models->previousPageUrl() }}">{{ __('pagination.previous_page_lc') }}</a>
     @endif
     @for($p = 1; $p <= min($models->lastPage(), 10); $p++)
-    <a href="{{ $models->url($p) }}" {{ $p === $models->currentPage() ? 'aria-current=page' : '' }}>{{ __('Page') }} {{ $p }}</a>
+    <a href="{{ $models->url($p) }}" {{ $p === $models->currentPage() ? 'aria-current=page' : '' }}>{{ __('pagination.page') }} {{ $p }}</a>
     @endfor
     @if($models->hasMorePages())
-    <a href="{{ $models->nextPageUrl() }}">{{ __('Next page') }}</a>
+    <a href="{{ $models->nextPageUrl() }}">{{ __('pagination.next_page_lc') }}</a>
     @endif
 </nav>
 

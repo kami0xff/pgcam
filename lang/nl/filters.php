@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'search' => 'Zoeken',
+    'username_placeholder' => 'Gebruikersnaam...',
+    'platform' => 'Platform',
+    'all_platforms' => 'Alle Platforms',
+    'gender' => 'Geslacht',
+    'all_genders' => 'Alle Geslachten',
+    'age_range' => 'Leeftijdsbereik',
+    'min' => 'Min',
+    'max' => 'Max',
+    'sort_by' => 'Sorteren Op',
+    'viewers' => 'Kijkers',
+    'close_to_goal' => 'Dicht bij Doel',
+    'rating' => 'Beoordeling',
+    'favorites' => 'Favorieten',
+    'last_online' => 'Laatst Online',
+    'age' => 'Leeftijd',
+    'options' => 'Opties',
+    'online' => 'Online',
+    'hd' => 'HD',
+    'autoplay_previews' => 'Automatische Voorbeelden',
+    'autoplay_description' => 'Automatisch live voorbeelden afspelen (gebruikt meer data)',
+    'clear_filters' => 'Filters wissen',
+    'apply_filters' => 'Filters Toepassen',
+];

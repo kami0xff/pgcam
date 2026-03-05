@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'title_short' => 'Perguntas Frequentes',
+    'meta_description' => 'Encontre respostas para as perguntas mais comuns sobre o PornGuru.cam — como funciona, quais plataformas agregamos, privacidade, contas e mais.',
+    'intro' => 'Tem perguntas? Aqui estão as respostas para as perguntas mais frequentes sobre o PornGuru.cam e como a nossa plataforma funciona.',
+    'q_what_is' => 'O que é o PornGuru.cam?',
+    'a_what_is' => 'O PornGuru.cam é um agregador e plataforma de descoberta de cams ao vivo. Reunimos milhares de modelos de cam das principais plataformas adultas em um diretório fácil de navegar, atualizado em tempo real. Pense nele como um mecanismo de busca para shows de cam ao vivo.',
+    'q_is_free' => 'O PornGuru.cam é gratuito?',
+    'a_is_free' => 'Sim, o PornGuru.cam é completamente gratuito para navegar. Você pode pesquisar, filtrar e descobrir modelos de cam sem pagar nada. Se quiser assistir a um show, dar gorjeta ou comprar tokens, você será redirecionado para a plataforma original onde o modelo está transmitindo.',
+    'q_how_works' => 'Como o PornGuru.cam funciona?',
+    'a_how_works' => 'Sincronizamos continuamente dados de múltiplas plataformas de cam para fornecer status de modelos em tempo real, contagens de espectadores, prévias de streams e filtragem inteligente. Nosso sistema atualiza a cada poucos minutos para garantir que as informações sejam precisas e atualizadas.',
+    'q_need_account' => 'Preciso de uma conta para usar o PornGuru.cam?',
+    'a_need_account' => 'Não é necessária uma conta para navegar e descobrir modelos. No entanto, criar uma conta gratuita permite salvar favoritos, deixar avaliações e participar do chat da comunidade ao vivo.',
+    'q_platforms' => 'Quais plataformas o PornGuru.cam agrega?',
+    'a_platforms' => 'Agregamos modelos das principais plataformas de cam adultas incluindo Chaturbate, Stripchat, BongaCams e mais. Todo o conteúdo e streams ao vivo são fornecidos diretamente por essas plataformas através de seus programas oficiais de afiliados.',
+    'q_update_frequency' => 'Com que frequência os dados dos modelos são atualizados?',
+    'a_update_frequency' => 'Os dados dos nossos modelos são atualizados a cada poucos minutos. Status online, contagens de espectadores e prévias de streams são atualizados quase em tempo real para que você sempre veja quem está ao vivo no momento.',
+    'q_privacy' => 'Minha privacidade está protegida?',
+    'a_privacy' => 'Com certeza. Usamos criptografia SSL em todo o site e não rastreamos sua atividade de navegação. Para mais detalhes, consulte nossa Política de Privacidade.',
+    'q_heatmaps' => 'O que são mapas de calor de transmissão?',
+    'a_heatmaps' => 'Os mapas de calor de transmissão analisam semanas de dados de atividade de cada modelo e mostram quando é mais provável que estejam online. Isso ajuda você a planejar quando visitar para nunca perder seu performer favorito.',
+    'q_explore' => 'O que é a função Explorar / Rolagem de Cams?',
+    'a_explore' => 'Explorar é nosso feed estilo TikTok para cams ao vivo. Permite navegar rapidamente por streams ao vivo deslizando, facilitando a descoberta de novos modelos sem busca manual.',
+    'q_contact' => 'Como posso entrar em contato com o PornGuru.cam?',
+    'a_contact' => 'Você pode nos contatar em contact@pornguru.com para qualquer pergunta, feedback ou consulta comercial. Visite nossa página de Contato para mais detalhes.',
+];

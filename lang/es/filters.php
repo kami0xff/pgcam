@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'search' => 'Buscar',
+    'username_placeholder' => 'Usuario...',
+    'platform' => 'Plataforma',
+    'all_platforms' => 'Todas las Plataformas',
+    'gender' => 'Género',
+    'all_genders' => 'Todos los Géneros',
+    'age_range' => 'Rango de Edad',
+    'min' => 'Mín',
+    'max' => 'Máx',
+    'sort_by' => 'Ordenar Por',
+    'viewers' => 'Espectadores',
+    'close_to_goal' => 'Cerca de la Meta',
+    'rating' => 'Calificación',
+    'favorites' => 'Favoritos',
+    'last_online' => 'Última Conexión',
+    'age' => 'Edad',
+    'options' => 'Opciones',
+    'online' => 'En Línea',
+    'hd' => 'HD',
+    'autoplay_previews' => 'Vista Previa Automática',
+    'autoplay_description' => 'Reproducir vistas previas automáticamente (usa más datos)',
+    'clear_filters' => 'Limpiar filtros',
+    'apply_filters' => 'Aplicar Filtros',
+];

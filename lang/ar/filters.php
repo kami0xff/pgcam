@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'search' => 'بحث',
+    'username_placeholder' => 'اسم المستخدم...',
+    'platform' => 'المنصة',
+    'all_platforms' => 'جميع المنصات',
+    'gender' => 'الجنس',
+    'all_genders' => 'جميع الأجناس',
+    'age_range' => 'نطاق العمر',
+    'min' => 'الحد الأدنى',
+    'max' => 'الحد الأقصى',
+    'sort_by' => 'ترتيب حسب',
+    'viewers' => 'المشاهدون',
+    'close_to_goal' => 'قريب من الهدف',
+    'rating' => 'التقييم',
+    'favorites' => 'المفضلة',
+    'last_online' => 'آخر اتصال',
+    'age' => 'العمر',
+    'options' => 'خيارات',
+    'online' => 'متصل',
+    'hd' => 'عالي الدقة',
+    'autoplay_previews' => 'تشغيل تلقائي',
+    'autoplay_description' => 'تشغيل المعاينات المباشرة تلقائياً (يستخدم بيانات أكثر)',
+    'clear_filters' => 'مسح المرشحات',
+    'apply_filters' => 'تطبيق المرشحات',
+];

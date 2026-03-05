@@ -1,8 +1,8 @@
 @extends('layouts.pornguru')
 
-@section('title', __('Cam Tags') . ' - ' . __('Browse by Category'))
+@section('title', __('tags.cam_tags') . ' - ' . __('tags.browse_by_category'))
 
-@section('meta_description'){{ __('Browse live cam models by category. Find the perfect cam show with our extensive tag system.') }}@endsection
+@section('meta_description'){{ __('tags.browse_description') }}@endsection
 
 @push('seo-pagination')
 <x-seo.schema :schemas="$seoSchemas" />
@@ -12,9 +12,9 @@
 <div class="container page-section">
     {{-- Breadcrumbs --}}
     <nav class="breadcrumbs">
-        <a href="{{ localized_route('home') }}" class="breadcrumb-link">{{ __('Home') }}</a>
+        <a href="{{ localized_route('home') }}" class="breadcrumb-link">{{ __('common.home') }}</a>
         <span class="breadcrumbs-separator">/</span>
-        <span class="breadcrumb-current">{{ __('Tags') }}</span>
+        <span class="breadcrumb-current">{{ __('common.tags') }}</span>
     </nav>
 
     {{-- Page Header --}}
@@ -24,7 +24,7 @@
                 <path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/>
             </svg>
         </div>
-        <h1 class="page-title-text">{{ __('BROWSE BY TAG') }}</h1>
+        <h1 class="page-title-text">{{ __('tags.browse_by_tag') }}</h1>
     </div>
 
     {{-- Top SEO Content --}}
@@ -33,7 +33,7 @@
     {{-- Popular Tags --}}
     @if(count($featuredTags) > 0)
         <section class="tags-section">
-            <h2 class="tags-section-title">{{ __('Popular Tags') }}</h2>
+            <h2 class="tags-section-title">{{ __('tags.popular_tags') }}</h2>
             <div class="tags-cloud">
                 @foreach($featuredTags as $tag)
                     @php
@@ -74,10 +74,10 @@
                                 @endif
                             </a>
                             <span class="tags-column-niches">
-                                <a href="{{ localized_route('niche.tag', ['niche' => 'girls', 'tagSlug' => $slug]) }}" title="{{ __('Girls') }}">G</a>
-                                <a href="{{ localized_route('niche.tag', ['niche' => 'couples', 'tagSlug' => $slug]) }}" title="{{ __('Couples') }}">C</a>
-                                <a href="{{ localized_route('niche.tag', ['niche' => 'men', 'tagSlug' => $slug]) }}" title="{{ __('Men') }}">M</a>
-                                <a href="{{ localized_route('niche.tag', ['niche' => 'trans', 'tagSlug' => $slug]) }}" title="{{ __('Trans') }}">T</a>
+                                <a href="{{ localized_route('niche.tag', ['niche' => 'girls', 'tagSlug' => $slug]) }}" title="{{ __('common.girls') }}">G</a>
+                                <a href="{{ localized_route('niche.tag', ['niche' => 'couples', 'tagSlug' => $slug]) }}" title="{{ __('common.couples') }}">C</a>
+                                <a href="{{ localized_route('niche.tag', ['niche' => 'men', 'tagSlug' => $slug]) }}" title="{{ __('common.men') }}">M</a>
+                                <a href="{{ localized_route('niche.tag', ['niche' => 'trans', 'tagSlug' => $slug]) }}" title="{{ __('common.trans') }}">T</a>
                             </span>
                         </li>
                     @endforeach

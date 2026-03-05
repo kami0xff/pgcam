@@ -41,7 +41,7 @@
                     </svg>
                 </div>
                 <div class="goal-bar-text">
-                    <span class="goal-bar-label">{{ __('Goal') }}:</span>
+                    <span class="goal-bar-label">{{ __('common.goal') }}:</span>
                     @if($displayTokens)
                         <span class="goal-bar-tokens">{{ number_format($displayTokens) }}</span>
                     @endif

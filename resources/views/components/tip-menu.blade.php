@@ -23,12 +23,12 @@
     $groupedMenu = $tipMenu->groupBy(fn($item) => $item->actionType->category);
     
     $categoryLabels = [
-        'tease' => __('Tease'),
-        'dance' => __('Dance'),
-        'interactive' => __('Interactive'),
-        'special' => __('Special Shows'),
-        'outfit' => __('Outfit'),
-        'general' => __('General'),
+        'tease' => __('tips.tease'),
+        'dance' => __('tips.dance'),
+        'interactive' => __('tips.interactive'),
+        'special' => __('tips.special_shows'),
+        'outfit' => __('tips.outfit'),
+        'general' => __('tips.general'),
     ];
     
     $categoryIcons = [
@@ -47,12 +47,12 @@
         <div class="tip-menu-header-content">
             <h3 class="tip-menu-title">
                 <span class="tip-menu-emoji">🎁</span>
-                {{ __('Tip Menu') }}
+                {{ __('tips.tip_menu') }}
             </h3>
-            <p class="tip-menu-subtitle">{{ __('Make her day special!') }}</p>
+            <p class="tip-menu-subtitle">{{ __('tips.make_her_day') }}</p>
         </div>
         <div class="tip-menu-badge">
-            <span>{{ $tipMenu->count() }} {{ __('Actions') }}</span>
+            <span>{{ $tipMenu->count() }} {{ __('tips.actions') }}</span>
         </div>
     </div>
 
@@ -87,13 +87,13 @@
     {{-- CTA --}}
     <div class="tip-menu-cta">
         <div class="tip-menu-cta-content">
-            <p class="tip-menu-cta-title">💎 {{ __('Want to tip') }} {{ $modelName }}?</p>
-            <p class="tip-menu-cta-text">{{ __('Register and get tokens to tip and request private shows!') }}</p>
+            <p class="tip-menu-cta-title">💎 {{ __('tips.want_to_tip') }} {{ $modelName }}?</p>
+            <p class="tip-menu-cta-text">{{ __('tips.register_tokens_description') }}</p>
         </div>
         
         @if ($affiliateUrl)
             <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow noopener" class="tip-menu-cta-btn">
-                {{ __('Get Tokens') }}
+                {{ __('tips.get_tokens') }}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                 </svg>

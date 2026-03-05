@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'search' => '검색',
+    'username_placeholder' => '사용자명...',
+    'platform' => '플랫폼',
+    'all_platforms' => '모든 플랫폼',
+    'gender' => '성별',
+    'all_genders' => '모든 성별',
+    'age_range' => '나이 범위',
+    'min' => '최소',
+    'max' => '최대',
+    'sort_by' => '정렬',
+    'viewers' => '시청자',
+    'close_to_goal' => '목표 근접',
+    'rating' => '평점',
+    'favorites' => '즐겨찾기',
+    'last_online' => '마지막 접속',
+    'age' => '나이',
+    'options' => '옵션',
+    'online' => '온라인',
+    'hd' => 'HD',
+    'autoplay_previews' => '자동 재생 미리보기',
+    'autoplay_description' => '라이브 미리보기 자동 재생 (더 많은 데이터 사용)',
+    'clear_filters' => '필터 초기화',
+    'apply_filters' => '필터 적용',
+];

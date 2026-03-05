@@ -1,6 +1,6 @@
 @extends('layouts.pornguru')
 
-@section('title'){{ $model->username }}@if($model->age) ({{ $model->age }})@endif - {{ $model->is_online ? __('Live Cam Now') : __('Cam Model Profile') }}@if($model->country) | {{ $model->country }}@endif | PornGuru @endsection
+@section('title'){{ $model->username }}@if($model->age) ({{ $model->age }})@endif - {{ $model->is_online ? __('profile.live_cam_now') : __('profile.cam_model_profile') }}@if($model->country) | {{ $model->country }}@endif | PornGuru @endsection
 
 @section('meta_description'){{ $metaDescription }}@endsection
 
@@ -35,7 +35,7 @@
             <div class="swipe-tutorial-hand">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7.5 12.5L4.5 9.5M4.5 9.5L7.5 6.5M4.5 9.5H15M16.5 12.5l3-3m0 0l-3-3m3 3H9"/></svg>
             </div>
-            <span class="swipe-tutorial-text">{{ __('Swipe to navigate models') }}</span>
+            <span class="swipe-tutorial-text">{{ __('profile.swipe_to_navigate') }}</span>
         </div>
     </div>
 
@@ -81,7 +81,7 @@
                         <img src="{{ $model->best_image_url }}" alt="{{ $model->username }} live stream" class="stream-skeleton-bg" width="640" height="480">
                         <div class="stream-skeleton-overlay">
                             <div class="stream-skeleton-spinner"></div>
-                            <span>{{ __('Loading stream...') }}</span>
+                            <span>{{ __('profile.loading_stream') }}</span>
                         </div>
                     </div>
                     {{-- HLS Video Player --}}
@@ -122,7 +122,7 @@
                                 <svg viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M8 5v14l11-7z"/>
                                 </svg>
-                                {{ __('Watch Live Stream') }}
+                                {{ __('profile.watch_live_stream') }}
                             </a>
                         </div>
                         <div class="model-stream-live-badge">LIVE</div>
@@ -132,11 +132,11 @@
                     <div class="model-stream-preview">
                         <img src="{{ $model->best_image_url }}" alt="{{ $model->username }} cam model" width="640" height="480">
                         <div class="model-stream-preview-overlay model-stream-preview-offline">
-                            <div class="model-stream-offline-badge">{{ __('OFFLINE') }}</div>
-                            <p class="model-stream-offline-name">{{ $model->username }} {{ __('is Offline') }}</p>
-                            <p>{{ __('Check back later or browse other live models') }}</p>
+                            <div class="model-stream-offline-badge">{{ __('profile.offline_badge') }}</div>
+                            <p class="model-stream-offline-name">{{ $model->username }} {{ __('profile.is_offline') }}</p>
+                            <p>{{ __('profile.check_back_later') }}</p>
                             <a href="{{ $model->affiliate_url }}" target="_blank" rel="nofollow noopener" class="btn btn-primary" data-affiliate="{{ $model->source_platform }}">
-                                {{ __('Visit Profile') }}
+                                {{ __('profile.visit_profile') }}
                             </a>
                         </div>
                     </div>
@@ -146,9 +146,9 @@
             {{-- Keyboard shortcuts hint (desktop only) --}}
             <div class="shortcuts-hint" id="shortcuts-hint">
                 <div class="shortcuts-hint-items">
-                    <span class="shortcut-item"><kbd>←</kbd><kbd>→</kbd> {{ __('navigate') }}</span>
-                    <span class="shortcut-item"><kbd>M</kbd> {{ __('mute') }}</span>
-                    <span class="shortcut-item"><kbd>F</kbd> {{ __('fullscreen') }}</span>
+                    <span class="shortcut-item"><kbd>←</kbd><kbd>→</kbd> {{ __('profile.navigate') }}</span>
+                    <span class="shortcut-item"><kbd>M</kbd> {{ __('profile.mute') }}</span>
+                    <span class="shortcut-item"><kbd>F</kbd> {{ __('profile.fullscreen') }}</span>
                 </div>
             </div>
 
@@ -174,7 +174,7 @@
                         </div>
                         <div class="model-info-meta">
                             @if($model->age)
-                                <span>{{ $model->age }} {{ __('years') }}</span>
+                                <span>{{ $model->age }} {{ __('profile.years') }}</span>
                             @endif
                             @if($model->country)
                                 <span>{{ $model->country }}</span>
@@ -199,7 +199,7 @@
                     <button class="model-btn-favorite {{ $isFavorited ? 'is-favorited' : '' }}" 
                             id="favorite-btn"
                             onclick="toggleFavoriteModel('{{ $model->username }}')"
-                            title="{{ $isFavorited ? __('Remove from favorites') : __('Add to favorites') }}">
+                            title="{{ $isFavorited ? __('common.remove_from_favorites') : __('common.add_to_favorites') }}">
                         <svg viewBox="0 0 24 24" fill="{{ $isFavorited ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                         </svg>
@@ -219,19 +219,19 @@
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                             <path d="M7 11V7a5 5 0 0110 0v4"/>
                         </svg>
-                        <span>{{ __('Private') }}</span>
+                        <span>{{ __('profile.private_show') }}</span>
                     </a>
                     <a href="{{ $chatUrl }}" target="_blank" rel="nofollow noopener" class="model-btn-tip" data-affiliate="{{ $model->source_platform }}">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/>
                         </svg>
-                        <span>{{ __('Tip') }}</span>
+                        <span>{{ __('profile.tip') }}</span>
                     </a>
                     <a href="{{ $chatUrl }}" target="_blank" rel="nofollow noopener" class="model-btn-chat" data-affiliate="{{ $model->source_platform }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
                         </svg>
-                        <span>{{ __('Chat') }}</span>
+                        <span>{{ __('common.chat') }}</span>
                     </a>
                     <a href="{{ $model->source_platform === 'stripchat' ? $model->affiliate_signup_url : $profileUrl }}" target="_blank" rel="nofollow noopener" class="model-btn-profile" data-affiliate="{{ $model->source_platform }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -239,7 +239,7 @@
                             <polyline points="15 3 21 3 21 9"/>
                             <line x1="10" y1="14" x2="21" y2="3"/>
                         </svg>
-                        <span>{{ $model->source_platform === 'stripchat' ? __('Stripchat') : __('Profile') }}</span>
+                        <span>{{ $model->source_platform === 'stripchat' ? __('profile.stripchat') : __('profile.profile_link') }}</span>
                     </a>
                 </div>
             </div>
@@ -268,34 +268,34 @@
         <div class="model-sidebar-narrow">
             <div class="model-chat" id="chat-panel">
                 <div class="model-chat-header">
-                    <span class="model-chat-title">{{ __('Live Chat') }}</span>
+                    <span class="model-chat-title">{{ __('profile.live_chat') }}</span>
                 </div>
                 <div class="model-chat-messages" id="chat-messages">
-                    <div class="model-chat-welcome">{{ __('Welcome to') }} {{ $model->username }}{{ __("'s room!") }}</div>
+                    <div class="model-chat-welcome">{{ __('profile.welcome_to') }} {{ $model->username }}{{ __('profile.room') }}</div>
                 </div>
                 @if($model->source_platform === 'stripchat')
                     <div class="model-chat-overlay" id="chat-overlay" style="display: flex;">
                         <div class="model-chat-overlay-card">
                             <img src="{{ asset('stripchat-logo.svg') }}" alt="Stripchat" class="chat-overlay-platform-logo">
-                            <p class="model-chat-overlay-title">{{ __('Chat with') }} {{ $model->username }}</p>
-                            <p class="model-chat-overlay-text">{{ __('Create a free Stripchat account to join the chat, send tips, and request private shows.') }}</p>
+                            <p class="model-chat-overlay-title">{{ __('profile.chat_with') }} {{ $model->username }}</p>
+                            <p class="model-chat-overlay-text">{{ __('profile.stripchat_signup_description') }}</p>
                             <a href="{{ $model->affiliate_signup_url }}" target="_blank" rel="nofollow noopener" class="btn btn-stripchat" data-affiliate="stripchat" style="width: 100%;">
-                                {{ __('Sign Up Free on Stripchat') }}
+                                {{ __('profile.sign_up_free_stripchat') }}
                             </a>
                         </div>
                     </div>
                 @else
                     <div class="model-chat-input">
-                        <input type="text" placeholder="{{ __('Type a message...') }}" onfocus="showChatOverlay()">
+                        <input type="text" placeholder="{{ __('profile.type_message') }}" onfocus="showChatOverlay()">
                     </div>
                     <div class="model-chat-overlay" id="chat-overlay" style="display: none;">
                         <div class="model-chat-overlay-card">
-                            <p class="model-chat-overlay-title">{{ __('Join the Chat') }}</p>
-                            <p class="model-chat-overlay-text">{{ __('Create a free account to chat!') }}</p>
+                            <p class="model-chat-overlay-title">{{ __('profile.join_chat') }}</p>
+                            <p class="model-chat-overlay-text">{{ __('profile.create_account_chat') }}</p>
                             <a href="{{ $model->affiliate_signup_url }}" target="_blank" rel="nofollow noopener" class="btn btn-primary" data-affiliate="{{ $model->source_platform }}" style="width: 100%;">
-                                {{ __('Sign Up Free') }}
+                                {{ __('common.sign_up_free') }}
                             </a>
-                            <button onclick="hideChatOverlay()" class="model-chat-overlay-close">{{ __('Maybe later') }}</button>
+                            <button onclick="hideChatOverlay()" class="model-chat-overlay-close">{{ __('profile.maybe_later') }}</button>
                         </div>
                     </div>
                 @endif
@@ -309,15 +309,15 @@
         <a href="{{ $model->affiliate_signup_url }}" target="_blank" rel="nofollow noopener" class="stripchat-private-cta" data-affiliate="stripchat">
             <img src="{{ asset('stripchat-logo.svg') }}" alt="Stripchat" class="stripchat-private-logo">
             <div class="stripchat-private-text">
-                <p class="stripchat-private-heading">{{ __('Talk to') }} {{ $model->username }} {{ __('privately') }}</p>
-                <p>{{ __('Go 1-on-1 with cam2cam, voice chat, and exclusive private shows on Stripchat.') }}</p>
+                <p class="stripchat-private-heading">{{ __('profile.talk_to') }} {{ $model->username }} {{ __('profile.privately') }}</p>
+                <p>{{ __('profile.go_one_on_one') }}</p>
             </div>
         </a>
     @endif
 
     {{-- Description (directly below stream) --}}
     <section class="model-section model-about-section">
-        <h2 class="model-section-title">{{ __('About') }} {{ $model->username }}</h2>
+        <h2 class="model-section-title">{{ __('common.about') }} {{ $model->username }}</h2>
         @if($modelDescription && !empty($modelDescription['long_description']))
             <div class="model-description-full">
                 @if(!empty($modelDescription['short_description']))
@@ -335,7 +335,7 @@
                 @endif
                 @if(!empty($modelDescription['specialties']))
                     <p class="model-specialties">
-                        <strong>{{ __('Known for:') }}</strong> {{ $modelDescription['specialties'] }}
+                        <strong>{{ __('profile.known_for') }}</strong> {{ $modelDescription['specialties'] }}
                     </p>
                 @endif
             </div>
@@ -349,7 +349,7 @@
     {{-- FAQs Section --}}
     @if($modelFaqs->isNotEmpty())
         <section class="model-section model-faqs-section">
-            <h2 class="model-section-title">{{ __('Frequently Asked Questions') }}</h2>
+            <h2 class="model-section-title">{{ __('common.frequently_asked_questions') }}</h2>
             <div class="model-faqs">
                 @foreach($modelFaqs as $faq)
                     <details class="model-faq-item">
@@ -383,7 +383,7 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <span>{{ __('Completed Goals') }}</span>
+                        <span>{{ __('profile.completed_goals') }}</span>
                     </div>
                     <div class="completed-goals-list">
                         @foreach($completedGoals as $goal)
@@ -416,7 +416,7 @@
     @if(isset($similarModels) && $similarModels->count() > 0)
         <section class="model-section">
             <div class="model-section-header">
-                <h2 class="model-section-title">{{ __('Suggested Models') }}</h2>
+                <h2 class="model-section-title">{{ __('profile.suggested_models') }}</h2>
                 <div class="similar-nav">
                     <button class="similar-nav-btn" id="similar-prev" onclick="scrollSimilar(-1)">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -468,7 +468,7 @@
     {{-- Tags Section --}}
     @if(!empty($model->tags) && count($model->tags) > 0)
         <section class="model-section">
-            <h2 class="model-section-title">{{ __('Tags') }}</h2>
+            <h2 class="model-section-title">{{ __('common.tags') }}</h2>
             <div class="model-tags">
                 @foreach($model->tags as $tag)
                     <x-tag-link :tag="$tag" />
@@ -536,11 +536,11 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:48px;height:48px;color:var(--accent);margin-bottom:1rem">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                     </svg>
-                    <h3>{{ __('Save Your Favorites') }}</h3>
-                    <p>{{ __('Create a free account to build your personal favorites list and get notified when your favorite models go live.') }}</p>
+                    <h3>{{ __('common.save_your_favorites') }}</h3>
+                    <p>{{ __('common.save_favorites_description') }}</p>
                     <div class="favorite-popup-actions">
-                        <a href="{{ route('register') }}" class="favorite-popup-btn favorite-popup-btn-primary">{{ __('Sign Up Free') }}</a>
-                        <a href="{{ route('login') }}" class="favorite-popup-btn favorite-popup-btn-secondary">{{ __('Log In') }}</a>
+                        <a href="{{ route('register') }}" class="favorite-popup-btn favorite-popup-btn-primary">{{ __('common.sign_up_free') }}</a>
+                        <a href="{{ route('login') }}" class="favorite-popup-btn favorite-popup-btn-secondary">{{ __('common.log_in') }}</a>
                     </div>
                 </div>
             </div>
@@ -959,7 +959,7 @@
                                 </svg>
                             </div>
                             <div class="goal-bar-text">
-                                <span class="goal-bar-label">{{ __('Goal') }}:</span>
+                                <span class="goal-bar-label">{{ __('common.goal') }}:</span>
                                 ${tokenSpan}
                                 <span class="goal-bar-message">${displayMessage}</span>
                             </div>

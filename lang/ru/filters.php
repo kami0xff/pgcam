@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'search' => 'Поиск',
+    'username_placeholder' => 'Имя пользователя...',
+    'platform' => 'Платформа',
+    'all_platforms' => 'Все Платформы',
+    'gender' => 'Пол',
+    'all_genders' => 'Все Полы',
+    'age_range' => 'Возрастной Диапазон',
+    'min' => 'Мин',
+    'max' => 'Макс',
+    'sort_by' => 'Сортировать По',
+    'viewers' => 'Зрители',
+    'close_to_goal' => 'Близко к Цели',
+    'rating' => 'Рейтинг',
+    'favorites' => 'Избранное',
+    'last_online' => 'Последний Раз Онлайн',
+    'age' => 'Возраст',
+    'options' => 'Опции',
+    'online' => 'Онлайн',
+    'hd' => 'HD',
+    'autoplay_previews' => 'Автовоспроизведение',
+    'autoplay_description' => 'Автовоспроизведение превью (использует больше данных)',
+    'clear_filters' => 'Очистить фильтры',
+    'apply_filters' => 'Применить Фильтры',
+];

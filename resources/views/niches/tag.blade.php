@@ -48,7 +48,7 @@
 
         {{-- Related Tags --}}
         <div class="niche-tags">
-            <span class="niche-tags-label">{{ __('Related') }}:</span>
+            <span class="niche-tags-label">{{ __('tags.related') }}:</span>
             @foreach(['young', 'mature', 'bbw', 'petite', 'asian', 'latina', 'ebony', 'blonde', 'brunette', 'milf'] as $relatedTag)
                 @php $relatedLocalizedSlug = \App\Models\Tag::localizeSlug($relatedTag); @endphp
                 @if($relatedLocalizedSlug !== $tagSlug)

@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'search' => '検索',
+    'username_placeholder' => 'ユーザー名...',
+    'platform' => 'プラットフォーム',
+    'all_platforms' => 'すべてのプラットフォーム',
+    'gender' => '性別',
+    'all_genders' => 'すべての性別',
+    'age_range' => '年齢範囲',
+    'min' => '最小',
+    'max' => '最大',
+    'sort_by' => '並び替え',
+    'viewers' => '視聴者数',
+    'close_to_goal' => 'ゴールに近い',
+    'rating' => '評価',
+    'favorites' => 'お気に入り',
+    'last_online' => '最終オンライン',
+    'age' => '年齢',
+    'options' => 'オプション',
+    'online' => 'オンライン',
+    'hd' => 'HD',
+    'autoplay_previews' => '自動再生プレビュー',
+    'autoplay_description' => 'ライブプレビューを自動再生（データ量増加）',
+    'clear_filters' => 'フィルターをクリア',
+    'apply_filters' => 'フィルターを適用',
+];

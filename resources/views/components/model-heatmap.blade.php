@@ -44,12 +44,12 @@
                     <line x1="8" y1="2" x2="8" y2="6"></line>
                     <line x1="3" y1="10" x2="21" y2="10"></line>
                 </svg>
-                {{ __('Online Schedule') }}
+                {{ __('schedule.online_schedule') }}
             </h3>
             @if($summary['best_day'])
                 <p class="heatmap-card-subtitle">
-                    {{ __('Most active:') }} {{ __($summary['best_day']) }}
-                    @if($summary['best_hour']) {{ __('around') }} {{ $summary['best_hour'] }} @endif
+                    {{ __('schedule.most_active') }} {{ __($summary['best_day']) }}
+                    @if($summary['best_hour']) {{ __('schedule.around') }} {{ $summary['best_hour'] }} @endif
                 </p>
             @endif
         </div>
@@ -75,7 +75,7 @@
                         @php $slot = $row[$dbDay] ?? $row[0]; @endphp
                         <div 
                             class="heatmap-slot heat-level-{{ $slot['heat_level'] }}"
-                            title="{{ $dayLabelsFull[$displayIdx] }} {{ sprintf('%02d:00', $slot['hour']) }} - {{ round($slot['percentage']) }}% {{ __('online') }}"
+                            title="{{ $dayLabelsFull[$displayIdx] }} {{ sprintf('%02d:00', $slot['hour']) }} - {{ round($slot['percentage']) }}% {{ __('common.online') }}"
                         ></div>
                     @endforeach
                 </div>
@@ -85,20 +85,20 @@
         
         {{-- Legend --}}
         <div class="heatmap-legend-row">
-            <span class="heatmap-legend-text">{{ __('Less') }}</span>
+            <span class="heatmap-legend-text">{{ __('schedule.less') }}</span>
             <div class="heatmap-legend-slot heat-level-0"></div>
             <div class="heatmap-legend-slot heat-level-1"></div>
             <div class="heatmap-legend-slot heat-level-2"></div>
             <div class="heatmap-legend-slot heat-level-3"></div>
             <div class="heatmap-legend-slot heat-level-4"></div>
-            <span class="heatmap-legend-text">{{ __('More') }}</span>
+            <span class="heatmap-legend-text">{{ __('schedule.more') }}</span>
         </div>
     </div>
 
     {{-- Schedule blocks --}}
     @if(!$compact && !empty($scheduleBlocks))
     <div class="heatmap-card-footer">
-        <h4 class="heatmap-schedule-title">{{ __('Typical Schedule') }}</h4>
+        <h4 class="heatmap-schedule-title">{{ __('schedule.typical_schedule') }}</h4>
         <div class="heatmap-schedule-list">
             @foreach(array_slice($scheduleBlocks, 0, 4) as $block)
                 <div class="heatmap-schedule-item">
@@ -111,7 +111,7 @@
     </div>
     @elseif(!$compact && $bestTimes->isNotEmpty())
     <div class="heatmap-card-footer">
-        <h4 class="heatmap-schedule-title">{{ __('Best Times') }}</h4>
+        <h4 class="heatmap-schedule-title">{{ __('schedule.best_times') }}</h4>
         <div class="heatmap-best-list">
             @foreach($bestTimes->take(4) as $time)
                 <div class="heatmap-best-item">
@@ -133,8 +133,8 @@
             <line x1="8" y1="2" x2="8" y2="6"></line>
             <line x1="3" y1="10" x2="21" y2="10"></line>
         </svg>
-        <p class="heatmap-empty-text">{{ __('Online Schedule') }}</p>
-        <p class="heatmap-empty-subtext">{{ __('Schedule data coming soon') }}</p>
+        <p class="heatmap-empty-text">{{ __('schedule.online_schedule') }}</p>
+        <p class="heatmap-empty-subtext">{{ __('schedule.schedule_data_coming_soon') }}</p>
     </div>
 </div>
 @endif

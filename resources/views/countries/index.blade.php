@@ -33,7 +33,7 @@
             <a href="{{ $url }}" class="country-card">
                 <span class="country-card-flag">{{ $flag }}</span>
                 <span class="country-card-name">{{ $name }}</span>
-                <span class="country-card-count">{{ number_format($count) }} {{ __('models') }}</span>
+                <span class="country-card-count">{{ number_format($count) }} {{ __('common.models') }}</span>
             </a>
         @endforeach
     </div>
