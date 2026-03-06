@@ -276,15 +276,15 @@ window.StreamPreviewManager = (function() {
     }
 
     /**
-     * Setup hover events for preview on hover
+     * Setup hover events for preview on hover (pointer devices only)
      */
     function setupHoverEvents() {
-        document.addEventListener('mouseenter', (e) => {
+        document.addEventListener('pointerenter', (e) => {
+            if (e.pointerType !== 'mouse') return;
             if (!(e.target instanceof Element)) return;
             const card = e.target.closest('.model-card');
             if (!card) return;
 
-            // Skip if autoplay is running or this card already has an active stream
             if (allPreviewsPlaying || activeStreams.has(card)) return;
             
             const streamUrl = card.dataset.streamUrl;
@@ -293,14 +293,14 @@ window.StreamPreviewManager = (function() {
             hoverTimeout = setTimeout(() => startStream(card, streamUrl), 500);
         }, true);
 
-        document.addEventListener('mouseleave', (e) => {
+        document.addEventListener('pointerleave', (e) => {
+            if (e.pointerType !== 'mouse') return;
             if (!(e.target instanceof Element)) return;
             const card = e.target.closest('.model-card');
             if (!card) return;
             
             if (hoverTimeout) { clearTimeout(hoverTimeout); hoverTimeout = null; }
 
-            // Don't stop streams that were started by autoplay
             if (allPreviewsPlaying) return;
             stopStream(card);
         }, true);
