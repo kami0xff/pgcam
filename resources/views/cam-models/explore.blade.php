@@ -956,9 +956,15 @@
         const video = slide.querySelector('video');
         if (!video) return;
         const entry = hlsInstances.get(slide);
-        if (entry && entry.state === 'playing') return;
+        if (entry && entry.state === 'playing') {
+            video.muted = isMuted;
+            return;
+        }
         if (entry && entry.hls) {
-            video.play().then(() => { slide.classList.add('stream-active'); entry.state = 'playing'; }).catch(() => {});
+            video.muted = isMuted;
+            video.play().then(() => { slide.classList.add('stream-active'); entry.state = 'playing'; }).catch(() => {
+                if (!isMuted) { video.muted = true; video.play().then(() => { slide.classList.add('stream-active'); entry.state = 'playing'; }).catch(() => {}); }
+            });
             return;
         }
         if (typeof Hls !== 'undefined' && Hls.isSupported()) {
@@ -968,7 +974,9 @@
             hls.on(Hls.Events.MANIFEST_PARSED, () => {
                 if (slides[currentIndex] === slide) {
                     video.muted = isMuted;
-                    video.play().then(() => { slide.classList.add('stream-active'); hlsInstances.set(slide, { hls, state: 'playing' }); }).catch(() => {});
+                    video.play().then(() => { slide.classList.add('stream-active'); hlsInstances.set(slide, { hls, state: 'playing' }); }).catch(() => {
+                        if (!isMuted) { video.muted = true; video.play().then(() => { slide.classList.add('stream-active'); hlsInstances.set(slide, { hls, state: 'playing' }); }).catch(() => {}); }
+                    });
                 } else {
                     hlsInstances.set(slide, { hls, state: 'preloaded' });
                 }
@@ -978,9 +986,14 @@
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
             video.src = url;
             video.addEventListener('loadedmetadata', () => {
-                if (slides[currentIndex] === slide) video.play().then(() => slide.classList.add('stream-active')).catch(() => {});
+                if (slides[currentIndex] === slide) {
+                    video.muted = isMuted;
+                    video.play().then(() => slide.classList.add('stream-active')).catch(() => {
+                        if (!isMuted) { video.muted = true; video.play().then(() => slide.classList.add('stream-active')).catch(() => {}); }
+                    });
+                }
             }, { once: true });
-            hlsInstances.set(slide, { hls: null, state: 'playing' });
+            hlsInstances.set(slide, { hls: null, state: 'loading' });
         }
     }
 
@@ -1144,6 +1157,7 @@
     }, { passive: true });
 
     initSlides();
+    syncMuteUI();
     if (slides.length > 0) { populatePanel(0); manageStreams(); }
 })();
 </script>

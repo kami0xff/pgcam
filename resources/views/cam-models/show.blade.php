@@ -648,6 +648,14 @@
 
     // Initialize HLS player
     document.addEventListener('DOMContentLoaded', function() {
+        // Sync volume UI to saved preference immediately
+        const initSlider = document.getElementById('volume-slider');
+        const initIconMuted = document.getElementById('icon-muted');
+        const initIconUnmuted = document.getElementById('icon-unmuted');
+        if (initSlider) initSlider.value = userUnmuted ? savedVolume : 0;
+        if (initIconMuted) initIconMuted.style.display = userUnmuted ? 'none' : 'block';
+        if (initIconUnmuted) initIconUnmuted.style.display = userUnmuted ? 'block' : 'none';
+
         const video = document.getElementById('stream-player');
         const skeleton = document.getElementById('stream-skeleton');
         const streamUrl = @json($model->best_stream_url);
