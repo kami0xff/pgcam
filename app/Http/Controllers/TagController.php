@@ -159,29 +159,24 @@ class TagController extends Controller
         $locale = App::getLocale();
         $tag = Tag::findBySlug($slug, $locale);
 
-        if (!$tag) {
-            abort(404);
+        // Redirect to the canonical localized URL if the slug doesn't match
+        if ($tag) {
+            $correctSlug = Tag::localizeSlug($tag->slug, $locale);
+            if ($slug !== $correctSlug && $slug !== $tag->slug) {
+                return redirect(localized_route('tags.show', $correctSlug), 301);
+            }
         }
 
-        // Redirect to the canonical localized URL if the slug doesn't match
-        $correctSlug = Tag::localizeSlug($tag->slug, $locale);
-        if ($slug !== $correctSlug && $slug !== $tag->slug) {
-            return redirect(localized_route('tags.show', $correctSlug), 301);
-        }
+        $englishSlug = $tag?->slug ?? $slug;
+        $englishName = $tag?->name ?? ucwords(str_replace(['-', '_'], ' ', $slug));
 
         $query = CamModel::query();
-
-        // Filter by tag using PostgreSQL-compatible text search
-        // Always use the ENGLISH slug/name for DB queries (cam DB stores English tags)
-        $englishSlug = $tag->slug;
-        $englishName = $tag->name;
         $query->where(function ($q) use ($englishSlug, $englishName) {
             $q->whereRaw("tags::text ILIKE ?", ['%"' . $englishSlug . '"%'])
               ->orWhereRaw("tags::text ILIKE ?", ['%/' . $englishSlug . '"%'])
               ->orWhereRaw("tags::text ILIKE ?", ['%"' . $englishName . '"%']);
         });
 
-        // Apply additional filters
         if ($request->boolean('online')) {
             $query->online();
         }
@@ -191,18 +186,35 @@ class TagController extends Controller
               ->orderBy('viewers_count', 'desc');
 
         $models = $query->paginate(48)->withQueryString();
-        $translation = $tag->translation($locale);
 
-        \Illuminate\Support\Facades\View::share('langSwitchUrls', $tag->getHreflangUrls());
+        // Only 404 if the tag isn't in the DB AND no models match
+        if (!$tag && $models->isEmpty()) {
+            abort(404);
+        }
+
+        // Build a lightweight stand-in for unregistered tags
+        if (!$tag) {
+            $tag = new Tag([
+                'slug' => $englishSlug,
+                'name' => $englishName,
+                'models_count' => $models->total(),
+            ]);
+            $tag->id = 0;
+        }
+
+        $translation = $tag->id ? $tag->translation($locale) : null;
+        $hreflangUrls = $tag->id ? $tag->getHreflangUrls() : [];
+
+        \Illuminate\Support\Facades\View::share('langSwitchUrls', $hreflangUrls);
 
         return view('tags.show', [
             'tag' => $tag,
             'models' => $models,
             'translation' => $translation,
-            'niche' => null, // All niches
+            'niche' => null,
             'niches' => $this->validNiches,
-            'seoSchemas' => $this->seoService->getTagSchema($tag),
-            'hreflangUrls' => $tag->getHreflangUrls(),
+            'seoSchemas' => $tag->id ? $this->seoService->getTagSchema($tag) : [],
+            'hreflangUrls' => $hreflangUrls,
         ]);
     }
 
