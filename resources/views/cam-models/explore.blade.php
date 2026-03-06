@@ -730,7 +730,7 @@
     const CATEGORY = @json($category);
     const IS_AUTHED = {{ auth()->check() ? 'true' : 'false' }};
     const REGISTER_URL = '{{ route("register") }}';
-    let isMuted = true;
+    let isMuted = localStorage.getItem('streamMuted') !== 'false';
 
     function initSlides() {
         slides.length = 0;
@@ -767,6 +767,7 @@
         if (muteBtn) {
             muteBtn.addEventListener('click', () => {
                 isMuted = !isMuted;
+                localStorage.setItem('streamMuted', isMuted);
                 applyMuteState();
                 syncMuteUI();
             });

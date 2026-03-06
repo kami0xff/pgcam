@@ -559,21 +559,29 @@
         container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
     }
 
-    let savedVolume = 1;
+    let savedVolume = parseFloat(localStorage.getItem('streamVolume') ?? '1');
+    let userUnmuted = localStorage.getItem('streamMuted') === 'false';
+
+    function persistVolumeState(muted, vol) {
+        localStorage.setItem('streamMuted', muted);
+        localStorage.setItem('streamVolume', vol);
+    }
 
     function toggleMute() {
         const video = document.getElementById('stream-player');
         if (!video) return;
 
         video.muted = !video.muted;
+        userUnmuted = !video.muted;
         updateVolumeUI();
 
-        // Sync slider when unmuting
         const slider = document.getElementById('volume-slider');
         if (slider && !video.muted && video.volume === 0) {
             video.volume = savedVolume || 0.5;
             slider.value = video.volume;
         }
+
+        persistVolumeState(video.muted, video.muted ? savedVolume : video.volume);
     }
 
     function setVolume(val) {
@@ -590,6 +598,8 @@
             video.muted = false;
         }
 
+        userUnmuted = !video.muted;
+        persistVolumeState(video.muted, val || savedVolume);
         updateVolumeUI();
     }
 
@@ -660,25 +670,16 @@
         }
 
         function tryPlayUnmuted() {
-            // Try to play unmuted first
-            video.muted = false;
-            updateMuteIcon();
+            video.muted = !userUnmuted;
+            video.volume = savedVolume;
+            updateVolumeUI();
             
             return video.play().catch(() => {
                 // Browser blocked unmuted autoplay, fall back to muted
                 video.muted = true;
-                updateMuteIcon();
+                updateVolumeUI();
                 return video.play().catch(() => {});
             });
-        }
-
-        function updateMuteIcon() {
-            const iconMuted = document.getElementById('icon-muted');
-            const iconUnmuted = document.getElementById('icon-unmuted');
-            if (iconMuted && iconUnmuted) {
-                iconMuted.style.display = video.muted ? 'block' : 'none';
-                iconUnmuted.style.display = video.muted ? 'none' : 'block';
-            }
         }
 
         if (Hls.isSupported()) {
