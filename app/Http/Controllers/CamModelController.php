@@ -327,12 +327,42 @@ class CamModelController extends Controller
         $modelFaqs = ModelFaq::forModel($model->id);
         $seoSchemas = $this->seoService->getModelSchema($model);
 
-        // Build meta description from generated content or fallback
-        $metaDescription = $modelDescription['short_description']
-            ?? "Watch {$model->username} live on PornGuru.cam. Join the free chat and interact with this amazing model.";
+        $platformName = match ($model->source_platform) {
+            'stripchat' => 'Stripchat',
+            'chaturbate' => 'Chaturbate',
+            'bongacams' => 'BongaCams',
+            'xlovecam' => 'XloveCam',
+            default => ucfirst($model->source_platform ?? 'Cam'),
+        };
 
-        // Build hreflang URLs for all priority locales
+        $topTags = array_slice($model->tags ?? [], 0, 5);
+        $tagHashtags = implode(' ', array_map(
+            fn($t) => '#' . str_replace(['-', '_', ' '], '', $t),
+            $topTags
+        ));
+
+        $metaTitle = $this->buildModelMetaTitle($model, $platformName);
+
+        $agePart = $model->age ? "{$model->age}yo" : '';
+        $countryPart = $model->country ? "from {$model->country}" : '';
+        $demoParts = implode(' ', array_filter([$agePart, $countryPart]));
+
+        if (!empty($modelDescription['short_description'])) {
+            $desc = $modelDescription['short_description'];
+            $metaDescription = "{$desc} 🔥 Watch free on {$platformName} via PornGuru.cam ❤️ {$tagHashtags}";
+        } else {
+            $metaDescription = "Watch {$model->username}'s live cam show free!"
+                . ($demoParts ? " {$demoParts}." : '')
+                . " 🔥 Free chat, HD stream & full profile on {$platformName}."
+                . " Join {$model->username} now on PornGuru.cam"
+                . " ❤️ {$tagHashtags}";
+        }
+
+        $metaDescription = \Illuminate\Support\Str::limit($metaDescription, 160, '');
+
         $hreflangUrls = $this->buildModelHreflangUrls($model);
+
+        $noindex = !in_array($model->username, $this->getTopModelUsernames());
 
         return view('cam-models.show', [
             'model' => $model,
@@ -342,9 +372,23 @@ class CamModelController extends Controller
             'modelDescription' => $modelDescription,
             'modelFaqs' => $modelFaqs,
             'seoSchemas' => $seoSchemas,
+            'metaTitle' => $metaTitle,
             'metaDescription' => $metaDescription,
             'hreflangUrls' => $hreflangUrls,
+            'noindex' => $noindex,
+            'platformName' => $platformName,
         ]);
+    }
+
+    /**
+     * Stable set of model usernames that should always be indexed.
+     * Uses ONLY stable pools (all-time popular + Japanese) — NOT the rotating online pool.
+     * This ensures noindex never flips on popular models when they go offline.
+     * Cache TTL is 24h since favorites/country data barely changes day to day.
+     */
+    protected function getTopModelUsernames(): array
+    {
+        return SitemapController::getStableModelUsernames();
     }
 
     /**
@@ -506,6 +550,153 @@ class CamModelController extends Controller
             ]),
             'hasMore' => $models->count() === $limit,
         ]);
+    }
+
+    /**
+     * Build a meta title that stays within ~60 chars while front-loading
+     * the highest-value keywords: username, platform, "Free Live Cam".
+     * Degrades gracefully: drops brand first, then shortens keywords.
+     */
+    private function buildModelMetaTitle(CamModel $model, string $platformName): string
+    {
+        $u = $model->username;
+
+        $full = "{$u} {$platformName}: Free Live Sex Show & Chat | PornGuru";
+        if (mb_strlen($full) <= 60) {
+            return $full;
+        }
+
+        $medium = "{$u} {$platformName}: Free Live Cam Show & Chat";
+        if (mb_strlen($medium) <= 60) {
+            return $medium;
+        }
+
+        $short = "{$u} - Free Live Cam & Chat | {$platformName}";
+        if (mb_strlen($short) <= 60) {
+            return $short;
+        }
+
+        return "{$u}: Free Live Cam & Chat | {$platformName}";
+    }
+
+    /**
+     * Cam Roulette — random model matching, targets chatroulette/cam roulette keywords.
+     */
+    public function roulette(Request $request, ?string $category = null)
+    {
+        $validCategories = ['girls', 'couples', 'men', 'trans'];
+        if ($category && !in_array($category, $validCategories)) {
+            abort(404);
+        }
+
+        $query = CamModel::where('is_online', true)
+            ->where(function ($q) {
+                $q->whereNotNull('stream_url')->where('stream_url', '!=', '')
+                  ->orWhereNotNull('stream_urls');
+            });
+
+        if ($category) {
+            $query->inNiche($category);
+        }
+
+        $model = $query->inRandomOrder()->first();
+
+        $categoryLabels = [
+            null => __('roulette.all_cams'),
+            'girls' => __('roulette.girls'),
+            'couples' => __('roulette.couples'),
+            'men' => __('roulette.men'),
+            'trans' => __('roulette.trans'),
+        ];
+
+        $categoryUrls = [];
+        foreach ([null, ...$validCategories] as $cat) {
+            $categoryUrls[$cat ?? 'all'] = localized_route('roulette', $cat ? ['category' => $cat] : []);
+        }
+
+        $pageTitle = __('roulette.title') . ($category ? ' - ' . ($categoryLabels[$category] ?? '') : '');
+
+        $hreflangUrls = $this->buildRouletteHreflangUrls($category);
+
+        return view('cam-models.roulette', [
+            'model' => $model,
+            'category' => $category,
+            'categoryLabels' => $categoryLabels,
+            'categoryUrls' => $categoryUrls,
+            'pageTitle' => $pageTitle,
+            'hreflangUrls' => $hreflangUrls,
+        ]);
+    }
+
+    /**
+     * API endpoint for roulette — returns a random model as JSON.
+     */
+    public function rouletteApi(Request $request)
+    {
+        $category = $request->input('category');
+        $excludeId = $request->input('exclude');
+
+        $query = CamModel::where('is_online', true)
+            ->where(function ($q) {
+                $q->whereNotNull('stream_url')->where('stream_url', '!=', '')
+                  ->orWhereNotNull('stream_urls');
+            });
+
+        if ($category && in_array($category, ['girls', 'couples', 'men', 'trans'])) {
+            $query->inNiche($category);
+        }
+
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+
+        $model = $query->inRandomOrder()->first();
+
+        if (!$model) {
+            return response()->json(['model' => null]);
+        }
+
+        return response()->json([
+            'model' => [
+                'id' => $model->id,
+                'username' => $model->username,
+                'age' => $model->age,
+                'country' => $model->country,
+                'gender' => $model->gender,
+                'viewers_count' => $model->viewers_count,
+                'stream_url' => $model->best_stream_url,
+                'image_url' => $model->best_image_url,
+                'affiliate_url' => $model->affiliate_url,
+                'platform' => $model->source_platform,
+                'url' => $model->url,
+                'flag' => $model->country ? country_flag($model->country) : null,
+                'stream_title' => $model->stream_title,
+                'is_hd' => $model->is_hd,
+                'rating' => $model->rating,
+                'tags' => array_slice($model->tags ?? [], 0, 8),
+                'avatar_url' => $model->avatar_url,
+                'is_online' => $model->is_online,
+            ],
+        ]);
+    }
+
+    private function buildRouletteHreflangUrls(?string $category): array
+    {
+        $urls = [];
+        $priorityLocales = config('locales.priority', ['en', 'es', 'fr', 'de', 'pt']);
+        $params = $category ? ['category' => $category] : [];
+
+        foreach ($priorityLocales as $locale) {
+            if ($locale === 'en') {
+                $urls['en'] = route('roulette', $params);
+            } else {
+                $path = "/{$locale}/roulette" . ($category ? "/{$category}" : '');
+                $urls[$locale] = url($path);
+            }
+        }
+
+        $urls['x-default'] = route('roulette', $params);
+        return $urls;
     }
 
     private function buildExploreHreflangUrls(?string $category): array

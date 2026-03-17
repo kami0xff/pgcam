@@ -79,6 +79,7 @@
             <a href="{{ localized_route('niche.show', 'trans') }}" class="niche-bar-link {{ request()->segment(1) === 'trans' || (request()->segment(2) === 'trans') ? 'active' : '' }}">{{ __('common.trans') }}</a>
             <span class="niche-bar-separator"></span>
             <a href="{{ localized_route('explore') }}" class="niche-bar-link {{ request()->routeIs('explore*') ? 'active' : '' }}">{{ __('common.explore') }}</a>
+            <a href="{{ localized_route('roulette') }}" class="niche-bar-link {{ request()->routeIs('roulette*') ? 'active' : '' }}">{{ __('roulette.title') }}</a>
             <span class="niche-bar-separator"></span>
             <a href="{{ localized_route('tags.index') }}" class="niche-bar-link {{ request()->routeIs('tags.index*') ? 'active' : '' }}">{{ __('common.tags') }}</a>
             <a href="{{ localized_route('countries.index') }}" class="niche-bar-link {{ request()->routeIs('countries.index*') ? 'active' : '' }}">{{ __('common.countries') }}</a>

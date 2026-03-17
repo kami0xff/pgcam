@@ -1,13 +1,17 @@
 @extends('layouts.pornguru')
 
-@section('title'){{ $model->username }}@if($model->age) ({{ $model->age }})@endif - {{ $model->is_online ? __('profile.live_cam_now') : __('profile.cam_model_profile') }}@if($model->country) | {{ $model->country }}@endif | PornGuru @endsection
+@section('title', $metaTitle)
 
 @section('meta_description'){{ $metaDescription }}@endsection
 
 @section('canonical'){{ $model->url }}@endsection
 
+@if($noindex ?? false)
+@section('meta_robots', 'noindex, follow')
+@endif
+
 @section('og_type', 'profile')
-@section('og_title'){{ $model->username }}@if($model->age) ({{ $model->age }})@endif - {{ $model->is_online ? 'Live Now' : 'Cam Model' }}@if($model->country) | {{ $model->country }}@endif | PornGuru @endsection
+@section('og_title', $metaTitle)
 @section('og_description'){{ $metaDescription }}@endsection
 @section('og_image', $model->best_image_url)
 
@@ -192,6 +196,14 @@
                                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                                     </svg>
                                     {{ number_format($model->rating, 1) }}
+                                </span>
+                            @endif
+                            @if($model->updated_at)
+                                <span class="model-info-stat-inline" title="{{ $model->updated_at->toIso8601String() }}">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                                    </svg>
+                                    <time datetime="{{ $model->updated_at->toIso8601String() }}">{{ $model->updated_at->diffForHumans() }}</time>
                                 </span>
                             @endif
                         </div>

@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'PornGuru - The Ultimate Adult Guide')</title>
-    <meta name="description" content="@yield('meta_description', 'Watch free live cam shows from the hottest models. Browse thousands of live sex cams on PornGuru.cam')">
+    <title>@yield('title', 'Free Live Sex Cams - Watch Live Cam Shows Free | PornGuru')</title>
+    <meta name="description" content="@yield('meta_description', 'Watch free live sex cam shows from the hottest models! 🔥 HD streams from Stripchat, Chaturbate & more. Free chat, no signup on PornGuru.cam ❤️')">
+    @hasSection('meta_robots')<meta name="robots" content="@yield('meta_robots')">
+    @endif
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('favicon-nobg.png') }}">

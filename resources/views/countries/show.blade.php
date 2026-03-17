@@ -8,9 +8,9 @@
     $modelsCount = isset($country->models_count) ? $country->models_count : $models->total();
 @endphp
 
-@section('title', ($translation?->meta_title ?? $countryName . ' Cams'))
+@section('title'){{ $translation?->meta_title ?? $countryName . ' Cams: Free Live ' . $countryName . ' Sex Chat | PornGuru' }}@endsection
 
-@section('meta_description'){{ $translation?->meta_description ?? "Watch live cam models from {$countryName}. Browse {$modelsCount} models." }}@endsection
+@section('meta_description'){{ $translation?->meta_description ?? "Watch {$modelsCount}+ live cam models from {$countryName} free! 🔥 {$countryName} sex cams with free chat & HD streams on PornGuru.cam ❤️" }}@endsection
 
 @section('canonical'){{ $models->currentPage() > 1 ? $models->url($models->currentPage()) : $countryUrl }}@endsection
 

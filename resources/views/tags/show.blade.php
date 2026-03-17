@@ -1,8 +1,8 @@
 @extends('layouts.pornguru')
 
-@section('title', ($translation?->meta_title ?? $tag->localized_name . ' Cams'))
+@section('title'){{ $translation?->meta_title ?? $tag->localized_name . ' Cams: Free Live ' . $tag->localized_name . ' Sex Chat | PornGuru' }}@endsection
 
-@section('meta_description'){{ $translation?->meta_description ?? "Watch live {$tag->localized_name} cam shows. Browse {$tag->models_count} models." }}@endsection
+@section('meta_description'){{ $translation?->meta_description ?? "Watch {$tag->models_count}+ live {$tag->localized_name} cam models free! 🔥 HD {$tag->localized_name} sex cams with free chat on PornGuru.cam ❤️" }}@endsection
 
 @section('canonical'){{ $models->currentPage() > 1 ? $models->url($models->currentPage()) : $tag->url }}@endsection
 

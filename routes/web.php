@@ -46,46 +46,32 @@ Route::middleware('detect.locale')->group(function () {
     Route::get('/explore/{category?}', [CamModelController::class, 'explore'])
         ->where('category', 'girls|couples|men|trans')
         ->name('explore');
+
+    // Cam Roulette (random model matching)
+    Route::get('/roulette/{category?}', [CamModelController::class, 'roulette'])
+        ->where('category', 'girls|couples|men|trans')
+        ->name('roulette');
 });
 
 // API endpoint (no locale detection needed)
 Route::get('/api/models', [CamModelController::class, 'loadMore'])->name('api.models.load');
 Route::get('/api/explore', [CamModelController::class, 'exploreApi'])->name('api.explore');
+Route::get('/api/roulette', [CamModelController::class, 'rouletteApi'])->name('api.roulette');
 
-// Sitemap Index
-Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+// Sitemaps — strip session/cookie/CSRF middleware so Cloudflare can cache at the edge
+Route::withoutMiddleware([
+    \Illuminate\Session\Middleware\StartSession::class,
+    \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+    \Illuminate\Cookie\Middleware\EncryptCookies::class,
+    \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+    \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+])->group(function () {
+    Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
-// Static pages sitemap
-Route::get('/sitemap-static.xml', [SitemapController::class, 'staticPages'])->name('sitemap.static');
-
-// Models sitemaps (paginated, with optional locale)
-Route::get('/sitemap-models-{page}.xml', [SitemapController::class, 'models'])
-    ->where('page', '[0-9]+')
-    ->name('sitemap.models');
-Route::get('/sitemap-models-{locale}-{page}.xml', [SitemapController::class, 'models'])
-    ->where(['locale' => '[a-z]{2}(-[A-Z]{2})?', 'page' => '[0-9]+'])
-    ->name('sitemap.models.locale');
-
-// Tags sitemaps (with optional locale)
-Route::get('/sitemap-tags.xml', [SitemapController::class, 'tags'])->name('sitemap.tags');
-Route::get('/sitemap-tags-{locale}.xml', [SitemapController::class, 'tags'])
-    ->where('locale', '[a-z]{2}(-[A-Z]{2})?')
-    ->name('sitemap.tags.locale');
-
-// Countries sitemaps (with optional locale)
-Route::get('/sitemap-countries.xml', [SitemapController::class, 'countries'])->name('sitemap.countries');
-Route::get('/sitemap-countries-{locale}.xml', [SitemapController::class, 'countries'])
-    ->where('locale', '[a-z]{2}(-[A-Z]{2})?')
-    ->name('sitemap.countries.locale');
-
-// Niches sitemaps (with optional locale)
-Route::get('/sitemap-niches.xml', [SitemapController::class, 'niches'])->name('sitemap.niches');
-Route::get('/sitemap-niches-{locale}.xml', [SitemapController::class, 'niches'])
-    ->where('locale', '[a-z]{2}(-[A-Z]{2})?')
-    ->name('sitemap.niches.locale');
-
-// Image sitemap (for Google Images SEO)
-Route::get('/sitemap-images.xml', [SitemapController::class, 'images'])->name('sitemap.images');
+    // 410 Gone for all old sub-sitemaps so crawlers stop requesting them
+    Route::get('/sitemap-{any}.xml', fn () => response('', 410))
+        ->where('any', '.*');
+});
 
 // ==============================================
 // Localized Routes (/{locale}/...)
@@ -125,6 +111,11 @@ Route::prefix('{locale}')
         Route::get('/explore/{category?}', [CamModelController::class, 'explore'])
             ->where('category', 'girls|couples|men|trans')
             ->name('explore.localized');
+
+        // Localized roulette
+        Route::get('/roulette/{category?}', [CamModelController::class, 'roulette'])
+            ->where('category', 'girls|couples|men|trans')
+            ->name('roulette.localized');
 
         // Localized legal/static pages
         Route::get('/about', fn() => view('legal.about'))->name('about.localized');

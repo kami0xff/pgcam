@@ -1,12 +1,12 @@
 @extends('layouts.pornguru')
 
-@section('title', __('models.live_cam_models') . ($models->currentPage() > 1 ? ' - ' . __('pagination.page') . ' ' . $models->currentPage() : ''))
+@section('title')Free Live Sex Cams - Watch {{ number_format($onlineCount) }}+ Models Live Now | PornGuru{{ $models->currentPage() > 1 ? ' - ' . __('pagination.page') . ' ' . $models->currentPage() : '' }}@endsection
 
-@section('meta_description'){{ __('models.watch_description', ['count' => number_format($onlineCount)]) }}@endsection
+@section('meta_description')Watch {{ number_format($onlineCount) }}+ live cam models streaming free right now! 🔥 HD sex cams from Stripchat, Chaturbate & more. Free chat, no signup. Browse girls, couples, men & trans live on PornGuru.cam ❤️ #livecams #freechat @endsection
 
 @section('canonical'){{ $models->currentPage() > 1 ? $models->url($models->currentPage()) : localized_route('home') }}@endsection
 
-@section('og_title', __('models.live_cam_models') . ' - PornGuru.cam')
+@section('og_title')Free Live Sex Cams - {{ number_format($onlineCount) }}+ Models Live | PornGuru @endsection
 @section('og_image', asset('img/og-home.png'))
 @section('og_image_width', '1200')
 @section('og_image_height', '630')

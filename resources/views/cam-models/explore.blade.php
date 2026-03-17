@@ -1,7 +1,7 @@
 @extends('layouts.pornguru')
 
-@section('title'){{ $pageTitle }} | PornGuru @endsection
-@section('meta_description'){{ __('explore.meta_description') }} {{ $categoryLabels[$category] ?? $categoryLabels[null] }}. {{ __('explore.swipe_description') }}@endsection
+@section('title'){{ $pageTitle }} - Swipe Through Live Sex Cams Free | PornGuru @endsection
+@section('meta_description')Swipe through {{ strtolower($categoryLabels[$category] ?? $categoryLabels[null]) }} live cam streams free! 🔥 TikTok-style feed of live sex cams. Watch HD previews & join shows instantly on PornGuru.cam ❤️ @endsection
 @section('canonical'){{ $models->currentPage() > 1 ? $models->url($models->currentPage()) : localized_route('explore', $category ? ['category' => $category] : []) }}@endsection
 
 @push('seo-pagination')
