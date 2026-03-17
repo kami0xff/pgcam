@@ -42,8 +42,8 @@ return [
     'explore_desc'       => 'Swipe through :category_lc live cam streams free! 🔥 TikTok-style feed of live sex cams. Watch HD previews & join shows instantly on PornGuru.cam ❤️',
 
     // ─── Roulette page ──────────────────────────────────────
-    'roulette_title'     => ':category Cam Roulette: Free Random Live Sex Chat | PornGuru',
-    'roulette_desc'      => 'Free cam roulette - get matched with random live :category_lc instantly! 🔥 Chatroulette-style random video chat. Spin to discover new models streaming now on PornGuru.cam ❤️',
+    'roulette_title'     => ':category Cam Roulette: Free Chatroulette for Live Sex Cams | PornGuru',
+    'roulette_desc'      => 'Free cam roulette — Chatroulette & Omegle alternative for live :category_lc 🔥 Random match with Chaturbate & Stripchat models. HD streams, free chat, no signup ❤️',
 
     // ─── Layout fallback ────────────────────────────────────
     'default_title'      => 'Free Live Sex Cams - Watch Live Cam Shows Free | PornGuru',

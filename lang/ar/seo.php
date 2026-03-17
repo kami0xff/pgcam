@@ -41,8 +41,8 @@ return [
     'explore_desc'       => 'مرر عبر بث :category_lc المباشر مجاناً! 🔥 خلاصة بأسلوب TikTok لكامات جنسية مباشرة. معاينات HD وانضم فوراً على PornGuru.cam ❤️',
 
     // ─── Roulette page ──────────────────────────────────────
-    'roulette_title'     => ':category كام روليت: دردشة جنسية عشوائية مجانية | PornGuru',
-    'roulette_desc'      => 'كام روليت مجاني - تواصل مع :category_lc عشوائية مباشرة فوراً! 🔥 دردشة فيديو عشوائية بأسلوب Chatroulette. اكتشف عارضات جدد على PornGuru.cam ❤️',
+    'roulette_title'     => ':category كام روليت: Chatroulette مجاني للكاميرات المباشرة | PornGuru',
+    'roulette_desc'      => 'كام روليت مجاني — بديل Chatroulette و Omegle لـ :category_lc المباشرة 🔥 مطابقة عشوائية مع موديلات Chaturbate و Stripchat. بث HD، دردشة مجانية، بدون تسجيل ❤️',
 
     // ─── Layout fallback ────────────────────────────────────
     'default_title'      => 'كامات جنسية مباشرة مجانية - شاهد عروض الكام مجاناً | PornGuru',

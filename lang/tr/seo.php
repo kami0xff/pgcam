@@ -41,8 +41,8 @@ return [
     'explore_desc'       => ':category_lc canlı kamera yayınlarını kaydırarak ücretsiz izle! 🔥 TikTok tarzı canlı seks kamerası akışı. HD önizleme ve anında şovlara katıl PornGuru.cam\'de ❤️',
 
     // ─── Roulette page ──────────────────────────────────────
-    'roulette_title'     => ':category Kamera Rulet: Ücretsiz Rastgele Canlı Seks Sohbet | PornGuru',
-    'roulette_desc'      => 'Ücretsiz kamera rulet - rastgele canlı :category_lc ile anında eşleş! 🔥 Chatroulette tarzı rastgele görüntülü sohbet. Yeni modeller keşfet PornGuru.cam\'de ❤️',
+    'roulette_title'     => ':category Kamera Rulet: Canlı Kameralar İçin Ücretsiz Chatroulette | PornGuru',
+    'roulette_desc'      => 'Ücretsiz kamera rulet — Chatroulette & Omegle alternatifi, canlı :category_lc 🔥 Chaturbate & Stripchat modelleriyle rastgele eşleş. HD, ücretsiz sohbet, kayıt yok ❤️',
 
     // ─── Layout fallback ────────────────────────────────────
     'default_title'      => 'Ücretsiz Canlı Seks Kameraları - Canlı Şovları Ücretsiz İzle | PornGuru',

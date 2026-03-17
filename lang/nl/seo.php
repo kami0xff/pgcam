@@ -41,8 +41,8 @@ return [
     'explore_desc'       => 'Swipe door :category_lc live camstreams gratis! 🔥 TikTok-achtige feed van live sekscams. HD-previews & direct shows joinen op PornGuru.cam ❤️',
 
     // ─── Roulette page ──────────────────────────────────────
-    'roulette_title'     => ':category Cam Roulette: Gratis Willekeurige Live Sekschat | PornGuru',
-    'roulette_desc'      => 'Gratis cam roulette - word direct gekoppeld aan willekeurige live :category_lc! 🔥 Chatroulette-achtige random videochat. Ontdek nieuwe modellen op PornGuru.cam ❤️',
+    'roulette_title'     => ':category Cam Roulette: Gratis Chatroulette voor Live Seks Cams | PornGuru',
+    'roulette_desc'      => 'Gratis cam roulette — Chatroulette & Omegle alternatief voor live :category_lc 🔥 Random match met Chaturbate & Stripchat models. HD, gratis chat, geen registratie ❤️',
 
     // ─── Layout fallback ────────────────────────────────────
     'default_title'      => 'Gratis Live Sekscams - Bekijk Live Camshows Gratis | PornGuru',

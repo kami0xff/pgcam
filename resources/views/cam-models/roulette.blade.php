@@ -15,26 +15,61 @@
 @push('head')
 <script type="application/ld+json">
 @php
+$catLabel = $category ? ($categoryLabels[$category] ?? '') : '';
+$pageTitle = ($catLabel ? $catLabel . ' ' : '') . 'Cam Roulette: Free Random Live Sex Chat';
+$pageUrl = localized_route('roulette', $category ? ['category' => $category] : []);
 echo json_encode([
     '@context' => 'https://schema.org',
-    '@type' => 'WebPage',
-    'name' => ($category ? ($categoryLabels[$category] ?? '') . ' ' : '') . 'Cam Roulette: Free Random Live Sex Chat',
-    'description' => 'Free cam roulette - chatroulette-style random video chat with live cam models. Spin to get matched instantly.',
-    'url' => localized_route('roulette', $category ? ['category' => $category] : []),
-    'isPartOf' => [
-        '@type' => 'WebSite',
-        'name' => 'PornGuru.cam',
-        'url' => url('/'),
-    ],
-    'potentialAction' => [
-        '@type' => 'SearchAction',
-        'target' => url('/roulette') . '?q={search_term_string}',
-        'query-input' => 'required name=search_term_string',
+    '@graph' => [
+        [
+            '@type' => 'WebPage',
+            'name' => $pageTitle,
+            'description' => 'Free cam roulette - chatroulette-style random video chat with live cam models from Chaturbate & Stripchat. Get matched instantly with no signup.',
+            'url' => $pageUrl,
+            'inLanguage' => app()->getLocale(),
+            'dateModified' => now()->toIso8601String(),
+            'isPartOf' => [
+                '@type' => 'WebSite',
+                'name' => 'PornGuru.cam',
+                'url' => url('/'),
+            ],
+        ],
+        [
+            '@type' => 'FAQPage',
+            'mainEntity' => [
+                [
+                    '@type' => 'Question',
+                    'name' => 'What is Cam Roulette?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => 'Cam Roulette is a free chatroulette-style feature that randomly matches you with live cam models from Chaturbate, Stripchat and other platforms. Hit Next to spin and meet new models instantly — no signup or payment needed.',
+                    ],
+                ],
+                [
+                    '@type' => 'Question',
+                    'name' => 'Is Cam Roulette free?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => 'Yes, 100% free. You can watch unlimited live cam streams and chat without creating an account or paying anything. PornGuru Cam Roulette aggregates free live streams from major cam platforms.',
+                    ],
+                ],
+                [
+                    '@type' => 'Question',
+                    'name' => 'How is this different from Chatroulette or Omegle?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => 'Unlike Chatroulette or Omegle where you video chat with random strangers, Cam Roulette matches you with professional live cam models who are streaming right now. Every spin shows a real performer — no bots, no waiting.',
+                    ],
+                ],
+            ],
+        ],
     ],
 ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 @endphp
 </script>
 <style>
+    html:has(.rlt) { overflow: hidden !important; }
+    body:has(.rlt) { overflow: hidden !important; position: fixed; width: 100%; height: 100%; }
     .page-wrapper:has(.rlt) { overflow: hidden; height: 100svh; }
     .site-footer { display: none; }
 
@@ -44,6 +79,7 @@ echo json_encode([
         height: calc(100svh - 110px);
         background: var(--bg-primary);
         overflow: hidden;
+        touch-action: none;
     }
 
     .rlt-cats {
@@ -51,9 +87,11 @@ echo json_encode([
         gap: 6px;
         padding: 10px 16px;
         overflow-x: auto;
+        overflow-y: hidden;
         scrollbar-width: none;
         border-bottom: 1px solid var(--border);
         background: var(--bg-secondary);
+        flex-shrink: 0;
     }
     .rlt-cats::-webkit-scrollbar { display: none; }
     .rlt-cat {
@@ -83,6 +121,7 @@ echo json_encode([
         padding: 16px;
         min-height: 0;
         gap: 16px;
+        overflow: hidden;
     }
 
     .rlt-screen {
@@ -288,17 +327,50 @@ echo json_encode([
     }
 
     @media (max-width: 767px) {
-        .rlt { height: calc(100svh - 50px); }
-        .rlt-main { padding: 8px; }
-        .rlt-screen { border-radius: var(--radius-lg); }
-        .rlt-info { bottom: 80px; left: 14px; right: 64px; }
-        .rlt-info-name { font-size: 18px; }
-        .rlt-info-meta { font-size: 13px; }
-        .rlt-actions { right: 10px; bottom: 88px; }
-        .rlt-action-btn { width: 42px; height: 42px; }
-        .rlt-bottom-bar { padding: 12px 14px; }
-        .rlt-next-btn { padding: 12px 18px; font-size: 14px; }
-        .rlt-join-btn { padding: 12px 14px; font-size: 13px; }
+        .page-wrapper:has(.rlt) .niche-bar { display: none; }
+        .rlt {
+            height: calc(100svh - 3.25rem);
+        }
+        .rlt-cats {
+            padding: 6px 10px;
+            gap: 4px;
+        }
+        .rlt-cat {
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+        .rlt-main {
+            padding: 0;
+        }
+        .rlt-screen {
+            border-radius: 0;
+            box-shadow: none;
+        }
+        .rlt-info { bottom: 72px; left: 12px; right: 58px; }
+        .rlt-info-name { font-size: 17px; }
+        .rlt-info-meta { font-size: 12px; gap: 8px; }
+        .rlt-info-tags { gap: 3px; margin-top: 5px; }
+        .rlt-info-tag { font-size: 10px; padding: 1px 6px; }
+        .rlt-actions { right: 8px; bottom: 78px; gap: 12px; }
+        .rlt-action-btn { width: 40px; height: 40px; }
+        .rlt-action-btn svg { width: 20px; height: 20px; }
+        .rlt-action-label { font-size: 9px; }
+        .rlt-bottom-bar { padding: 10px 10px calc(env(safe-area-inset-bottom, 0px) + 10px); }
+        .rlt-next-btn { padding: 12px 16px; font-size: 14px; }
+        .rlt-join-btn { padding: 12px 12px; font-size: 12px; }
+    }
+
+    @media (max-width: 767px) and (max-height: 700px) {
+        .rlt-cats { padding: 4px 8px; }
+        .rlt-cat { padding: 3px 10px; font-size: 11px; }
+        .rlt-info { bottom: 62px; }
+        .rlt-info-tags { display: none; }
+        .rlt-actions { bottom: 68px; gap: 8px; }
+        .rlt-action-btn { width: 36px; height: 36px; }
+        .rlt-action-label { display: none; }
+        .rlt-bottom-bar { padding: 8px 8px calc(env(safe-area-inset-bottom, 0px) + 8px); }
+        .rlt-next-btn { padding: 10px 14px; font-size: 13px; }
+        .rlt-join-btn { padding: 10px 10px; font-size: 11px; }
     }
 </style>
 @endpush
@@ -397,11 +469,23 @@ echo json_encode([
 </div>
 
 <div class="rlt-seo">
-    <h1>{{ $category ? $categoryLabels[$category] . ' ' : '' }}Cam Roulette - Free Random Live Sex Chat</h1>
-    <h2>Chatroulette for Live Cams - Random Video Chat</h2>
-    <p>PornGuru.cam Cam Roulette lets you get matched with random live cam models instantly. Like Chatroulette but for adult live cams. Spin to meet new {{ $category ? strtolower($categoryLabels[$category] ?? 'cam models') : 'cam girls, couples, men and trans models' }} streaming right now. Free random cam chat with no signup required. Cam roulette, random cam, chatroulette alternative, omegle cams, random video chat.</p>
+    <h1>{{ $category ? $categoryLabels[$category] . ' ' : '' }}Cam Roulette — Free Random Live Sex Chat Like Chatroulette</h1>
+    <h2>Random Cam Chat: Omegle & Chatroulette Alternative for Adult Live Cams</h2>
+    <p>PornGuru Cam Roulette is the best free chatroulette alternative for live adult cams. Get randomly matched with {{ $category ? strtolower($categoryLabels[$category] ?? 'cam models') : 'cam girls, couples, men and trans models' }} streaming live on Chaturbate, Stripchat, and other top cam sites — all in one place. No signup, no payment, just hit Next and spin.</p>
+    <h3>How Cam Roulette Works</h3>
+    <p>Unlike traditional chatroulette or omegle, our cam roulette connects you exclusively with professional live cam performers. Every spin loads a real HD stream from a live model. Watch free, chat free, and discover new performers with every click. Filter by category to find exactly what you want: {{ implode(', ', array_map(fn($l) => strtolower($l), $categoryLabels)) }}.</p>
+    <h3>Why Choose PornGuru Cam Roulette?</h3>
+    <ul>
+        <li>100% free random cam chat — no account needed</li>
+        <li>Real live streams from Chaturbate, Stripchat & more</li>
+        <li>HD quality video with instant loading</li>
+        <li>Works on mobile, tablet & desktop</li>
+        <li>New model every spin — thousands of performers</li>
+        <li>Chatroulette-style random matching for adult cams</li>
+        <li>Omegle alternative with real cam models, not random strangers</li>
+    </ul>
     @if($model)
-    <p>Now matched with <a href="{{ $model->url }}">{{ $model->username }}</a> — watch live and chat free.</p>
+    <p>Currently watching <a href="{{ $model->url }}">{{ $model->username }}</a> — live now! <a href="{{ $model->affiliate_url }}" rel="nofollow">Join {{ $model->username }}'s free chat</a>.</p>
     @endif
 </div>
 
@@ -568,6 +652,19 @@ echo json_encode([
             document.getElementById('rlt-mute-btn')?.click();
         }
     });
+
+    document.getElementById('rlt')?.addEventListener('touchmove', (e) => {
+        if (!e.target.closest('.rlt-cats')) e.preventDefault();
+    }, { passive: false });
+
+    let touchStartY = 0;
+    document.getElementById('rlt-screen')?.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    document.getElementById('rlt-screen')?.addEventListener('touchend', (e) => {
+        const dy = touchStartY - e.changedTouches[0].clientY;
+        if (Math.abs(dy) > 60) loadNext();
+    }, { passive: true });
 
     const initialStreamUrl = videoWrap?.dataset.streamUrl;
     if (initialStreamUrl) startStream(initialStreamUrl);

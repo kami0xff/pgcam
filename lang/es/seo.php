@@ -41,8 +41,8 @@ return [
     'explore_desc'       => '¡Desliza por :category_lc en vivo gratis! 🔥 Feed estilo TikTok de cámaras. Mira HD y únete al instante en PornGuru.cam ❤️',
 
     // ─── Roulette page ──────────────────────────────────────
-    'roulette_title'     => 'Ruleta :category: Chat de Sexo en Vivo Aleatorio Gratis | PornGuru',
-    'roulette_desc'      => 'Ruleta de cámara gratis - ¡emparejamiento con :category_lc en vivo al instante! 🔥 Chat aleatorio estilo Chatroulette. Gira para descubrir modelos en PornGuru.cam ❤️',
+    'roulette_title'     => ':category Cam Ruleta: Chatroulette Gratis para Cams en Vivo | PornGuru',
+    'roulette_desc'      => 'Cam ruleta gratis — alternativa a Chatroulette y Omegle para :category_lc en vivo 🔥 Match aleatorio con modelos de Chaturbate y Stripchat. HD, chat gratis, sin registro ❤️',
 
     // ─── Layout fallback ────────────────────────────────────
     'default_title'      => 'Cámaras en Vivo Gratis - Mira Shows en Vivo Gratis | PornGuru',

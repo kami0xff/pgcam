@@ -41,8 +41,8 @@ return [
     'explore_desc'       => ':category_lc 라이브 캠 스트림을 스와이프하며 무료 시청! 🔥 TikTok 스타일 라이브 섹스캠 피드. HD 미리보기로 PornGuru.cam에서 바로 참여 ❤️',
 
     // ─── Roulette page ──────────────────────────────────────
-    'roulette_title'     => ':category 캠 룰렛: 무료 랜덤 라이브 채팅 | PornGuru',
-    'roulette_desc'      => '무료 캠 룰렛 - 랜덤 라이브 :category_lc와 즉시 매칭! 🔥 채트룰렛 스타일 랜덤 비디오 채팅. PornGuru.cam에서 새로운 모델을 발견하세요 ❤️',
+    'roulette_title'     => ':category 캠 룰렛: 무료 채트룰렛 라이브 캠 | PornGuru',
+    'roulette_desc'      => '무료 캠 룰렛 — Chatroulette & Omegle 대안 라이브 :category_lc 🔥 Chaturbate & Stripchat 모델과 랜덤 매칭. HD 스트림, 무료 채팅, 가입 불필요 ❤️',
 
     // ─── Layout fallback ────────────────────────────────────
     'default_title'      => '무료 라이브 섹스캠 - 라이브 캠쇼 무료 시청 | PornGuru',

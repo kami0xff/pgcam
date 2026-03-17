@@ -41,8 +41,8 @@ return [
     'explore_desc'       => 'Листайте :category_lc трансляции бесплатно! 🔥 Лента в стиле TikTok с секс-камерами. HD-превью и мгновенный вход в шоу на PornGuru.cam ❤️',
 
     // ─── Roulette page ──────────────────────────────────────
-    'roulette_title'     => ':category камрулетка: бесплатный случайный секс-чат | PornGuru',
-    'roulette_desc'      => 'Бесплатная камрулетка - случайное подключение к :category_lc в прямом эфире! 🔥 Видеочат в стиле Chatroulette. Откройте новых моделей на PornGuru.cam ❤️',
+    'roulette_title'     => ':category Камрулетка: Бесплатный Chatroulette для Секс Камер | PornGuru',
+    'roulette_desc'      => 'Бесплатная камрулетка — альтернатива Chatroulette и Omegle для :category_lc 🔥 Случайное подключение к моделям Chaturbate и Stripchat. HD, бесплатный чат, без регистрации ❤️',
 
     // ─── Layout fallback ────────────────────────────────────
     'default_title'      => 'Бесплатные секс-камеры - смотрите камшоу бесплатно | PornGuru',

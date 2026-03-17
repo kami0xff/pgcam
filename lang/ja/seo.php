@@ -33,8 +33,8 @@ return [
     'explore_desc'       => ':category_lcのライブカムストリームをスワイプして無料視聴！🔥 TikTokスタイルのライブセックスカムフィード。HDプレビューで今すぐPornGuru.camへ ❤️',
 
     // ─── Roulette page ──────────────────────────────────────
-    'roulette_title'     => ':category カムルーレット: 無料ランダムライブチャット | PornGuru',
-    'roulette_desc'      => '無料カムルーレット - ランダムなライブ:category_lcと即マッチング！🔥 チャットルーレット風ランダムビデオチャット。PornGuru.camで新しいモデルを発見 ❤️',
+    'roulette_title'     => ':category カムルーレット: 無料チャットルーレット風ライブカム | PornGuru',
+    'roulette_desc'      => '無料カムルーレット — Chatroulette・Omegle風のライブ:category_lcマッチング 🔥 Chaturbate・Stripchatモデルとランダムに出会える。HD配信、無料チャット、登録不要 ❤️',
 
     // ─── Layout fallback ────────────────────────────────────
     'default_title'      => '無料ライブセックスカム - ライブカムショー無料視聴 | PornGuru',

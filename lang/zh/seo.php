@@ -41,8 +41,8 @@ return [
     'explore_desc'       => '滑动浏览:category_lc直播免费观看！🔥 TikTok风格直播性爱秀信息流。高清预览，即刻加入PornGuru.cam ❤️',
 
     // ─── Roulette page ──────────────────────────────────────
-    'roulette_title'     => ':category 随机直播: 免费随机性爱聊天 | PornGuru',
-    'roulette_desc'      => '免费随机直播 - 即刻匹配随机:category_lc！🔥 类似Chatroulette的随机视频聊天。在PornGuru.cam发现新模特 ❤️',
+    'roulette_title'     => ':category 随机直播: 免费Chatroulette式直播 | PornGuru',
+    'roulette_desc'      => '免费随机直播 — Chatroulette和Omegle替代品，匹配直播:category_lc 🔥 随机匹配Chaturbate和Stripchat模特。高清直播、免费聊天、无需注册 ❤️',
 
     // ─── Layout fallback ────────────────────────────────────
     'default_title'      => '免费直播性爱秀 - 免费观看直播秀 | PornGuru',
