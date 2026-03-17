@@ -1,8 +1,8 @@
 @extends('layouts.pornguru')
 
-@section('title')Free Live {{ $nicheTitle }} Cams - Watch {{ number_format($models->total()) }}+ {{ $nicheTitle }} Now | PornGuru{{ $models->currentPage() > 1 ? ' - Page ' . $models->currentPage() : '' }}@endsection
+@section('title'){{ __('seo.niche_title', ['niche' => $nicheTitle, 'count' => number_format($models->total())]) }}{{ $models->currentPage() > 1 ? ' - Page ' . $models->currentPage() : '' }}@endsection
 
-@section('meta_description')Watch {{ number_format($models->total()) }}+ live {{ strtolower($nicheTitle) }} cam models streaming free! 🔥 HD {{ strtolower($nicheTitle) }} sex cams with free chat. No signup needed. Browse the hottest {{ strtolower($nicheTitle) }} on PornGuru.cam now ❤️ @endsection
+@section('meta_description'){{ __('seo.niche_desc', ['niche_lc' => strtolower($nicheTitle), 'count' => number_format($models->total())]) }}@endsection
 
 @section('canonical'){{ $models->currentPage() > 1 ? $models->url($models->currentPage()) : localized_route('niche.show', $niche) }}@endsection
 

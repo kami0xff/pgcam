@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Free Live Sex Cams - Watch Live Cam Shows Free | PornGuru')</title>
-    <meta name="description" content="@yield('meta_description', 'Watch free live sex cam shows from the hottest models! 🔥 HD streams from Stripchat, Chaturbate & more. Free chat, no signup on PornGuru.cam ❤️')">
+    <title>@yield('title', __('seo.default_title'))</title>
+    <meta name="description" content="@yield('meta_description', __('seo.default_desc'))">
     @hasSection('meta_robots')<meta name="robots" content="@yield('meta_robots')">
     @endif
 
@@ -23,8 +23,8 @@
     <!-- Open Graph -->
     <meta property="og:type" content="@yield('og_type', 'website')">
     <meta property="og:site_name" content="PornGuru.cam">
-    <meta property="og:title" content="@yield('og_title', View::yieldContent('title', 'PornGuru - The Ultimate Adult Guide'))">
-    <meta property="og:description" content="@yield('og_description', View::yieldContent('meta_description', 'Watch free live cam shows from the hottest models.'))">
+    <meta property="og:title" content="@yield('og_title', View::yieldContent('title', __('seo.default_title')))">
+    <meta property="og:description" content="@yield('og_description', View::yieldContent('meta_description', __('seo.default_desc')))">
     <meta property="og:url" content="@yield('canonical', url()->current())">
     @hasSection('og_image')
     <meta property="og:image" content="@yield('og_image')">
@@ -35,8 +35,8 @@
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="@yield('twitter_card', 'summary_large_image')">
-    <meta name="twitter:title" content="@yield('og_title', View::yieldContent('title', 'PornGuru - The Ultimate Adult Guide'))">
-    <meta name="twitter:description" content="@yield('og_description', View::yieldContent('meta_description', 'Watch free live cam shows from the hottest models.'))">
+    <meta name="twitter:title" content="@yield('og_title', View::yieldContent('title', __('seo.default_title')))">
+    <meta name="twitter:description" content="@yield('og_description', View::yieldContent('meta_description', __('seo.default_desc')))">
     @hasSection('og_image')
     <meta name="twitter:image" content="@yield('og_image')">
     @endif

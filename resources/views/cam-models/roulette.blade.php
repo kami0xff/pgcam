@@ -1,7 +1,7 @@
 @extends('layouts.pornguru')
 
-@section('title'){{ $category ? $categoryLabels[$category] . ' ' : '' }}Cam Roulette: Free Random Live Sex Chat | PornGuru @endsection
-@section('meta_description')Free cam roulette - get matched with random live {{ $category ? strtolower($categoryLabels[$category] ?? 'cam models') : 'cam models' }} instantly! 🔥 Chatroulette-style random video chat. Spin to discover new models streaming now on PornGuru.cam ❤️ #camroulette #randomchat #livecams @endsection
+@section('title'){{ __('seo.roulette_title', ['category' => $category ? $categoryLabels[$category] : '']) }}@endsection
+@section('meta_description'){{ __('seo.roulette_desc', ['category_lc' => $category ? strtolower($categoryLabels[$category] ?? 'cam models') : 'cam models']) }}@endsection
 @section('canonical'){{ localized_route('roulette', $category ? ['category' => $category] : []) }}@endsection
 
 @push('seo-pagination')

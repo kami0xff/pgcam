@@ -347,15 +347,19 @@ class CamModelController extends Controller
         $countryPart = $model->country ? "from {$model->country}" : '';
         $demoParts = implode(' ', array_filter([$agePart, $countryPart]));
 
+        $seoVars = [
+            'username' => $model->username,
+            'platform' => $platformName,
+            'demo'     => $demoParts,
+            'tags'     => $tagHashtags,
+        ];
+
         if (!empty($modelDescription['short_description'])) {
-            $desc = $modelDescription['short_description'];
-            $metaDescription = "{$desc} 🔥 Watch free on {$platformName} via PornGuru.cam ❤️ {$tagHashtags}";
+            $metaDescription = __('seo.model_desc_ai', array_merge($seoVars, [
+                'description' => $modelDescription['short_description'],
+            ]));
         } else {
-            $metaDescription = "Watch {$model->username}'s live cam show free!"
-                . ($demoParts ? " {$demoParts}." : '')
-                . " 🔥 Free chat, HD stream & full profile on {$platformName}."
-                . " Join {$model->username} now on PornGuru.cam"
-                . " ❤️ {$tagHashtags}";
+            $metaDescription = __('seo.model_desc', $seoVars);
         }
 
         $metaDescription = \Illuminate\Support\Str::limit($metaDescription, 160, '');
@@ -553,30 +557,25 @@ class CamModelController extends Controller
     }
 
     /**
-     * Build a meta title that stays within ~60 chars while front-loading
-     * the highest-value keywords: username, platform, "Free Live Cam".
-     * Degrades gracefully: drops brand first, then shortens keywords.
+     * Build a translated meta title that stays within the safe display width.
+     * CJK locales (ja/ko/zh) get a lower char limit since full-width chars
+     * are ~2x the pixel width of Latin characters.
      */
     private function buildModelMetaTitle(CamModel $model, string $platformName): string
     {
-        $u = $model->username;
+        $vars = ['username' => $model->username, 'platform' => $platformName];
+        $maxLen = in_array(app()->getLocale(), ['ja', 'ko', 'zh']) ? 40 : 60;
 
-        $full = "{$u} {$platformName}: Free Live Sex Show & Chat | PornGuru";
-        if (mb_strlen($full) <= 60) {
-            return $full;
+        $tiers = ['model_title_full', 'model_title_medium', 'model_title_short', 'model_title_mini'];
+
+        foreach ($tiers as $tier) {
+            $title = __("seo.{$tier}", $vars);
+            if (mb_strlen($title) <= $maxLen) {
+                return $title;
+            }
         }
 
-        $medium = "{$u} {$platformName}: Free Live Cam Show & Chat";
-        if (mb_strlen($medium) <= 60) {
-            return $medium;
-        }
-
-        $short = "{$u} - Free Live Cam & Chat | {$platformName}";
-        if (mb_strlen($short) <= 60) {
-            return $short;
-        }
-
-        return "{$u}: Free Live Cam & Chat | {$platformName}";
+        return __('seo.model_title_mini', $vars);
     }
 
     /**
