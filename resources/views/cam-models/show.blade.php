@@ -6,10 +6,6 @@
 
 @section('canonical'){{ $model->url }}@endsection
 
-@if($noindex ?? false)
-@section('meta_robots', 'noindex, follow')
-@endif
-
 @section('og_type', 'profile')
 @section('og_title', $metaTitle)
 @section('og_description'){{ $metaDescription }}@endsection

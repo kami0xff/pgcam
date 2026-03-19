@@ -366,8 +366,6 @@ class CamModelController extends Controller
 
         $hreflangUrls = $this->buildModelHreflangUrls($model);
 
-        $noindex = !in_array($model->username, $this->getTopModelUsernames());
-
         return view('cam-models.show', [
             'model' => $model,
             'similarModels' => $similarModels,
@@ -379,20 +377,8 @@ class CamModelController extends Controller
             'metaTitle' => $metaTitle,
             'metaDescription' => $metaDescription,
             'hreflangUrls' => $hreflangUrls,
-            'noindex' => $noindex,
             'platformName' => $platformName,
         ]);
-    }
-
-    /**
-     * Stable set of model usernames that should always be indexed.
-     * Uses ONLY stable pools (all-time popular + Japanese) — NOT the rotating online pool.
-     * This ensures noindex never flips on popular models when they go offline.
-     * Cache TTL is 24h since favorites/country data barely changes day to day.
-     */
-    protected function getTopModelUsernames(): array
-    {
-        return SitemapController::getStableModelUsernames();
     }
 
     /**
