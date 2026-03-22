@@ -992,21 +992,21 @@
     })();
 </script>
 
-{{-- GA4: Track model page view --}}
-@if(config('services.google.analytics_id'))
+{{-- Track model page view (GTM dataLayer + gtag.js fallback) --}}
+@if(config('services.google.gtm_id') || config('services.google.analytics_id'))
 <script>
-    if (typeof gtag === 'function') {
-        gtag('event', 'view_item', {
-            content_type: 'model',
-            item_id: @json($model->username),
-            model_name: @json($model->username),
-            model_status: @json($model->is_online ? 'online' : 'offline'),
-            model_platform: @json($model->source_platform),
-            model_age: @json($model->age),
-            model_country: @json($model->country),
-            model_viewers: @json($model->viewers_count ?? 0)
-        });
-    }
+    window.dataLayer = window.dataLayer || [];
+    dataLayer.push({
+        'event': 'view_item',
+        'content_type': 'model',
+        'item_id': @json($model->username),
+        'model_name': @json($model->username),
+        'model_status': @json($model->is_online ? 'online' : 'offline'),
+        'model_platform': @json($model->source_platform),
+        'model_age': @json($model->age),
+        'model_country': @json($model->country),
+        'model_viewers': @json($model->viewers_count ?? 0)
+    });
 </script>
 @endif
 @endsection

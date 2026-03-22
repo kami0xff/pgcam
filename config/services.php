@@ -41,6 +41,7 @@ return [
 
     'google' => [
         'analytics_id' => env('GOOGLE_ANALYTICS_ID'),
+        'gtm_id' => env('GTM_CONTAINER_ID'),
     ],
 
     'indexnow' => [

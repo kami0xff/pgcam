@@ -57,74 +57,95 @@
     <!-- Additional Head Content (JSON-LD, etc.) -->
     @stack('head')
 
-    <!-- Google Analytics (GA4) -->
-    @if(config('services.google.analytics_id'))
+    @if(config('services.google.gtm_id'))
+    <!-- Google Tag Manager -->
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        @if(session('ga_event'))
+        dataLayer.push({
+            'event': {!! json_encode(session('ga_event.name')) !!},
+            @foreach(session('ga_event.params', []) as $key => $val)
+            {{ json_encode($key) }}: {!! json_encode($val) !!},
+            @endforeach
+        });
+        @endif
+    </script>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','{{ config('services.google.gtm_id') }}');</script>
+    <!-- End Google Tag Manager -->
+    @elseif(config('services.google.analytics_id'))
+    <!-- Fallback: GA4 via gtag.js (when GTM is not configured) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.google.analytics_id') }}"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
         gtag('config', '{{ config('services.google.analytics_id') }}');
+    </script>
+    @endif
 
+    <!-- DataLayer event tracking (works with both GTM and gtag.js) -->
+    @if(config('services.google.gtm_id') || config('services.google.analytics_id'))
+    <script>
+        window.dataLayer = window.dataLayer || [];
         document.addEventListener('DOMContentLoaded', function() {
-            // 1. Track model card clicks (homepage, tag pages, favorites)
             document.addEventListener('click', function(e) {
                 var card = e.target.closest('.model-card');
                 if (card) {
-                    gtag('event', 'select_content', {
-                        content_type: 'model',
-                        item_id: card.dataset.modelName || card.dataset.modelId || '',
-                        model_name: card.dataset.modelName || '',
-                        model_status: card.dataset.modelStatus || '',
-                        page_section: card.closest('[data-section]') ? card.closest('[data-section]').dataset.section : 'unknown'
+                    dataLayer.push({
+                        'event': 'select_content',
+                        'content_type': 'model',
+                        'item_id': card.dataset.modelName || card.dataset.modelId || '',
+                        'model_name': card.dataset.modelName || '',
+                        'model_status': card.dataset.modelStatus || '',
+                        'page_section': card.closest('[data-section]') ? card.closest('[data-section]').dataset.section : 'unknown'
                     });
                 }
             });
 
-            // 2. Track outbound affiliate clicks (whitelabel links)
             document.addEventListener('click', function(e) {
                 var link = e.target.closest('a[data-affiliate], a[href*="stripchat"], a[href*="xlovecam"], a[href*="stripguru"], a[href*="bongacams"]');
                 if (link) {
-                    gtag('event', 'click', {
-                        event_category: 'affiliate_outbound',
-                        link_url: link.href,
-                        link_domain: link.hostname,
-                        model_name: link.dataset.modelName || link.closest('[data-model-name]')?.dataset.modelName || '',
-                        affiliate_platform: link.dataset.affiliate || '',
-                        link_text: link.textContent.trim().substring(0, 50),
-                        transport_type: 'beacon'
+                    dataLayer.push({
+                        'event': 'affiliate_click',
+                        'link_url': link.href,
+                        'link_domain': link.hostname,
+                        'model_name': link.dataset.modelName || (link.closest('[data-model-name]') ? link.closest('[data-model-name]').dataset.modelName : ''),
+                        'affiliate_platform': link.dataset.affiliate || '',
+                        'link_text': link.textContent.trim().substring(0, 50)
                     });
                 }
             });
 
-            // 3. Track favorite toggles
             document.addEventListener('click', function(e) {
                 var favBtn = e.target.closest('.model-card-favorite');
                 if (favBtn) {
                     var wasFavorited = favBtn.classList.contains('is-favorited');
                     var card = favBtn.closest('.model-card-wrapper');
                     var modelCard = card ? card.querySelector('.model-card') : null;
-                    gtag('event', wasFavorited ? 'remove_from_wishlist' : 'add_to_wishlist', {
-                        content_type: 'model',
-                        item_id: modelCard ? (modelCard.dataset.modelName || modelCard.dataset.modelId) : '',
-                        model_name: modelCard ? (modelCard.dataset.modelName || '') : ''
+                    dataLayer.push({
+                        'event': wasFavorited ? 'remove_from_wishlist' : 'add_to_wishlist',
+                        'content_type': 'model',
+                        'item_id': modelCard ? (modelCard.dataset.modelName || modelCard.dataset.modelId) : '',
+                        'model_name': modelCard ? (modelCard.dataset.modelName || '') : ''
                     });
                 }
             });
         });
     </script>
     @endif
-
-    {{-- Fire sign_up event after successful registration --}}
-    @if(session('ga_event'))
-    <script>
-        if (typeof gtag === 'function') {
-            gtag('event', {!! json_encode(session('ga_event.name')) !!}, {!! json_encode(session('ga_event.params', [])) !!});
-        }
-    </script>
-    @endif
 </head>
 <body>
+    @if(config('services.google.gtm_id'))
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ config('services.google.gtm_id') }}"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    @endif
+
     <div class="page-wrapper">
         <x-pornguru.header />
 
