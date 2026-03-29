@@ -5,10 +5,13 @@
 # ==============================================
 
 {
-    # Global options
-    frankenphp
+    frankenphp {
+        worker {
+            file /app/public/frankenphp-worker.php
+            num 4
+        }
+    }
 
-    # Disable automatic HTTPS — Cloudflare handles TLS
     auto_https off
 }
 
@@ -35,7 +38,6 @@ http://pornguru.cam, http://www.pornguru.cam {
         -Server
     }
 
-    # Handle Laravel with FrankenPHP (standard request-per-process mode)
     php_server
 
     # Dynamic pages - NO cache (content updates every 30 seconds)
