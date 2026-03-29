@@ -14,6 +14,7 @@ storage/framework/views/*
 bootstrap/cache/*.php
 public/build/
 public/hot
+public/sitemap*.xml
 logs/
 data/
 docs/

@@ -96,10 +96,16 @@ ${COMPOSE} exec -T app php artisan event:cache
 ok "Caches built"
 
 # --------------------------------------------------
-# Generate sitemaps (non-fatal)
+# Remove stale static sitemaps so Caddy routes to the dynamic SitemapController
 # --------------------------------------------------
-log "Generating sitemaps..."
-${COMPOSE} exec -T app php artisan sitemap:generate --static 2>/dev/null || warn "Sitemap generation skipped"
+log "Removing stale static sitemaps from container..."
+${COMPOSE} exec -T app sh -c 'rm -f /app/public/sitemap*.xml' 2>/dev/null && ok "Static sitemaps removed" || warn "No static sitemaps to remove"
+
+# --------------------------------------------------
+# Clear sitemap caches (sitemaps served dynamically by SitemapController)
+# --------------------------------------------------
+log "Clearing sitemap caches..."
+${COMPOSE} exec -T app php artisan sitemap:generate --warm-cache 2>/dev/null || warn "Sitemap cache clear skipped"
 
 # --------------------------------------------------
 # Health check

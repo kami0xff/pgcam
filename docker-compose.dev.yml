@@ -21,7 +21,8 @@ services:
       db:
         condition: service_healthy
 
-  # Vite dev server for hot module replacement
+  # Vite dev server for hot module replacement but thats not so usefull honestly using vite just for that is so useless
+  
   vite:
     image: node:20-alpine
     container_name: porngurucam-vite
