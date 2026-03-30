@@ -8,7 +8,9 @@
     frankenphp {
         worker {
             file /app/public/frankenphp-worker.php
-            num 4
+            num 8
+            # MAX_REQUESTS: recycle worker after 1000 requests to prevent memory leaks
+            env MAX_REQUESTS 1000
         }
     }
 

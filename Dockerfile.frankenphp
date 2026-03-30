@@ -97,6 +97,13 @@ ENV SERVER_NAME=:80
 ENV APP_ENV=production
 ENV APP_DEBUG=false
 
+# Pre-cache routes, config, views, and events for Octane workers.
+# These are loaded once when the worker boots and reused across all requests.
+RUN php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache \
+    && php artisan event:cache
+
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD curl -f http://localhost/up || exit 1

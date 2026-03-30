@@ -82,15 +82,32 @@ echo json_encode([
         touch-action: none;
     }
 
+    .rlt-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 0 16px;
+        border-bottom: 1px solid var(--border);
+        background: var(--bg-secondary);
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+    .rlt-title {
+        font-size: 15px;
+        font-weight: 800;
+        white-space: nowrap;
+        color: var(--text-primary);
+        margin: 0;
+        padding: 10px 0;
+        letter-spacing: -0.01em;
+    }
     .rlt-cats {
         display: flex;
         gap: 6px;
-        padding: 10px 16px;
+        padding: 10px 0;
         overflow-x: auto;
         overflow-y: hidden;
         scrollbar-width: none;
-        border-bottom: 1px solid var(--border);
-        background: var(--bg-secondary);
         flex-shrink: 0;
     }
     .rlt-cats::-webkit-scrollbar { display: none; }
@@ -331,8 +348,16 @@ echo json_encode([
         .rlt {
             height: calc(100svh - 3.25rem);
         }
+        .rlt-header {
+            padding: 0 10px;
+            gap: 10px;
+        }
+        .rlt-title {
+            font-size: 13px;
+            padding: 6px 0;
+        }
         .rlt-cats {
-            padding: 6px 10px;
+            padding: 6px 0;
             gap: 4px;
         }
         .rlt-cat {
@@ -361,7 +386,9 @@ echo json_encode([
     }
 
     @media (max-width: 767px) and (max-height: 700px) {
-        .rlt-cats { padding: 4px 8px; }
+        .rlt-header { padding: 0 8px; gap: 8px; }
+        .rlt-title { font-size: 12px; padding: 4px 0; }
+        .rlt-cats { padding: 4px 0; }
         .rlt-cat { padding: 3px 10px; font-size: 11px; }
         .rlt-info { bottom: 62px; }
         .rlt-info-tags { display: none; }
@@ -377,15 +404,18 @@ echo json_encode([
 
 @section('content')
 <div class="rlt" id="rlt">
-    <nav class="rlt-cats">
-        @foreach($categoryUrls as $key => $catUrl)
-            <a href="{{ $catUrl }}"
-               class="rlt-cat {{ ($key === 'all' && !$category) || $key === $category ? 'active' : '' }}"
-               data-category="{{ $key === 'all' ? '' : $key }}">
-                {{ $categoryLabels[$key === 'all' ? null : $key] ?? __('roulette.all_cams') }}
-            </a>
-        @endforeach
-    </nav>
+    <div class="rlt-header">
+        <h1 class="rlt-title">{{ $category ? $categoryLabels[$category] . ' ' : '' }}{{ __('roulette.cam_roulette_heading', ['default' => 'Cam Roulette']) }}</h1>
+        <nav class="rlt-cats">
+            @foreach($categoryUrls as $key => $catUrl)
+                <a href="{{ $catUrl }}"
+                   class="rlt-cat {{ ($key === 'all' && !$category) || $key === $category ? 'active' : '' }}"
+                   data-category="{{ $key === 'all' ? '' : $key }}">
+                    {{ $categoryLabels[$key === 'all' ? null : $key] ?? __('roulette.all_cams') }}
+                </a>
+            @endforeach
+        </nav>
+    </div>
 
     <div class="rlt-main">
         <div class="rlt-screen" id="rlt-screen">

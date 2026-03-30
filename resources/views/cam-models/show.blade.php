@@ -194,12 +194,12 @@
                                     {{ number_format($model->rating, 1) }}
                                 </span>
                             @endif
-                            @if($model->updated_at)
-                                <span class="model-info-stat-inline" title="{{ $model->updated_at->toIso8601String() }}">
+                            @if($model->last_synced_at)
+                                <span class="model-info-stat-inline model-info-synced" title="{{ __('profile.data_last_updated') }}: {{ $model->last_synced_at->format('M j, Y g:i A') }}">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-                                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                                        <path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
                                     </svg>
-                                    <time datetime="{{ $model->updated_at->toIso8601String() }}">{{ $model->updated_at->diffForHumans() }}</time>
+                                    <time datetime="{{ $model->last_synced_at->toIso8601String() }}">{{ $model->last_synced_at->diffForHumans() }}</time>
                                 </span>
                             @endif
                         </div>

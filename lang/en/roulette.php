@@ -2,6 +2,7 @@
 
 return [
     'title' => 'Cam Roulette',
+    'cam_roulette_heading' => 'Cam Roulette',
     'all_cams' => 'All Cams',
     'girls' => 'Girls',
     'couples' => 'Couples',

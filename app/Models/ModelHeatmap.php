@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class ModelHeatmap extends Model
 {
+    protected const CACHE_TTL = 86400; // 24 hours — refreshed after daily aggregation
+
     protected $fillable = [
         'model_id',
         'day_of_week',
@@ -79,33 +82,34 @@ class ModelHeatmap extends Model
      */
     public static function getHeatmapGrid(string $modelId): array
     {
-        $data = static::forModel($modelId)->get()->keyBy(function ($item) {
-            return $item->day_of_week . '_' . $item->hour_of_day;
-        });
+        return Cache::remember("heatmap:grid:{$modelId}", self::CACHE_TTL, function () use ($modelId) {
+            $data = static::forModel($modelId)->get()->keyBy(function ($item) {
+                return $item->day_of_week . '_' . $item->hour_of_day;
+            });
 
-        $grid = [];
-        
-        // Build 7x24 grid (rows = hours, cols = days)
-        for ($hour = 0; $hour < 24; $hour++) {
-            $row = [];
-            for ($day = 0; $day < 7; $day++) {
-                $key = $day . '_' . $hour;
-                $slot = $data[$key] ?? null;
-                
-                $row[] = [
-                    'day' => $day,
-                    'hour' => $hour,
-                    'percentage' => $slot?->online_percentage ?? 0,
-                    'heat_level' => $slot?->heat_level ?? 0,
-                    'times_online' => $slot?->times_online ?? 0,
-                    'times_checked' => $slot?->times_checked ?? 0,
-                    'avg_viewers' => $slot?->avg_viewers,
-                ];
+            $grid = [];
+
+            for ($hour = 0; $hour < 24; $hour++) {
+                $row = [];
+                for ($day = 0; $day < 7; $day++) {
+                    $key = $day . '_' . $hour;
+                    $slot = $data[$key] ?? null;
+
+                    $row[] = [
+                        'day' => $day,
+                        'hour' => $hour,
+                        'percentage' => $slot?->online_percentage ?? 0,
+                        'heat_level' => $slot?->heat_level ?? 0,
+                        'times_online' => $slot?->times_online ?? 0,
+                        'times_checked' => $slot?->times_checked ?? 0,
+                        'avg_viewers' => $slot?->avg_viewers,
+                    ];
+                }
+                $grid[] = $row;
             }
-            $grid[] = $row;
-        }
 
-        return $grid;
+            return $grid;
+        });
     }
 
     /**
@@ -117,15 +121,29 @@ class ModelHeatmap extends Model
     }
 
     /**
+     * Flush all cached heatmap data for a model (call after aggregation).
+     */
+    public static function flushCache(string $modelId): void
+    {
+        Cache::forget("heatmap:grid:{$modelId}");
+        Cache::forget("heatmap:summary:{$modelId}");
+        Cache::forget("heatmap:best:{$modelId}:5");
+        Cache::forget("heatmap:blocks:{$modelId}:40");
+        Cache::forget("heatmap:blocks:{$modelId}:50");
+    }
+
+    /**
      * Get best times (slots with highest online percentage)
      */
     public static function getBestTimes(string $modelId, int $limit = 5): Collection
     {
-        return static::forModel($modelId)
-            ->where('online_percentage', '>', 0)
-            ->orderByDesc('online_percentage')
-            ->limit($limit)
-            ->get();
+        return Cache::remember("heatmap:best:{$modelId}:{$limit}", self::CACHE_TTL, function () use ($modelId, $limit) {
+            return static::forModel($modelId)
+                ->where('online_percentage', '>', 0)
+                ->orderByDesc('online_percentage')
+                ->limit($limit)
+                ->get();
+        });
     }
 
     /**
@@ -133,37 +151,38 @@ class ModelHeatmap extends Model
      */
     public static function getSummary(string $modelId): array
     {
-        $heatmap = static::forModel($modelId)->get();
-        
-        if ($heatmap->isEmpty()) {
+        return Cache::remember("heatmap:summary:{$modelId}", self::CACHE_TTL, function () use ($modelId) {
+            $heatmap = static::forModel($modelId)->get();
+
+            if ($heatmap->isEmpty()) {
+                return [
+                    'has_data' => false,
+                    'total_slots' => 0,
+                    'active_slots' => 0,
+                    'avg_online_percentage' => 0,
+                    'best_day' => null,
+                    'best_hour' => null,
+                ];
+            }
+
+            $activeSlots = $heatmap->where('online_percentage', '>', 0);
+            $bestSlot = $heatmap->sortByDesc('online_percentage')->first();
+
+            $dayStats = $heatmap->groupBy('day_of_week')->map(function ($slots) {
+                return $slots->where('online_percentage', '>', 50)->count();
+            });
+            $bestDay = $dayStats->sortDesc()->keys()->first();
+
             return [
-                'has_data' => false,
-                'total_slots' => 0,
-                'active_slots' => 0,
-                'avg_online_percentage' => 0,
-                'best_day' => null,
-                'best_hour' => null,
+                'has_data' => true,
+                'total_slots' => $heatmap->count(),
+                'active_slots' => $activeSlots->count(),
+                'avg_online_percentage' => round($activeSlots->avg('online_percentage'), 1),
+                'best_day' => $bestDay !== null ? self::DAYS[$bestDay] : null,
+                'best_hour' => $bestSlot ? sprintf('%02d:00', $bestSlot->hour_of_day) : null,
+                'peak_percentage' => $bestSlot?->online_percentage ?? 0,
             ];
-        }
-
-        $activeSlots = $heatmap->where('online_percentage', '>', 0);
-        $bestSlot = $heatmap->sortByDesc('online_percentage')->first();
-        
-        // Find best day (day with most active hours)
-        $dayStats = $heatmap->groupBy('day_of_week')->map(function ($slots) {
-            return $slots->where('online_percentage', '>', 50)->count();
         });
-        $bestDay = $dayStats->sortDesc()->keys()->first();
-
-        return [
-            'has_data' => true,
-            'total_slots' => $heatmap->count(),
-            'active_slots' => $activeSlots->count(),
-            'avg_online_percentage' => round($activeSlots->avg('online_percentage'), 1),
-            'best_day' => $bestDay !== null ? self::DAYS[$bestDay] : null,
-            'best_hour' => $bestSlot ? sprintf('%02d:00', $bestSlot->hour_of_day) : null,
-            'peak_percentage' => $bestSlot?->online_percentage ?? 0,
-        ];
     }
 
     /**
@@ -211,64 +230,60 @@ class ModelHeatmap extends Model
      */
     public static function getScheduleBlocks(string $modelId, int $minPercentage = 40): array
     {
-        $heatmap = static::forModel($modelId)
-            ->where('online_percentage', '>=', $minPercentage)
-            ->orderBy('day_of_week')
-            ->orderBy('hour_of_day')
-            ->get();
+        return Cache::remember("heatmap:blocks:{$modelId}:{$minPercentage}", self::CACHE_TTL, function () use ($modelId, $minPercentage) {
+            $heatmap = static::forModel($modelId)
+                ->where('online_percentage', '>=', $minPercentage)
+                ->orderBy('day_of_week')
+                ->orderBy('hour_of_day')
+                ->get();
 
-        if ($heatmap->isEmpty()) {
-            return [];
-        }
-
-        // Group consecutive hours by day
-        $blocks = [];
-        $currentBlock = null;
-
-        foreach ($heatmap as $slot) {
-            if ($currentBlock === null) {
-                // Start new block
-                $currentBlock = [
-                    'day' => $slot->day_of_week,
-                    'day_name' => $slot->day_name,
-                    'start_hour' => $slot->hour_of_day,
-                    'end_hour' => $slot->hour_of_day + 1,
-                    'avg_percentage' => $slot->online_percentage,
-                    'slots' => 1,
-                ];
-            } elseif (
-                $slot->day_of_week === $currentBlock['day'] &&
-                $slot->hour_of_day === $currentBlock['end_hour']
-            ) {
-                // Extend current block
-                $currentBlock['end_hour'] = $slot->hour_of_day + 1;
-                $currentBlock['avg_percentage'] = 
-                    (($currentBlock['avg_percentage'] * $currentBlock['slots']) + $slot->online_percentage) 
-                    / ($currentBlock['slots'] + 1);
-                $currentBlock['slots']++;
-            } else {
-                // Save current block and start new one
-                $blocks[] = $currentBlock;
-                $currentBlock = [
-                    'day' => $slot->day_of_week,
-                    'day_name' => $slot->day_name,
-                    'start_hour' => $slot->hour_of_day,
-                    'end_hour' => $slot->hour_of_day + 1,
-                    'avg_percentage' => $slot->online_percentage,
-                    'slots' => 1,
-                ];
+            if ($heatmap->isEmpty()) {
+                return [];
             }
-        }
 
-        // Don't forget the last block
-        if ($currentBlock !== null) {
-            $blocks[] = $currentBlock;
-        }
+            $blocks = [];
+            $currentBlock = null;
 
-        // Sort by average percentage (most reliable times first)
-        usort($blocks, fn($a, $b) => $b['avg_percentage'] <=> $a['avg_percentage']);
+            foreach ($heatmap as $slot) {
+                if ($currentBlock === null) {
+                    $currentBlock = [
+                        'day' => $slot->day_of_week,
+                        'day_name' => $slot->day_name,
+                        'start_hour' => $slot->hour_of_day,
+                        'end_hour' => $slot->hour_of_day + 1,
+                        'avg_percentage' => $slot->online_percentage,
+                        'slots' => 1,
+                    ];
+                } elseif (
+                    $slot->day_of_week === $currentBlock['day'] &&
+                    $slot->hour_of_day === $currentBlock['end_hour']
+                ) {
+                    $currentBlock['end_hour'] = $slot->hour_of_day + 1;
+                    $currentBlock['avg_percentage'] =
+                        (($currentBlock['avg_percentage'] * $currentBlock['slots']) + $slot->online_percentage)
+                        / ($currentBlock['slots'] + 1);
+                    $currentBlock['slots']++;
+                } else {
+                    $blocks[] = $currentBlock;
+                    $currentBlock = [
+                        'day' => $slot->day_of_week,
+                        'day_name' => $slot->day_name,
+                        'start_hour' => $slot->hour_of_day,
+                        'end_hour' => $slot->hour_of_day + 1,
+                        'avg_percentage' => $slot->online_percentage,
+                        'slots' => 1,
+                    ];
+                }
+            }
 
-        return $blocks;
+            if ($currentBlock !== null) {
+                $blocks[] = $currentBlock;
+            }
+
+            usort($blocks, fn($a, $b) => $b['avg_percentage'] <=> $a['avg_percentage']);
+
+            return $blocks;
+        });
     }
 
     /**

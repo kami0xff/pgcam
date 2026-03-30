@@ -104,18 +104,10 @@
             {{-- Infinite Scroll Trigger --}}
             <div id="infinite-scroll-trigger"></div>
 
-            {{-- SEO Pagination --}}
-            <nav class="seo-pagination" aria-label="Pagination">
-                @if($models->currentPage() > 1)
-                    <a href="{{ $models->previousPageUrl() }}" rel="prev">Previous Page</a>
-                @endif
-                
-                <span>Page {{ $models->currentPage() }} of {{ $models->lastPage() }}</span>
-                
-                @if($models->hasMorePages())
-                    <a href="{{ $models->nextPageUrl() }}" rel="next">Next Page</a>
-                @endif
-            </nav>
+            {{-- Pagination --}}
+            <div class="pagination-wrapper">
+                {{ $models->links() }}
+            </div>
         @endif
 
         {{-- Bottom SEO Content --}}

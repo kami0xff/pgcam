@@ -8,6 +8,8 @@ use App\Models\ModelDescription;
 use App\Models\ModelFaq;
 use App\Services\SeoService;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
 
 class CamModelController extends Controller
 {
@@ -110,20 +112,35 @@ class CamModelController extends Controller
      */
     public function index(Request $request)
     {
-        $query = CamModel::query();
-        $this->applyFilters($request, $query);
-
-        // Get paginated results (larger batch for infinite scroll)
         $perPage = 48;
-        $models = $query->paginate($perPage)->withQueryString();
+        $page = (int) $request->input('page', 1);
+        $hasFilters = $request->hasAny(['search', 'tags', 'gender', 'platform', 'country', 'age_min', 'age_max', 'hd', 'online', 'niche', 'niche_tag']);
+        $isDefaultSort = !$request->filled('sort') || $request->input('sort') === 'viewers_count';
 
-        // Get unique values for filter dropdowns
-        $platforms = CamModel::distinct()->pluck('source_platform')->filter()->sort()->values();
-        $genders = CamModel::distinct()->pluck('gender')->filter()->sort()->values();
+        if (!$hasFilters && $isDefaultSort && $page <= 5) {
+            // Fast path: UNION approach uses the homepage index (~1ms vs ~190ms).
+            // Cached for 30s — cam data refreshes on a similar cadence.
+            $cacheKey = 'cam:homepage:p' . $page;
+            $models = cache()->remember($cacheKey, 30, function () use ($perPage, $page) {
+                return $this->getHomepageModels($perPage, $page);
+            });
+        } else {
+            $query = CamModel::query();
+            $this->applyFilters($request, $query);
+            $models = $query->simplePaginate($perPage)->withQueryString();
+        }
 
-        // Stats
-        $totalCount = CamModel::count();
-        $onlineCount = CamModel::online()->count();
+        // Cache filter options and counts — these change slowly
+        [$platforms, $genders, $totalCount, $onlineCount] = cache()->remember(
+            'cam:homepage_meta',
+            60,
+            fn () => [
+                CamModel::distinct()->pluck('source_platform')->filter()->sort()->values(),
+                CamModel::distinct()->pluck('gender')->filter()->sort()->values(),
+                CamModel::count(),
+                CamModel::online()->count(),
+            ]
+        );
 
         // SEO Featured Sections (only on first page, no filters)
         $seoSections = [];
@@ -154,7 +171,7 @@ class CamModelController extends Controller
                 '@type' => 'ItemList',
                 'name' => 'Live Cam Models',
                 'numberOfItems' => $totalCount,
-                'itemListElement' => $models->map(fn($m, $i) => [
+                'itemListElement' => $models->getCollection()->map(fn($m, $i) => [
                     '@type' => 'ListItem',
                     'position' => $i + 1,
                     'url' => $m->url,
@@ -183,37 +200,38 @@ class CamModelController extends Controller
      */
     private function getSeoSections(): array
     {
-        $sections = [];
-        $dbSections = HomepageSection::getActiveSections();
+        return cache()->remember('cam:seo_sections:' . app()->getLocale(), 120, function () {
+            $sections = [];
+            $dbSections = HomepageSection::getActiveSections();
 
-        foreach ($dbSections as $section) {
-            $tags = $section->tags ?? [];
-            if (empty($tags)) {
-                continue;
+            foreach ($dbSections as $section) {
+                $tags = $section->tags ?? [];
+                if (empty($tags)) {
+                    continue;
+                }
+
+                $models = CamModel::where('is_online', true)
+                    ->where(function ($q) use ($tags) {
+                        foreach ($tags as $tag) {
+                            $q->orWhereJsonContains('tags', $tag);
+                        }
+                    })
+                    ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
+                    ->orderBy('viewers_count', 'desc')
+                    ->limit($section->max_models)
+                    ->get();
+
+                if ($models->count() >= $section->min_models) {
+                    $sections[] = [
+                        'title' => $section->localized_title,
+                        'slug' => $section->slug,
+                        'models' => $models,
+                    ];
+                }
             }
 
-            $models = CamModel::where('is_online', true)
-                ->where(function ($q) use ($tags) {
-                    foreach ($tags as $tag) {
-                        $q->orWhereJsonContains('tags', $tag)
-                            ->orWhere('username', 'ilike', '%' . $tag . '%');
-                    }
-                })
-                ->orderByRaw("CASE WHEN source_platform = 'chaturbate' THEN 1 ELSE 0 END ASC")
-                ->orderBy('viewers_count', 'desc')
-                ->limit($section->max_models)
-                ->get();
-
-            if ($models->count() >= $section->min_models) {
-                $sections[] = [
-                    'title' => $section->localized_title,
-                    'slug' => $section->slug,
-                    'models' => $models,
-                ];
-            }
-        }
-
-        return $sections;
+            return $sections;
+        });
     }
 
     /**
@@ -221,13 +239,18 @@ class CamModelController extends Controller
      */
     public function loadMore(Request $request)
     {
-        $query = CamModel::query();
-        $this->applyFilters($request, $query);
-
         $perPage = 48;
-        $page = $request->input('page', 1);
+        $page = (int) $request->input('page', 1);
+        $hasFilters = $request->hasAny(['search', 'tags', 'gender', 'platform', 'country', 'age_min', 'age_max', 'hd', 'online', 'niche', 'niche_tag']);
+        $isDefaultSort = !$request->filled('sort') || $request->input('sort') === 'viewers_count';
 
-        $models = $query->paginate($perPage, ['*'], 'page', $page);
+        if (!$hasFilters && $isDefaultSort) {
+            $models = $this->getHomepageModels($perPage, $page);
+        } else {
+            $query = CamModel::query();
+            $this->applyFilters($request, $query);
+            $models = $query->simplePaginate($perPage, ['*'], 'page', $page);
+        }
 
         // Render model cards HTML
         $html = '';
@@ -239,7 +262,6 @@ class CamModelController extends Controller
             'html' => $html,
             'hasMore' => $models->hasMorePages(),
             'nextPage' => $models->currentPage() + 1,
-            'total' => $models->total(),
         ]);
     }
 
@@ -506,6 +528,15 @@ class CamModelController extends Controller
 
         $models = $query->offset($offset)->limit($limit)->get();
 
+        // Batch-load tip menus for all models at once (avoid N+1)
+        $usernames = $models->pluck('username')->all();
+        $tipMenusByModel = \App\Models\ModelTipMenuItem::whereIn('model_id', $usernames)
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('token_price')
+            ->get()
+            ->groupBy('model_id');
+
         return response()->json([
             'models' => $models->map(fn (CamModel $m) => [
                 'id' => $m->id,
@@ -530,7 +561,7 @@ class CamModelController extends Controller
                 'goal_needed' => $m->goal_needed,
                 'goal_earned' => $m->goal_earned,
                 'goal_progress' => $m->goal_progress,
-                'tip_menu' => \App\Models\ModelTipMenuItem::getForModel($m->username)
+                'tip_menu' => ($tipMenusByModel[$m->username] ?? collect())
                     ->take(6)
                     ->map(fn ($item) => [
                         'emoji' => $item->emoji,
@@ -565,6 +596,38 @@ class CamModelController extends Controller
     }
 
     /**
+     * Default homepage query using UNION to leverage the (is_online, viewers_count) index.
+     * Non-chaturbate (HLS-capable) models come first, then chaturbate, both sorted by
+     * is_online DESC, viewers_count DESC. Avoids the CASE expression that forces a seq scan.
+     */
+    private function getHomepageModels(int $perPage, int $page): Paginator
+    {
+        $offset = ($page - 1) * $perPage;
+        $fetch = $perPage + 1; // +1 to detect hasMorePages
+        $innerLimit = $offset + $fetch;
+        $table = (new CamModel)->getTable();
+        $conn = (new CamModel)->getConnectionName();
+
+        $rows = DB::connection($conn)->select("
+            SELECT * FROM (
+                (SELECT * FROM {$table} WHERE source_platform != 'chaturbate'
+                 ORDER BY is_online DESC, viewers_count DESC NULLS LAST LIMIT ?)
+                UNION ALL
+                (SELECT * FROM {$table} WHERE source_platform = 'chaturbate'
+                 ORDER BY is_online DESC, viewers_count DESC NULLS LAST LIMIT ?)
+            ) sub
+            LIMIT ? OFFSET ?
+        ", [$innerLimit, $innerLimit, $fetch, $offset]);
+
+        $items = collect($rows)->map(fn ($r) => (new CamModel)->newFromBuilder((array) $r));
+        $hasMore = $items->count() > $perPage;
+
+        return new Paginator($items->take($perPage), $perPage, $page, [
+            'path' => Paginator::resolveCurrentPath(),
+        ]);
+    }
+
+    /**
      * Cam Roulette — random model matching, targets chatroulette/cam roulette keywords.
      */
     public function roulette(Request $request, ?string $category = null)
@@ -574,17 +637,7 @@ class CamModelController extends Controller
             abort(404);
         }
 
-        $query = CamModel::where('is_online', true)
-            ->where(function ($q) {
-                $q->whereNotNull('stream_url')->where('stream_url', '!=', '')
-                  ->orWhereNotNull('stream_urls');
-            });
-
-        if ($category) {
-            $query->inNiche($category);
-        }
-
-        $model = $query->inRandomOrder()->first();
+        $model = $this->getRandomOnlineModel($category);
 
         $categoryLabels = [
             null => __('roulette.all_cams'),
@@ -621,21 +674,7 @@ class CamModelController extends Controller
         $category = $request->input('category');
         $excludeId = $request->input('exclude');
 
-        $query = CamModel::where('is_online', true)
-            ->where(function ($q) {
-                $q->whereNotNull('stream_url')->where('stream_url', '!=', '')
-                  ->orWhereNotNull('stream_urls');
-            });
-
-        if ($category && in_array($category, ['girls', 'couples', 'men', 'trans'])) {
-            $query->inNiche($category);
-        }
-
-        if ($excludeId) {
-            $query->where('id', '!=', $excludeId);
-        }
-
-        $model = $query->inRandomOrder()->first();
+        $model = $this->getRandomOnlineModel($category, $excludeId);
 
         if (!$model) {
             return response()->json(['model' => null]);
@@ -663,6 +702,53 @@ class CamModelController extends Controller
                 'is_online' => $model->is_online,
             ],
         ]);
+    }
+
+    /**
+     * Pick a random online model using a cached count + random offset.
+     * Avoids ORDER BY RANDOM() which requires sorting all matching rows.
+     */
+    private function getRandomOnlineModel(?string $category = null, ?string $excludeId = null): ?CamModel
+    {
+        $cacheKey = 'roulette:count' . ($category ? ":{$category}" : '');
+
+        $count = cache()->remember($cacheKey, 60, function () use ($category) {
+            $q = CamModel::where('is_online', true)
+                ->where(function ($q) {
+                    $q->whereNotNull('stream_url')->where('stream_url', '!=', '')
+                      ->orWhereNotNull('stream_urls');
+                });
+            if ($category) {
+                $q->inNiche($category);
+            }
+            return $q->count();
+        });
+
+        if ($count === 0) {
+            return null;
+        }
+
+        $query = CamModel::where('is_online', true)
+            ->where(function ($q) {
+                $q->whereNotNull('stream_url')->where('stream_url', '!=', '')
+                  ->orWhereNotNull('stream_urls');
+            });
+
+        if ($category) {
+            $query->inNiche($category);
+        }
+
+        $offset = random_int(0, max(0, $count - 1));
+        $model = (clone $query)->orderByDesc('viewers_count')
+            ->offset($offset)->limit(1)->first();
+
+        if ($model && $excludeId && $model->id === $excludeId) {
+            $nextOffset = ($offset + 1) % $count;
+            $model = (clone $query)->orderByDesc('viewers_count')
+                ->offset($nextOffset)->limit(1)->first();
+        }
+
+        return $model;
     }
 
     private function buildRouletteHreflangUrls(?string $category): array

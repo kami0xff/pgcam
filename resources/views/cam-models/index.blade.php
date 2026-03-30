@@ -176,7 +176,7 @@
                     <a href="{{ $models->previousPageUrl() }}" rel="prev">{{ __('pagination.previous_page') }}</a>
                 @endif
                 
-                <span>{{ __('pagination.page') }} {{ $models->currentPage() }} {{ __('pagination.of') }} {{ $models->lastPage() }}</span>
+                <span>{{ __('pagination.page') }} {{ $models->currentPage() }} {{ __('pagination.of') }} {{ ceil($totalCount / $models->perPage()) }}</span>
                 
                 @if($models->hasMorePages())
                     <a href="{{ $models->nextPageUrl() }}" rel="next">{{ __('pagination.next_page') }}</a>

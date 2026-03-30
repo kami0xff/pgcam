@@ -139,33 +139,49 @@
     @endif
 
     @production
-    <!-- OpenReplay -->
+    {{-- OpenReplay: 10% sampling for anonymous users, always record logged-in users.
+         Deferred load to avoid blocking initial render. --}}
     <script>
-      var initOpts = {
-        projectKey: "ZxvDwu52DB5EuuvEhjYC",
-        defaultInputMode: 0,
-        obscureTextNumbers: false,
-        obscureTextEmails: false,
-      };
-      var startOpts = { userID: {!! json_encode(auth()->check() ? (string) auth()->user()->id : '') !!} };
-      (function(A,s,a,y,e,r){
-        r=window.OpenReplay=[e,r,y,[s-1, e]];
-        s=document.createElement('script');s.src=A;s.async=!a;
-        document.getElementsByTagName('head')[0].appendChild(s);
-        r.start=function(v){r.push([0])};
-        r.stop=function(v){r.push([1])};
-        r.setUserID=function(id){r.push([2,id])};
-        r.setUserAnonymousID=function(id){r.push([3,id])};
-        r.setMetadata=function(k,v){r.push([4,k,v])};
-        r.event=function(k,p,i){r.push([5,k,p,i])};
-        r.issue=function(k,p){r.push([6,k,p])};
-        r.isActive=function(){return false};
-        r.getSessionToken=function(){};
-      })("//static.openreplay.com/latest/openreplay.js",1,0,initOpts,startOpts);
-      @auth
-      window.OpenReplay.setUserID({!! json_encode(auth()->user()->email) !!});
-      window.OpenReplay.setMetadata('name', {!! json_encode(auth()->user()->name) !!});
-      @endauth
+      (function(){
+        var isAuth = {{ auth()->check() ? 'true' : 'false' }};
+        if (!isAuth && Math.random() > 0.10) return;
+
+        var initOpts = {
+          projectKey: "ZxvDwu52DB5EuuvEhjYC",
+          defaultInputMode: 0,
+          obscureTextNumbers: false,
+          obscureTextEmails: false,
+          __DISABLE_SECURE_MODE: true,
+        };
+        var startOpts = { userID: {!! json_encode(auth()->check() ? (string) auth()->user()->id : '') !!} };
+
+        function loadOR(){
+          var r = window.OpenReplay=[startOpts,r,initOpts,[0, startOpts]];
+          var s = document.createElement('script');
+          s.src = '//static.openreplay.com/latest/openreplay.js';
+          s.async = true;
+          document.head.appendChild(s);
+          r.start=function(v){r.push([0])};
+          r.stop=function(v){r.push([1])};
+          r.setUserID=function(id){r.push([2,id])};
+          r.setUserAnonymousID=function(id){r.push([3,id])};
+          r.setMetadata=function(k,v){r.push([4,k,v])};
+          r.event=function(k,p,i){r.push([5,k,p,i])};
+          r.issue=function(k,p){r.push([6,k,p])};
+          r.isActive=function(){return false};
+          r.getSessionToken=function(){};
+          @auth
+          r.setUserID({!! json_encode(auth()->user()->email) !!});
+          r.setMetadata('name', {!! json_encode(auth()->user()->name) !!});
+          @endauth
+        }
+
+        if (window.requestIdleCallback) {
+          requestIdleCallback(loadOR, { timeout: 5000 });
+        } else {
+          setTimeout(loadOR, 3000);
+        }
+      })();
     </script>
     @endproduction
 </head>

@@ -34,4 +34,5 @@ return [
     'known_for' => 'Known for:',
     'completed_goals' => 'Completed Goals',
     'suggested_models' => 'Suggested Models',
+    'data_last_updated' => 'Data last updated',
 ];

@@ -8,4 +8,5 @@ return [
     'results' => 'results',
     'previous_page_lc' => 'Previous page',
     'next_page_lc' => 'Next page',
+    'navigation' => 'Pagination',
 ];

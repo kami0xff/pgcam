@@ -16,7 +16,7 @@ class RecordOnlineModels extends Command
      * 0 * * * * cd /var/www/porngurucam && php artisan heatmap:record >> /dev/null 2>&1
      */
     protected $signature = 'heatmap:record
-                            {--prune : Prune old snapshots (older than 8 weeks)}
+                            {--prune : Prune old snapshots (older than 4 weeks)}
                             {--dry-run : Show what would be recorded without saving}';
 
     protected $description = 'Record which models are currently online for heatmap generation';
@@ -46,20 +46,19 @@ class RecordOnlineModels extends Command
             return self::SUCCESS;
         }
 
+        // Batch-fetch all models that already have a snapshot this hour
+        $existingIds = ModelOnlineSnapshot::where('day_of_week', $dayOfWeek)
+            ->where('hour_of_day', $hourOfDay)
+            ->where('snapshot_at', '>=', $now->copy()->startOfHour())
+            ->pluck('model_id')
+            ->flip();
+
         $inserted = 0;
         $skipped = 0;
 
-        // Batch insert for performance
         $snapshots = [];
         foreach ($onlineModels as $model) {
-            // Skip if we already have a snapshot for this model this hour
-            $exists = ModelOnlineSnapshot::where('model_id', $model->username)
-                ->where('day_of_week', $dayOfWeek)
-                ->where('hour_of_day', $hourOfDay)
-                ->where('snapshot_at', '>=', $now->copy()->startOfHour())
-                ->exists();
-
-            if ($exists) {
+            if ($existingIds->has($model->username)) {
                 $skipped++;
                 continue;
             }
@@ -76,14 +75,12 @@ class RecordOnlineModels extends Command
 
             $inserted++;
 
-            // Insert in batches of 1000
             if (count($snapshots) >= 1000) {
                 ModelOnlineSnapshot::insert($snapshots);
                 $snapshots = [];
             }
         }
 
-        // Insert remaining
         if (!empty($snapshots)) {
             ModelOnlineSnapshot::insert($snapshots);
         }
@@ -92,8 +89,8 @@ class RecordOnlineModels extends Command
 
         // Optionally prune old data
         if ($this->option('prune')) {
-            $pruned = ModelOnlineSnapshot::pruneOlderThan(8);
-            $this->info("Pruned {$pruned} old snapshots (> 8 weeks)");
+            $pruned = ModelOnlineSnapshot::pruneOlderThan(4);
+            $this->info("Pruned {$pruned} old snapshots (> 4 weeks)");
         }
 
         return self::SUCCESS;

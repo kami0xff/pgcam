@@ -211,30 +211,42 @@ class CountryController extends Controller
      */
     protected function findCountryBySlug(string $slug)
     {
-        try {
-            // Get all unique countries and find matching one
-            $countries = CamModel::on('cam')
-                ->select('country')
-                ->selectRaw('COUNT(*) as models_count')
-                ->whereNotNull('country')
-                ->where('country', '!=', '')
-                ->groupBy('country')
-                ->get();
-
-            foreach ($countries as $item) {
-                if (\Illuminate\Support\Str::slug($item->country) === $slug) {
-                    return (object) [
-                        'name' => $item->country,
-                        'slug' => $slug,
-                        'code' => $this->getCountryCode($item->country),
-                        'models_count' => $item->models_count,
-                        'localized_name' => $item->country,
-                    ];
-                }
+        // Cache the full country list to avoid a GROUP BY scan on every unknown slug
+        $countriesBySlug = cache()->remember('cam:countries_by_slug', 3600, function () {
+            try {
+                return CamModel::on('cam')
+                    ->select('country')
+                    ->selectRaw('COUNT(*) as models_count')
+                    ->whereNotNull('country')
+                    ->where('country', '!=', '')
+                    ->groupBy('country')
+                    ->get()
+                    ->keyBy(fn ($item) => \Illuminate\Support\Str::slug($item->country));
+            } catch (\Exception $e) {
+                return collect();
             }
-        } catch (\Exception $e) {
-            // Fallback: create a country object from the slug
-            $name = ucwords(str_replace('-', ' ', $slug));
+        });
+
+        $item = $countriesBySlug[$slug] ?? null;
+
+        if ($item) {
+            return (object) [
+                'name' => $item->country,
+                'slug' => $slug,
+                'code' => $this->getCountryCode($item->country),
+                'models_count' => $item->models_count,
+                'localized_name' => $item->country,
+            ];
+        }
+
+        // Last resort: construct from the slug itself
+        $name = ucwords(str_replace('-', ' ', $slug));
+        $count = CamModel::on('cam')
+            ->where('country', $name)
+            ->limit(1)
+            ->exists();
+
+        if ($count) {
             return (object) [
                 'name' => $name,
                 'slug' => $slug,

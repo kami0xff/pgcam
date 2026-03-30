@@ -79,6 +79,15 @@ Schedule::command('tags:update-counts --countries')
 // DAILY TASKS
 // ============================================================================
 
+// Prune old snapshots and goals (3:30 AM, daily to prevent unbounded growth)
+Schedule::command('heatmap:record --prune')
+    ->dailyAt('03:30')
+    ->appendOutputTo(storage_path('logs/heatmap-prune.log'));
+
+Schedule::command('goals:prune --weeks=6')
+    ->dailyAt('03:30')
+    ->appendOutputTo(storage_path('logs/goals-prune.log'));
+
 // Aggregate heatmap data (4 AM)
 Schedule::command('heatmap:aggregate --weeks=4')
     ->dailyAt('04:00')
@@ -117,11 +126,6 @@ Schedule::command('indexnow:submit --type=models --limit=5000')
 // ============================================================================
 // WEEKLY TASKS (Sunday)
 // ============================================================================
-
-// Prune old heatmap snapshots (Sunday 3 AM)
-Schedule::command('heatmap:record --prune')
-    ->weeklyOn(0, '03:00')
-    ->appendOutputTo(storage_path('logs/heatmap-prune.log'));
 
 // Regenerate sitemaps (Sunday 6 AM)
 Schedule::command('sitemap:generate --warm-cache')

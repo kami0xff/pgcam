@@ -54,10 +54,31 @@ services:
     image: postgres:16-alpine
     container_name: porngurucam-db-prod
     restart: unless-stopped
+    shm_size: 256mb
     environment:
       POSTGRES_DB: porngurucam
       POSTGRES_USER: porngurucam
       POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
+    command:
+      - "postgres"
+      - "-c" 
+      - "shared_buffers=512MB"
+      - "-c"
+      - "effective_cache_size=2GB"
+      - "-c"
+      - "work_mem=16MB"
+      - "-c"
+      - "maintenance_work_mem=256MB"
+      - "-c"
+      - "random_page_cost=1.1"
+      - "-c"
+      - "checkpoint_completion_target=0.9"
+      - "-c"
+      - "wal_buffers=16MB"
+      - "-c"
+      - "default_statistics_target=200"
+      - "-c"
+      - "log_min_duration_statement=1000"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
