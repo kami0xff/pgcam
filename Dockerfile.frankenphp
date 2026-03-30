@@ -97,10 +97,10 @@ ENV SERVER_NAME=:80
 ENV APP_ENV=production
 ENV APP_DEBUG=false
 
-# Pre-cache routes, config, views, and events for Octane workers.
-# These are loaded once when the worker boots and reused across all requests.
-RUN php artisan config:cache \
-    && php artisan route:cache \
+# Pre-cache routes, views, and events at build time.
+# Config cache is NOT done here — it needs runtime env vars (APP_KEY, DB creds).
+# The deploy script runs `php artisan optimize` which handles config:cache.
+RUN php artisan route:cache \
     && php artisan view:cache \
     && php artisan event:cache
 
