@@ -131,7 +131,7 @@
 
         {{-- Results Count with Preview Toggle --}}
         <div class="results-bar">
-            <x-pornguru.results-count :paginator="$models" />
+            <x-pornguru.results-count :paginator="$models" :total="$totalCount" />
             <div class="preview-controls">
                 <button class="preview-toggle" id="preview-toggle" onclick="toggleAllPreviews()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="preview-off">
